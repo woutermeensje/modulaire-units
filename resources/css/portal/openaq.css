@@ -1,0 +1,241 @@
+/* ===============================
+   LUCHTKWALITEIT (OpenAQ)
+================================ */
+
+.oaq-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.oaq-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Lijst */
+.oaq-list-panel {
+  background: var(--color-bg-white);
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  padding: 14px;
+  max-height: 720px;
+  display: flex;
+  flex-direction: column;
+}
+
+.oaq-filter {
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.oaq-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+}
+
+.oaq-station {
+  width: 100%;
+  text-align: left;
+  background: var(--color-bg-white);
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+  font-family: var(--font-ui);
+}
+
+.oaq-station:hover {
+  background: var(--color-bg);
+  border-color: var(--color-border-strong);
+}
+
+.oaq-station.is-active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.oaq-station__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.oaq-station__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.oaq-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-text-muted);
+  opacity: .7;
+  flex-shrink: 0;
+}
+
+.oaq-station__coords {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.oaq-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.oaq-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--color-primary-strong);
+  background: var(--color-primary-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.oaq-empty-list {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  padding: 12px 4px;
+}
+
+/* Detail */
+.oaq-detail-panel {
+  background: var(--color-bg-white);
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  padding: 24px;
+  min-height: 240px;
+}
+
+.oaq-detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 200px;
+  color: var(--color-text-subtle);
+  text-align: center;
+}
+
+.oaq-detail-empty i {
+  font-size: 32px;
+}
+
+.oaq-detail-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+  min-height: 200px;
+  justify-content: center;
+}
+
+.oaq-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  animation: oaq-spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes oaq-spin {
+  to { transform: rotate(360deg); }
+}
+
+.oaq-detail-title {
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 2px;
+}
+
+.oaq-detail-subtitle {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+
+.oaq-readings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.oaq-reading {
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  padding: 14px;
+}
+
+.oaq-reading__label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--color-text-subtle);
+}
+
+.oaq-reading__value {
+  margin-top: 6px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.oaq-reading__value small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-left: 3px;
+}
+
+.oaq-reading__time {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.oaq-reading--empty .oaq-reading__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-subtle);
+}
+
+@media (max-width: 900px) {
+  .oaq-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .oaq-list-panel {
+    max-height: 420px;
+  }
+}

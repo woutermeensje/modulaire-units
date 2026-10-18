@@ -1,0 +1,128 @@
+/* ==========================================================================
+   DOELGROEPPAGINA'S (/werkgever en /werkzoekende).
+   Bouwt voort op cv-database.css (.cvdb, .cvdb-hero, .cvdb-step, .cvdb-btn).
+   ========================================================================== */
+
+.cvdb-btn--ghost {
+    border: 1px solid #2B6E8F;
+    background: transparent;
+    color: #2B6E8F;
+}
+
+.cvdb-btn--ghost:hover {
+    background: #2B6E8F;
+    color: #fff;
+}
+
+.doelgroep__image {
+    margin: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 50px -28px rgba(37, 79, 110, .45);
+}
+
+.doelgroep__image img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+.doelgroep__section {
+    padding-top: 0;
+}
+
+/* Gelijke blokken: alle kaarten in een rij even hoog, links onderaan uitgelijnd. */
+.doelgroep-blocks {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.doelgroep-blocks--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.doelgroep-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.doelgroep-block__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+.doelgroep-block__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cvdb-primary);
+    text-decoration: none;
+}
+
+.doelgroep-block__link:hover {
+    color: var(--cvdb-ink);
+    text-decoration: underline;
+}
+
+/* Contactblok */
+.doelgroep-contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+    padding: 36px;
+    border-radius: 12px;
+    background: var(--cvdb-soft);
+}
+
+.doelgroep-contact .cvdb-section__title {
+    margin-bottom: 10px;
+}
+
+.doelgroep-contact__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.doelgroep-contact__line {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--cvdb-ink);
+    text-decoration: none;
+}
+
+.doelgroep-contact__line:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .doelgroep-blocks--3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .doelgroep-contact {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .doelgroep-blocks,
+    .doelgroep-blocks--3 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .doelgroep-contact {
+        padding: 24px;
+    }
+}

@@ -1,0 +1,746 @@
+/* ==========================================================================
+   VACATUREPAGINA (/vacature/{slug})
+   Nagebouwd van de WordPress-site: child theme sustainablejobs-nl,
+   wp-job-manager/content-single-job_listing.php.
+   ========================================================================== */
+
+/* De profielbalk staat buiten de pagina-sectie, dus die krijgt dezelfde kleuren. Het job alert-blok
+   staat ook op de organisatiepagina's (organisaties/imported.blade.php). */
+.vacancy-single-page,
+.vacancy-profile-bar,
+.vacancy-sidebar-block--alert {
+    --vs-border: #DEDEDE;
+    --vs-text: #333333;
+    --vs-strong: #111827;
+    --vs-muted: #6b7280;
+    --vs-primary: #168AAD;
+    --vs-primary-hover: #11708D;
+    --vs-ink: var(--brand-midnight-blue, #254F6E);
+    --vs-green: #C5D77F;
+    --vs-green-hover: #8FC689;
+    --vs-soft: #F3F7E4;
+    --vs-soft-border: #DDE8C5;
+}
+
+.vacancy-single-page {
+    padding: 0 0 96px;
+    color: var(--vs-text);
+}
+
+.vacancy-single {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 0;
+    box-sizing: border-box;
+}
+
+.vacancy-single__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    margin-top: 16px;
+}
+
+.vacancy-single__main {
+    min-width: 0;
+}
+
+/* ---------- Hoofdblok ---------- */
+
+.vacancy-single__card,
+.vacancy-question,
+.vacancy-sidebar-block {
+    border: 1px solid var(--vs-border);
+    border-radius: 5px;
+    background: #fff;
+}
+
+.vacancy-single__card {
+    padding: 24px;
+}
+
+.vacancy-single__title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--vs-border);
+}
+
+.vacancy-single__title-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.vacancy-single__title {
+    margin: 0;
+    padding-top: 8px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--vs-text);
+}
+
+.vacancy-single__posted {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #777777;
+}
+
+.vacancy-single__title-row .vacancy-detail__favorite {
+    position: static;
+    flex-shrink: 0;
+}
+
+.vacancy-single__description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--vs-text);
+}
+
+.vacancy-single__apply a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px;
+    border: 1px solid var(--color-primary);
+    border-radius: 5px;
+    background: var(--color-primary);
+    color: #fff;
+    text-decoration: none;
+}
+
+.vacancy-single__apply a:hover {
+    background: #fff;
+    color: var(--color-primary);
+}
+
+.vacancy-single__no-apply {
+    margin: 20px 0 0;
+    color: var(--vs-muted);
+}
+
+.vacancy-single__direct-apply {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 20px;
+    border: 1px solid var(--color-primary);
+    border-radius: 5px;
+    background: var(--color-primary);
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+}
+
+.vacancy-single__direct-apply:hover {
+    background: #fff;
+    color: var(--color-primary);
+}
+
+.vacancy-question.vacancy-apply {
+    scroll-margin-top: 120px;
+}
+
+/* ---------- Direct solliciteren ---------- */
+
+.vacancy-apply__intro {
+    margin: 0 0 12px;
+    font-size: 15px;
+    color: var(--vs-text);
+}
+
+.vacancy-apply__checklist {
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--vs-text);
+}
+
+.vacancy-apply__checklist i {
+    margin-right: 4px;
+    color: var(--vs-primary);
+}
+
+.vacancy-apply__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin: 12px 0 0;
+}
+
+.vacancy-apply__links a:not(.vacancy-question__submit) {
+    color: var(--vs-primary);
+}
+
+a.vacancy-question__submit {
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* ---------- Stel een vraag ---------- */
+
+.vacancy-question {
+    scroll-margin-top: 100px;
+    margin-top: 20px;
+    padding: 28px;
+}
+
+.vacancy-question__title {
+    margin: 0 0 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--vs-border);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--vs-text);
+}
+
+.vacancy-question__form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.vacancy-question__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.vacancy-question__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.vacancy-question__label {
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--vs-text);
+}
+
+.vacancy-question__req {
+    margin-left: 2px;
+    color: var(--vs-primary);
+}
+
+.vacancy-question__optional {
+    font-size: 12px;
+    color: var(--vs-muted);
+}
+
+.vacancy-question .vacancy-question__input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--vs-border);
+    border-radius: 5px;
+    background: #fff;
+    font: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--vs-text);
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.vacancy-question .vacancy-question__input:focus {
+    border-color: var(--vs-primary);
+    box-shadow: 0 0 0 3px rgba(22, 138, 173, .15);
+}
+
+.vacancy-question .vacancy-question__input::placeholder {
+    font-weight: 300;
+    color: #777777;
+}
+
+.vacancy-question__upload {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 110px;
+    padding: 24px 20px;
+    border: 2px dashed var(--vs-primary);
+    border-radius: 5px;
+    background: var(--vs-soft);
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.vacancy-question__upload:hover {
+    border-color: var(--vs-green);
+    background: #F7FAEF;
+}
+
+.vacancy-question__upload i {
+    font-size: 26px;
+    color: var(--vs-primary);
+}
+
+.vacancy-question__upload-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vs-primary);
+}
+
+.vacancy-question__upload-name,
+.vacancy-question__hint {
+    font-size: 12px;
+    color: #777777;
+}
+
+.vacancy-question__hint {
+    font-size: 13px;
+}
+
+.vacancy-question__upload-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.vacancy-question__submit {
+    align-self: flex-start;
+    padding: 10px 28px;
+    border: 2px solid var(--vs-primary);
+    border-radius: 4px;
+    background: var(--vs-primary);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+
+.vacancy-question__submit:hover {
+    border-color: var(--vs-primary-hover);
+    background: var(--vs-primary-hover);
+    color: #fff;
+}
+
+.vacancy-question__success,
+.vacancy-job-alert__success {
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid #6ee7b7;
+    border-radius: 5px;
+    background: #ecfdf5;
+    font-size: 14px;
+    color: #065f46;
+}
+
+.vacancy-question__error,
+.vacancy-job-alert__errors {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    border: 1px solid #fca5a5;
+    border-radius: 5px;
+    background: #fef2f2;
+    font-size: 13px;
+    color: #991b1b;
+}
+
+.vacancy-question__error p,
+.vacancy-job-alert__errors p {
+    margin: 0;
+}
+
+/* ---------- Zijbalk ---------- */
+
+.vacancy-single__sidebar {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-self: start;
+}
+
+.vacancy-sidebar-block {
+    padding: 20px;
+}
+
+.vacancy-sidebar-block__title {
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--vs-border);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vs-strong);
+}
+
+.vacancy-company {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.vacancy-company__logo {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding: 5px;
+    border: 1px solid var(--vs-border);
+    border-radius: 50%;
+    background: #fff;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.vacancy-company__logo img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+.vacancy-company__logo span {
+    font-weight: 700;
+    color: var(--vs-ink);
+}
+
+.vacancy-company__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.vacancy-company__name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--vs-ink);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+a.vacancy-company__name:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.vacancy-company__count {
+    font-size: 13px;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+a.vacancy-company__count:hover {
+    text-decoration: underline;
+}
+
+.vacancy-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.vacancy-details__row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.vacancy-details dt {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--vs-muted);
+}
+
+.vacancy-details dd {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vs-strong);
+}
+
+.vacancy-details__chip {
+    display: inline-block;
+    margin: 0 4px 4px 0;
+    padding: 3px 10px;
+    border: 1px solid var(--vs-soft-border);
+    border-radius: 999px;
+    background: var(--vs-soft);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--vs-primary);
+    text-decoration: none;
+}
+
+a.vacancy-details__chip:hover {
+    border-color: var(--vs-primary);
+}
+
+/* Job alert */
+.vacancy-job-alert__subtitle {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--vs-muted);
+}
+
+.vacancy-job-alert__form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vacancy-job-alert__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.vacancy-job-alert__field label {
+    font-size: 13px;
+    color: var(--vs-text);
+}
+
+.vacancy-job-alert__field input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--vs-border);
+    border-radius: 5px;
+    font: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.vacancy-job-alert__field input:focus {
+    border-color: var(--vs-primary);
+}
+
+.vacancy-job-alert__sectors {
+    border: 1px solid var(--vs-border);
+    border-radius: 5px;
+}
+
+.vacancy-job-alert__sectors summary {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.vacancy-job-alert__sectors summary::-webkit-details-marker {
+    display: none;
+}
+
+.vacancy-job-alert__count {
+    margin-left: auto;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--vs-soft);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--vs-primary);
+}
+
+.vacancy-job-alert__options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    padding: 8px 12px 12px;
+    border-top: 1px solid var(--vs-border);
+    overflow-y: auto;
+}
+
+.vacancy-job-alert__options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.vacancy-job-alert__submit {
+    width: 100%;
+    padding: 9px 20px;
+    border: 2px solid var(--vs-primary);
+    border-radius: 4px;
+    background: var(--vs-primary);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.vacancy-job-alert__submit:hover {
+    border-color: var(--vs-primary-hover);
+    background: var(--vs-primary-hover);
+    color: #fff;
+}
+
+/* Contactpersoon */
+.vacancy-contact__name {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--vs-strong);
+}
+
+.vacancy-contact__email {
+    font-size: 13px;
+    color: var(--vs-primary);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.vacancy-contact__email:hover {
+    text-decoration: underline;
+}
+
+/* Vergelijkbare vacatures onder de pagina */
+.vacancy-single__related {
+    margin-top: 32px;
+}
+
+/* ---------- Vaste profielbalk onderaan ---------- */
+
+.vacancy-profile-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px max(24px, calc((100% - 1100px) / 2 + 24px));
+    background: var(--vs-ink);
+    color: #fff;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, .12);
+}
+
+.vacancy-profile-bar.is-hidden {
+    display: none;
+}
+
+.vacancy-profile-bar__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.vacancy-profile-bar__desc {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, .85);
+}
+
+.vacancy-profile-bar__btn {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    border: 1px solid var(--color-primary);
+    border-radius: 5px;
+    background: var(--color-primary);
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.vacancy-profile-bar__btn:hover {
+    border-color: var(--brand-ocean-blue, #2B6E8F);
+    background: var(--brand-ocean-blue, #2B6E8F);
+}
+
+.vacancy-profile-bar__close {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+    .vacancy-single__layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    /* Kolommen vallen weg, zodat de blokken van beide kolommen los te ordenen zijn:
+       eerst de details, dan de vacature, daarna de rest. */
+    .vacancy-single__main,
+    .vacancy-single__sidebar {
+        display: contents;
+    }
+
+    .vacancy-sidebar-block--details { order: 1; }
+    .vacancy-single__card          { order: 2; }
+    .vacancy-sidebar-block--company { order: 3; }
+    .vacancy-question              { order: 4; margin-top: 0; }
+    .vacancy-question.vacancy-apply { order: 2; }
+    .vacancy-sidebar-block--contact { order: 5; }
+    .vacancy-sidebar-block--alert   { order: 6; }
+}
+
+@media (max-width: 768px) {
+    .vacancy-single {
+        padding: 16px 12px 0;
+    }
+
+    .vacancy-question {
+        padding: 20px;
+    }
+
+    /* Op mobiel alleen de knop: die vult de balk naast het sluitkruisje. */
+    .vacancy-profile-bar__text {
+        display: none;
+    }
+
+    .vacancy-profile-bar__btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .vacancy-question__row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .vacancy-question__submit {
+        width: 100%;
+        align-self: stretch;
+    }
+}

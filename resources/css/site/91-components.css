@@ -1,0 +1,405 @@
+/* ==========================================================================
+   Componenten die in Laravel nieuw zijn of anders werken dan in WordPress
+   ========================================================================== */
+
+/* ── Units-catalogus: select en chips ── */
+.mh-units-catalog__select.is-open .mh-units-catalog__select-chevron {
+  transform: rotate(180deg);
+}
+
+.mh-units-catalog__select-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mh-units-catalog__select-tags:not(:empty) {
+  margin-top: 10px;
+}
+
+.mh-units-catalog__select-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 7px 16px;
+  border: 1px solid #DEDEDE;
+  border-radius: 999px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, .08);
+}
+
+.mh-units-catalog__select-tag-remove {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #999;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mh-units-catalog__select-option.is-selected {
+  background: #f1f8ee;
+  color: #111;
+  font-weight: 600;
+}
+
+/* ── Formulieren ([informatie_formulier], sollicitaties, offerte) ── */
+.mh-form__honeypot {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.mh-info-form {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(37, 71, 107, .08);
+}
+
+.mh-form__title {
+  margin: 0 0 18px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.mh-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mh-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mh-form__field--full {
+  grid-column: 1 / -1;
+}
+
+.mh-form__field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mh-form__field abbr {
+  color: #c0392b;
+  text-decoration: none;
+}
+
+.mh-form__field input,
+.mh-form__field select,
+.mh-form__field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 5px;
+  background: #fff;
+  font: inherit;
+  font-size: 15px;
+  color: var(--color-text, #333);
+}
+
+.mh-form__field input:focus,
+.mh-form__field select:focus,
+.mh-form__field textarea:focus {
+  outline: none;
+  border-color: var(--color-secondary, #4188AA);
+  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(65, 136, 170, .22));
+}
+
+.mh-form__error {
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.mh-form__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.mh-form__disclaimer {
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.mh-form-notice {
+  padding: 16px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.mh-form-notice--success {
+  border: 1px solid #BFE396;
+  background: #F1F8EE;
+  color: #25476B;
+}
+
+.mh-quote-cta__notice {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 5px;
+  background: #F1F8EE;
+  color: #25476B;
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .mh-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Blogartikel ── */
+.mh-post {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.mh-post__header {
+  margin: 18px 0 24px;
+}
+
+.mh-post__category {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(191, 227, 150, .3);
+  color: var(--color-primary, #25476B);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.mh-post__title {
+  margin: 0 0 10px;
+  color: var(--color-text, #333);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mh-post__meta {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.mh-post__meta a {
+  color: inherit;
+}
+
+.mh-post__image {
+  margin: 0 0 28px;
+}
+
+.mh-post__image img {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.mh-post__content {
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.mh-post__content h2,
+.mh-post__content h3 {
+  margin: 32px 0 12px;
+  line-height: 1.3;
+}
+
+.mh-post__content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.mh-post__related {
+  margin-top: 56px;
+}
+
+.mh-post__related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mh-post__related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-text, #333);
+  text-decoration: none;
+  transition: border-color .2s ease, transform .2s ease;
+}
+
+.mh-post__related-card:hover {
+  border-color: var(--color-secondary, #4188AA);
+  transform: translateY(-2px);
+}
+
+.mh-post__related-date {
+  color: #888;
+  font-size: 12px;
+}
+
+.mh-post__related-excerpt {
+  color: #666;
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .mh-post__related-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Blog-paginering ── */
+.mh-blog__pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.mh-blog__page-link {
+  color: var(--color-primary, #25476B);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── Zoeken, winkel en 404 ── */
+.mh-search,
+.mh-shop {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mh-search__form {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 28px;
+}
+
+.mh-search__form input {
+  flex: 1;
+  max-width: 520px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 5px;
+  font: inherit;
+}
+
+.mh-search__results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mh-search__results li {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border, #dedede);
+}
+
+.mh-search__results a {
+  color: var(--color-primary, #25476B);
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.mh-search__results p {
+  margin: 6px 0 0;
+  color: #666;
+}
+
+.mh-not-found {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 20px;
+  text-align: center;
+}
+
+.mh-not-found .mh-btn {
+  margin: 6px;
+}
+
+.mh-gallery-empty {
+  aspect-ratio: 3 / 2;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fff 0%, #F1F8EE 100%);
+}
+
+/* Tegeltitels in [subpage_grid] blijven wit (de Elementor-kit kleurt alle h3's donker). */
+.muo-card .muo-card__title {
+  color: #fff;
+}
+
+.mh-footer .mh-footer__heading {
+  color: #fff;
+}
+
+/* Formulier in een smalle Elementor-kolom: geen extra kader, velden onder elkaar. */
+.mh-info-form {
+  container-type: inline-size;
+}
+
+.elementor-widget .mh-info-form,
+.elementor-shortcode .mh-info-form,
+.elementor-widget-container .mh-info-form {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+@container (max-width: 520px) {
+  .mh-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mh-form__submit {
+    width: 100%;
+  }
+}
+
+/* Knop in de blog-sidebar: de Elementor-kit geeft alle links de primaire kleur. */
+.mh-blog__sidebar a.mh-sidebar-newsletter__btn,
+.mh-blog__sidebar a.mh-sidebar-newsletter__btn:hover {
+  color: #fff;
+}

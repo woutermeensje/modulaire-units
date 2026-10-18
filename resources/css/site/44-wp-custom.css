@@ -1,0 +1,11 @@
+/* source: inline_css/wp-custom.css */
+
+span.mh-header__site-name {
+    font-family:'Work Sans', sans-serif;
+	font-size: 18px !important; 
+	padding: 12px; 
+}
+
+h1.entry-title {
+	display: none; 
+}

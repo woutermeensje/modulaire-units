@@ -1,0 +1,235 @@
+/* ==========================================================================
+   ORGANISATIEPAGINA (/organisaties/{slug}) voor bedrijven die van de oude
+   WordPress-site zijn overgenomen (resources/views/organisaties/imported.blade.php).
+   ========================================================================== */
+
+.org-page {
+    padding-bottom: 72px;
+}
+
+.org-page__shell {
+    width: min(1100px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 0 auto;
+}
+
+/* Kop met logo en naam */
+.org-page__header {
+    box-sizing: border-box;
+    min-height: 400px;
+    padding: 28px 0 36px;
+    border-bottom: 1px solid var(--vb-border);
+    display: flex;
+}
+
+/* Breadcrumbs bovenaan; logo en titel verticaal in het midden van de rest van de kop */
+.org-page__header > .org-page__shell {
+    display: flex;
+    flex-direction: column;
+}
+
+.org-page__identity {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: auto 0;
+    padding-top: 24px;
+}
+
+.org-page__logo {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 112px;
+    height: 112px;
+    padding: 12px;
+    border: 1px solid var(--vb-border);
+    border-radius: 12px;
+    background: #fff;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.org-page__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.org-page__logo span {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--vb-primary-strong);
+}
+
+.org-page__heading {
+    min-width: 0;
+}
+
+.org-page__eyebrow {
+    margin: 0 0 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--vb-primary);
+}
+
+.org-page__title {
+    margin: 0;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--vb-text);
+    overflow-wrap: anywhere;
+}
+
+.org-page__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 12px;
+}
+
+.org-page__fact {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.org-page__fact i {
+    font-size: 17px;
+    color: var(--vb-primary);
+}
+
+.org-page__fact--strong {
+    font-weight: 700;
+    color: var(--vb-primary-strong);
+}
+
+/* Inhoud */
+.org-page__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 32px;
+    padding-top: 36px;
+}
+
+.org-page__section + .org-page__section {
+    margin-top: 40px;
+}
+
+.org-page__section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--vb-text);
+}
+
+.org-page__empty {
+    display: flex;
+    gap: 14px;
+    padding: 22px;
+    border: 1px dashed var(--vb-primary-muted);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.org-page__empty > i {
+    font-size: 26px;
+    color: var(--vb-primary);
+}
+
+.org-page__empty p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--vb-muted);
+}
+
+.org-page__empty .org-page__empty-title {
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vb-text);
+}
+
+/* Titel "Over …" staat in het witte blok, samen met de tekst */
+.org-page__about {
+    padding: 28px 32px;
+    border: 1px solid var(--vb-border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.org-page__about .richtext-content {
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.org-page__about .richtext-content > :first-child {
+    margin-top: 0;
+}
+
+/* Zijbalk */
+.org-page__sidebar {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-self: start;
+}
+
+.org-card {
+    padding: 20px;
+    border: 1px solid var(--vb-border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.org-card__title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vb-text);
+}
+
+.org-card__text {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--vb-muted);
+}
+
+@media (max-width: 900px) {
+    .org-page__layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .org-page__sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .org-page__identity {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .org-page__logo {
+        width: 88px;
+        height: 88px;
+    }
+
+    .org-page__about {
+        padding: 20px;
+    }
+}

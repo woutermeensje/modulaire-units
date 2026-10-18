@@ -1,0 +1,173 @@
+/* ==========================================================================
+   ModulaireHuisvesting.nl — aanvullingen op de theme-styling (Laravel)
+   ========================================================================== */
+
+body {
+  margin: 0;
+  font-family: 'Work Sans', sans-serif;
+  background: var(--color-bg, #F7FBF7);
+  color: var(--color-text, #333);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Work Sans', sans-serif;
+}
+
+/* ── Header: Inloggen + "Informatie aanvragen" (zelfde opbouw als de inlogomgeving) ── */
+.mh-header__divider,
+.mh-header__cta {
+  order: 1;
+}
+
+.mh-header__login {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--color-text, #333);
+  font-size: 17px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .15s ease;
+}
+
+.mh-header__login:hover {
+  color: var(--color-primary, #25476B);
+}
+
+.mh-btn--solid,
+a.mh-btn--solid,
+a.mh-btn--solid.mh-btn--nav-contact,
+button.mh-btn--solid {
+  min-height: 44px;
+  padding: 10px 26px !important;
+  border-radius: 8px !important;
+  border-color: #39749B !important;
+  background: #39749B !important;
+  color: #fff !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+}
+
+.mh-btn--solid:hover,
+a.mh-btn--solid:hover,
+a.mh-btn--solid.mh-btn--nav-contact:hover {
+  border-color: var(--color-primary, #25476B) !important;
+  background: var(--color-primary, #25476B) !important;
+  color: #fff !important;
+}
+
+@media (min-width: 961px) {
+  .mh-header__quote-icon--always {
+    display: inline-flex;
+    position: relative;
+  }
+}
+
+.mh-header__quote-icon {
+  position: relative;
+}
+
+/* ── Footer (was een Elementor-template) ── */
+.mh-footer {
+  background: var(--color-primary, #25476B);
+  color: #fff;
+  padding: 36px 24px 24px;
+}
+
+.mh-footer__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+  max-width: 1140px;
+  min-height: 215px;
+  margin: 0 auto;
+}
+
+.mh-footer__heading {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.mh-footer__column .mh-footer__heading:not(:first-child) {
+  margin-top: 24px;
+}
+
+.mh-footer__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.mh-footer__links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mh-footer__links li {
+  margin: 0 0 4px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.mh-footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.mh-footer a:hover {
+  color: var(--e-global-color-5e977a0, #8AC697);
+}
+
+.mh-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1140px;
+  margin: 28px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .2);
+  font-size: 13px;
+  opacity: .85;
+}
+
+@media (max-width: 1024px) {
+  .mh-footer__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .mh-footer__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ruimte zodat de sticky CTA-balk de footer niet afdekt. */
+body {
+  padding-bottom: 72px;
+}
+
+/* ── Standaardpagina's zonder Elementor-opmaak ── */
+body:not(.elementor-page) .site-main.page .page-content {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 0 48px;
+}
+
+.site-main .page-header {
+  padding: 40px 0 12px;
+}
+
+.site-main .page-header .entry-title {
+  margin: 0;
+  color: var(--color-text, #333);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+}

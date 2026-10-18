@@ -1,0 +1,127 @@
+/* ===============================
+   BUTTONS (global)
+================================ */
+
+/* Zorgt dat buttons dezelfde UI-typografie hebben als headings */
+button,
+.btn {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+/* Base button */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 40px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+
+.btn,
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn:visited{
+  text-decoration: none;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+}
+
+.btn:active{
+  transform: translateY(0);
+}
+
+/* Primary */
+.btn-primary{
+  background: var(--btn-blue-green);
+  color: #ffffff;
+  border-color: var(--btn-blue-green);
+}
+
+.btn-primary:hover{
+  background: color-mix(in srgb, var(--btn-blue-green) 88%, #000000 12%);
+  border-color: color-mix(in srgb, var(--btn-blue-green) 88%, #000000 12%);
+  color: #ffffff;
+}
+
+.btn-secondary{
+  background: var(--btn-green);
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-secondary:hover{
+  background: color-mix(in srgb, var(--btn-green) 88%, #ffffff 12%);
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+/* Ghost */
+.btn-ghost{
+  background: #ffffff;
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-ghost:hover{
+  background: color-mix(in srgb, var(--btn-blue-green) 10%, #ffffff 90%);
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn-basic{
+  background: #fff;
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-basic:hover{
+  background: var(--btn-rose);
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn-soft{
+  background: linear-gradient(135deg, var(--btn-rose), var(--btn-green));
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-soft:hover{
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--btn-rose) 88%, #ffffff 12%),
+    color-mix(in srgb, var(--btn-green) 88%, #ffffff 12%)
+  );
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"]{
+  opacity: .6;
+  pointer-events: none;
+  transform: none;
+}
+
+/* Focus */
+.btn:focus,
+.btn:focus-visible{
+  outline: none;
+}

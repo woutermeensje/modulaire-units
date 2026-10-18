@@ -1,0 +1,400 @@
+/* ==========================================================================
+   NIEUWSARTIKEL (/{slug}): tekst links (70%), zijkolom met recente artikelen,
+   vacatures en nieuwsbrief rechts (30%).
+   ========================================================================== */
+
+.artikel-page {
+    --artikel-primary: #168AAD;
+    --artikel-ink: var(--brand-midnight-blue, #254F6E);
+    --artikel-text: #333333;
+    --artikel-muted: #6b7280;
+    --artikel-border: #DEDEDE;
+
+    padding: 32px 0 72px;
+    color: var(--artikel-text);
+}
+
+.artikel-page__shell {
+    width: min(1200px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 0 auto;
+}
+
+.artikel-page__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+    gap: 32px;
+    align-items: start;
+    margin-top: 16px;
+}
+
+/* Artikel */
+.artikel {
+    overflow: hidden;
+    border: 1px solid var(--artikel-border);
+    border-radius: 6px;
+    background: #fff;
+}
+
+.artikel__cover {
+    margin: 0;
+    aspect-ratio: 16 / 7;
+    background: #EEF6F4;
+}
+
+.artikel__cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artikel__content {
+    padding: clamp(22px, 4vw, 44px);
+}
+
+.artikel__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--artikel-muted);
+}
+
+.artikel__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.artikel__meta i {
+    color: var(--artikel-primary);
+}
+
+.artikel__title {
+    margin: 0 0 16px;
+    font-size: clamp(26px, 3.2vw, 36px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--artikel-ink);
+}
+
+.artikel__lead {
+    margin: 0 0 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--artikel-border);
+    font-size: 18px;
+    line-height: 1.7;
+    color: #4b5563;
+}
+
+.artikel__body {
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.artikel__body h2,
+.artikel__body h3,
+.artikel__body h4 {
+    margin: 32px 0 10px;
+    line-height: 1.3;
+    color: var(--artikel-ink);
+}
+
+.artikel__body h2 { font-size: 24px; }
+.artikel__body h3 { font-size: 20px; }
+.artikel__body h4 { font-size: 17px; }
+
+.artikel__body p {
+    margin: 0 0 18px;
+}
+
+.artikel__body a {
+    color: var(--artikel-primary);
+    text-underline-offset: 3px;
+}
+
+.artikel__body ul,
+.artikel__body ol {
+    margin: 0 0 18px;
+    padding-left: 22px;
+}
+
+.artikel__body li {
+    margin-bottom: 6px;
+}
+
+.artikel__body blockquote {
+    margin: 24px 0;
+    padding: 4px 0 4px 20px;
+    border-left: 4px solid var(--artikel-primary);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--artikel-ink);
+}
+
+.artikel__body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+}
+
+.artikel__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--artikel-border);
+}
+
+.artikel-share {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.artikel-share__label {
+    margin-right: 4px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.artikel-share__btn {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--artikel-border);
+    border-radius: 50%;
+    font-size: 18px;
+    color: var(--artikel-ink);
+    text-decoration: none;
+    transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.artikel-share__btn:hover,
+.artikel-share__btn:focus-visible {
+    border-color: var(--artikel-primary);
+    background: var(--artikel-primary);
+    color: #fff;
+}
+
+.artikel__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--artikel-primary);
+    text-decoration: none;
+}
+
+.artikel__back:hover {
+    text-decoration: underline;
+}
+
+/* Zijkolom */
+.artikel-sidebar {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.artikel-side {
+    padding: 20px;
+    border: 1px solid var(--artikel-border);
+    border-radius: 6px;
+    background: #fff;
+}
+
+.artikel-side__title {
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--artikel-primary);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--artikel-ink);
+}
+
+.artikel-side__text {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.artikel-side__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--artikel-primary);
+    text-decoration: none;
+}
+
+.artikel-side__link:hover {
+    text-decoration: underline;
+}
+
+.artikel-side__button {
+    display: block;
+    margin-top: 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--artikel-primary);
+    border-radius: 5px;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--artikel-primary);
+    text-align: center;
+    text-decoration: none;
+}
+
+.artikel-side__button:hover {
+    background: var(--artikel-primary);
+    color: #fff;
+}
+
+.artikel-side--cta {
+    border-color: var(--artikel-ink);
+    background: var(--artikel-ink);
+    color: #fff;
+}
+
+.artikel-side--cta .artikel-side__title {
+    border-bottom-color: rgba(255, 255, 255, .3);
+    color: #fff;
+}
+
+.artikel-side__button--light {
+    border-color: #fff;
+    background: #fff;
+    color: var(--artikel-ink);
+}
+
+.artikel-side__button--light:hover {
+    background: transparent;
+    color: #fff;
+}
+
+/* Recente artikelen */
+.artikel-posts,
+.artikel-jobs {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.artikel-posts li + li,
+.artikel-jobs li + li {
+    border-top: 1px solid #eeeeee;
+}
+
+.artikel-posts__item,
+.artikel-jobs__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: var(--artikel-text);
+    text-decoration: none;
+}
+
+.artikel-posts__thumb {
+    display: grid;
+    flex: 0 0 64px;
+    place-items: center;
+    width: 64px;
+    height: 48px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #EEF6F4;
+    font-size: 20px;
+    color: var(--artikel-primary);
+}
+
+.artikel-posts__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artikel-posts__content,
+.artikel-jobs__content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.artikel-posts__title {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.artikel-posts__date,
+.artikel-jobs__meta {
+    overflow: hidden;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--artikel-muted);
+}
+
+.artikel-posts__item:hover .artikel-posts__title,
+.artikel-jobs__item:hover .artikel-jobs__title {
+    color: var(--artikel-primary);
+}
+
+/* Recente vacatures */
+.artikel-jobs__logo {
+    display: grid;
+    flex: 0 0 40px;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border: 1px solid #eeeeee;
+    border-radius: 6px;
+    background: #EEF6F4;
+    font-weight: 700;
+    color: var(--artikel-primary);
+}
+
+.artikel-jobs__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+}
+
+.artikel-jobs__title {
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 960px) {
+    .artikel-page__layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .artikel-sidebar {
+        position: static;
+    }
+}

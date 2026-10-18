@@ -1,0 +1,53 @@
+<?php
+
+return [
+    'accepted' => 'Je moet akkoord gaan met :attribute.',
+    'array' => ':attribute moet een lijst zijn.',
+    'confirmed' => 'De bevestiging van :attribute komt niet overeen.',
+    'current_password' => 'Het wachtwoord is onjuist.',
+    'date' => ':attribute is geen geldige datum.',
+    'email' => ':attribute moet een geldig e-mailadres zijn.',
+    'exists' => 'De gekozen :attribute is ongeldig.',
+    'file' => ':attribute moet een bestand zijn.',
+    'image' => ':attribute moet een afbeelding zijn.',
+    'in' => 'De gekozen :attribute is ongeldig.',
+    'integer' => ':attribute moet een geheel getal zijn.',
+    'max' => [
+        'array' => ':attribute mag niet meer dan :max items bevatten.',
+        'file' => ':attribute mag niet groter zijn dan :max kilobytes.',
+        'numeric' => ':attribute mag niet groter zijn dan :max.',
+        'string' => ':attribute mag niet uit meer dan :max tekens bestaan.',
+    ],
+    'mimes' => ':attribute moet een bestand zijn van het type: :values.',
+    'min' => [
+        'array' => ':attribute moet minimaal :min items bevatten.',
+        'file' => ':attribute moet minimaal :min kilobytes zijn.',
+        'numeric' => ':attribute moet minimaal :min zijn.',
+        'string' => ':attribute moet minimaal :min tekens bevatten.',
+    ],
+    'password' => [
+        'letters' => ':attribute moet minimaal één letter bevatten.',
+        'mixed' => ':attribute moet minimaal één hoofdletter en één kleine letter bevatten.',
+        'numbers' => ':attribute moet minimaal één cijfer bevatten.',
+        'symbols' => ':attribute moet minimaal één speciaal teken bevatten.',
+        'uncompromised' => 'Dit :attribute komt voor in een datalek. Kies een ander :attribute.',
+    ],
+    'required' => ':attribute is verplicht.',
+    'required_with' => ':attribute is verplicht als :values is ingevuld.',
+    'string' => ':attribute moet een tekst zijn.',
+    'unique' => ':attribute is al in gebruik.',
+    'url' => ':attribute moet een geldige URL zijn.',
+
+    'attributes' => [
+        'name' => 'naam',
+        'email' => 'e-mailadres',
+        'password' => 'wachtwoord',
+        'title' => 'titel',
+        'slug' => 'slug',
+        'status' => 'status',
+        'label' => 'label',
+        'from_path' => 'oude URL',
+        'to_path' => 'nieuwe URL',
+        'files' => 'bestanden',
+    ],
+];

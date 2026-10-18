@@ -1,0 +1,96 @@
+/* /kaart: vacatures als spelden op een kaart van Nederland (Leaflet). */
+.kaart {
+  height: 640px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-soft);
+  z-index: 0;
+}
+
+.kaart__noot {
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.kaart-speld {
+  position: relative;
+}
+
+.kaart-speld__punt {
+  position: absolute;
+  left: 2px;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transform: rotate(-45deg);
+}
+
+.kaart-speld__punt::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.kaart-speld__aantal {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--color-secondary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+.kaart--fout {
+  display: none;
+}
+
+.kaart-popup__plaats {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.kaart-popup ul {
+  max-height: 220px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.kaart-popup li + li {
+  margin-top: 6px;
+}
+
+.kaart-popup a {
+  display: block;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.kaart-popup span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .kaart {
+    height: 480px;
+  }
+}

@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Page;
+use App\Models\Post;
+use App\Models\Redirect;
+use App\Services\Content\ShortcodeRenderer;
+use App\Support\Seo;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+
+class PageController extends Controller
+{
+    public function __construct(private ShortcodeRenderer $shortcodes) {}
+
+    public function home(Request $request): View|RedirectResponse
+    {
+        if ($request->filled('s')) {
+            return redirect()->route('search', ['s' => $request->query('s')]);
+        }
+
+        return $this->show($request, '');
+    }
+
+    /**
+     * Resolve any other URL: configured redirects first, then pages by full path, then blog posts by slug.
+     */
+    public function show(Request $request, string $path): View|RedirectResponse
+    {
+        $path = trim($path, '/');
+
+        if ($redirect = $this->findRedirect($path)) {
+            $redirect->increment('hits');
+
+            return redirect($redirect->to_path, $redirect->status_code);
+        }
+
+        $page = Page::query()->where('path', $path)->first();
+
+        if ($page && ($page->isPublished() || Auth::check())) {
+            return $this->renderPage($page);
+        }
+
+        if (! str_contains($path, '/') && $path !== '') {
+            $post = Post::query()->where('slug', $path)->with(['author', 'category'])->first();
+
+            if ($post && ($post->isPublished() || Auth::check())) {
+                return app(BlogController::class)->renderPost($post);
+            }
+        }
+
+        abort(404);
+    }
+
+    private function renderPage(Page $page): View
+    {
+        return view('pages.show', [
+            'page' => $page,
+            'content' => $this->shortcodes->render($page->content, $page),
+            'seo' => Seo::for($page, $page->excerpt),
+        ]);
+    }
+
+    private function findRedirect(string $path): ?Redirect
+    {
+        return Redirect::query()->where('from_path', Redirect::normalize($path))->first();
+    }
+}

@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Header, nagebouwd naar sustainablejobs.com (partials/header.blade.php):
+   witte hoofdbalk met rechts uitgelijnd menu en CTA.
+   Achtergronden full-bleed; inhoud tot --rn-max met meeschalende zijmarge.
+   ========================================================================== */
+.rn-header,
+.rn-mobile-nav {
+    --rn-max: 1600px;
+    --rn-gutter: clamp(1rem, 3.4vw, 3rem);
+    --rn-brand: #2B6E8F;
+    --rn-brand-hover: #254F6E;
+    --rn-text: #333333;
+}
+
+.rn-header {
+    font-family: var(--font-ui);
+    position: relative;
+    z-index: 40; /* dropdowns boven de pagina-inhoud */
+    background: #fff;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+/* Globale link-stijl (text.css) niet laten doorlekken in header en mobiel menu. */
+.rn-header a,
+.rn-header a:hover,
+.rn-mobile-nav a,
+.rn-mobile-nav a:hover {
+    font-family: inherit;
+    text-decoration: none;
+}
+
+.rn-mainbar { background: #fff; }
+.rn-header__inner { display: flex; align-items: center; gap: 16px; width: min(var(--rn-max), 100% - 2 * var(--rn-gutter)); min-height: 65px; margin: 0 auto; }
+.rn-header__brand-link { flex: 0 0 auto; margin-right: auto; }
+.rn-header__logo { display: block; width: 160px; height: auto; }
+
+/* Hoofdmenu met dropdowns, zoals op sustainablejobs.nl: tweede niveau klapt zijwaarts uit. */
+.rn-header__nav { align-self: stretch; display: flex; }
+.rn-nav__list, .rn-nav__dropdown { margin: 0; padding: 0; list-style: none; }
+.rn-nav__list { display: flex; align-items: stretch; gap: 2px; }
+.rn-nav__item { position: relative; margin: 0; list-style: none; }
+.rn-nav__link { display: inline-flex; align-items: center; gap: 6px; height: 100%; padding: 0 12px; color: var(--rn-text); font-size: 15px; font-weight: 500; white-space: nowrap; transition: color .15s ease; }
+.rn-nav__link:hover, .rn-nav__item:focus-within > .rn-nav__link { color: var(--rn-brand); }
+.rn-nav__chev { flex-shrink: 0; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .2s ease; }
+
+.rn-nav__dropdown { position: absolute; top: calc(100% - 6px); left: 0; z-index: 50; min-width: 250px; padding: 10px; border: 1px solid #e3e3e3; border-radius: 5px; background: #fff; box-shadow: 0 22px 44px rgba(43, 110, 143, .16); opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .18s ease .14s, transform .18s ease .14s, visibility .18s ease .14s; }
+.rn-nav__item--has-children:hover > .rn-nav__dropdown,
+.rn-nav__item--has-children:focus-within > .rn-nav__dropdown { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.rn-nav__item--has-children:hover > .rn-nav__link .rn-nav__chev,
+.rn-nav__item--has-children:focus-within > .rn-nav__link .rn-nav__chev { transform: rotate(-135deg) translateY(-2px); }
+.rn-nav__dropdown .rn-nav__link { display: flex; justify-content: space-between; width: 100%; height: auto; padding: 10px 14px; line-height: 1.35; white-space: normal; }
+.rn-nav__dropdown .rn-nav__chev { transform: rotate(-45deg); }
+.rn-nav__dropdown .rn-nav__item--has-children:hover > .rn-nav__link .rn-nav__chev,
+.rn-nav__dropdown .rn-nav__item--has-children:focus-within > .rn-nav__link .rn-nav__chev { transform: rotate(-45deg); }
+.rn-nav__dropdown .rn-nav__dropdown { top: -11px; left: calc(100% + 8px); }
+/* Onzichtbare brug zodat de flyout niet sluit bij het oversteken van de tussenruimte. */
+.rn-nav__dropdown .rn-nav__item--has-children::after { content: ''; position: absolute; top: 0; right: -10px; width: 10px; height: 100%; }
+
+.rn-header__cta { display: flex; align-items: center; gap: 10px; }
+.rn-header__cta::before { content: ''; width: 1px; height: 34px; margin-right: 8px; background: #e3e3e3; }
+.rn-header__login { margin-right: 8px; color: var(--rn-text); font-size: 15px; font-weight: 500; transition: color .15s ease; }
+.rn-header__login:hover { color: var(--rn-brand); }
+
+.rn-btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px; border-radius: 5px; background: var(--rn-brand); color: #fff; font-size: 14.5px; font-weight: 600; letter-spacing: .01em; white-space: nowrap; transition: background .15s ease; }
+.rn-btn:hover { background: var(--rn-brand-hover); color: #fff; }
+.rn-auth-btn { min-height: 0; padding: 14px; line-height: 1.2; }
+
+.rn-header__hamburger { display: none; padding: .4rem; border: 0; background: transparent; cursor: pointer; }
+.rn-header__hamburger span { display: block; width: 24px; height: 2px; margin: 5px; background: var(--rn-text); }
+
+/* Mobiel: knop "Profiel aanmaken" in plaats van het logo, favicon in het midden. */
+.rn-header__signup,
+.rn-header__favicon { display: none; }
+.rn-header__signup { flex: 0 0 auto; align-items: center; padding: 9px 14px; border-radius: 5px; background: var(--rn-brand); color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .15s ease; }
+.rn-header__signup:hover { background: var(--rn-brand-hover); color: #fff; }
+.rn-header__favicon { align-items: center; justify-content: center; margin: 0 auto; }
+.rn-header__favicon img { display: block; width: 26px; height: 26px; }
+
+/* LinkedIn-iconen naast het hartje, alleen in de mobiele header. */
+.rn-header__socials { display: none; align-items: center; }
+.rn-header__social { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 42px; border-radius: 999px; font-size: 26px; transition: opacity .15s ease; }
+.rn-header__social:hover { opacity: .8; }
+.rn-header__social--company,
+.rn-header__social--company:hover { color: #0A66C2; }
+.rn-header__social--group,
+.rn-header__social--group:hover { color: var(--brand-teal-breeze, #409FA0); }
+
+.rn-mobile-nav { display: none; }
+.rn-mobile-nav.is-open { display: block; position: fixed; inset: 0; z-index: 60; background: rgba(48, 42, 60, .45); }
+.rn-mobile-nav__panel { display: flex; flex-direction: column; width: min(330px, 86vw); height: 100%; padding: 1.5rem; background: #fff; box-shadow: 8px 0 30px rgba(48, 42, 60, .18); font-family: var(--font-ui); }
+.rn-mobile-nav__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.rn-mobile-nav__close { border: 0; background: transparent; font-size: 2rem; line-height: 1; color: var(--rn-text); cursor: pointer; }
+.rn-mobile-nav__head > a { display: inline-block; }
+.rn-mobile-nav__logo { display: block; width: 160px; height: auto; margin: .5rem 0 3rem; }
+.rn-mobile-nav__panel { overflow-y: auto; }
+.rn-mobile-nav__list, .rn-mobile-nav__sublist { margin: 0; padding: 0; list-style: none; }
+.rn-mobile-nav__list > .rn-nav__item { border-bottom: 1px solid #e3e3e3; }
+.rn-mobile-nav__list .rn-nav__link,
+.rn-mobile-nav__group > summary { display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; color: var(--rn-text); font-size: 16px; font-weight: 500; cursor: pointer; }
+.rn-mobile-nav__group > summary { list-style: none; }
+.rn-mobile-nav__group > summary::-webkit-details-marker { display: none; }
+.rn-mobile-nav__group[open] > summary .rn-nav__chev { transform: rotate(-135deg) translateY(-2px); }
+.rn-mobile-nav__sublist { margin: 0 0 10px 4px; padding-left: 12px; border-left: 3px solid #e3e3e3; }
+.rn-mobile-nav__sublist .rn-nav__link,
+.rn-mobile-nav__sublist .rn-mobile-nav__group > summary { padding: 8px 4px; font-size: 15px; color: #555; }
+.rn-mobile-nav__body { display: flex; flex: 1 0 auto; flex-direction: column; }
+/* Inloggen en aanmelden, apart voor werkzoekenden en werkgevers. */
+.rn-mobile-nav__account { margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.rn-mobile-nav__account + .rn-mobile-nav__account { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid #e3e3e3; }
+.rn-mobile-nav__account a { display: flex; align-items: center; gap: 10px; padding: 7px 4px; color: var(--rn-text); font-size: 15px; font-weight: 500; transition: color .15s ease; }
+.rn-mobile-nav__account a:hover { color: var(--rn-brand); }
+.rn-mobile-nav__account i { font-size: 19px; color: var(--rn-brand); }
+/* Knop onderaan het paneel, over de volle breedte. */
+.rn-mobile-nav__ctas { margin-top: auto; padding-top: 1.5rem; }
+.rn-mobile-nav__ctas .rn-btn { display: flex; width: 100%; }
+
+@media (max-width: 1280px) {
+    .rn-nav__link { padding: 0 9px; }
+    .rn-header__cta::before { margin-right: 4px; }
+}
+@media (max-width: 1140px) {
+    .rn-header { position: sticky; top: 0; }
+    .rn-header__nav, .rn-header__cta { display: none; }
+    .rn-header__hamburger { display: block; }
+    .rn-header__socials { display: flex; }
+    .rn-header__brand-link { display: none; }
+    .rn-header__signup { display: inline-flex; }
+    .rn-header__favicon { display: flex; }
+}
+@media (max-width: 560px) {
+    .rn-header__inner { gap: 8px; }
+    .rn-header__signup { padding: 8px 12px; font-size: 13px; }
+    .rn-header__social { width: 32px; }
+    .rn-header__logo { width: 145px; }
+}

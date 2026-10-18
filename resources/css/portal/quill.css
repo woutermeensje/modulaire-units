@@ -1,0 +1,123 @@
+.container {
+  width: 500px;
+  max-width: 100%;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+/* label/input basisstyling is verplaatst naar forms.css */
+
+.ql-editor {
+  padding: 4px;
+  font-size: 14px;
+}
+
+#editor {
+  height: 130px;
+}
+
+/* ===============================
+   QUILL (Global Textareas)
+================================ */
+
+.quill-field {
+  --quill-editor-height: 300px;
+  border: 1px solid #d8dee6;
+  border-radius: 5px;
+  background: #fff;
+  transition: border-color .16s ease;
+  overflow: hidden;
+}
+
+.quill-field:hover {
+  border-color: #c9d2dc;
+}
+
+.quill-field:focus-within {
+  border-color: rgba(10, 107, 141, 0.45);
+}
+
+.quill-field .ql-toolbar.ql-snow {
+  border: 0;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  background: #fbfcfd;
+}
+
+.quill-field .ql-container.ql-snow {
+  border: 0;
+  height: auto;
+}
+
+.quill-field .ql-editor {
+  height: var(--quill-editor-height);
+  min-height: 0;
+  max-height: var(--quill-editor-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 14px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.6;
+}
+
+.quill-field .ql-editor h1,
+.quill-field .ql-editor h2,
+.quill-field .ql-editor h3 {
+  margin-top: 16px;
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+
+.quill-field .ql-editor h1:first-child,
+.quill-field .ql-editor h2:first-child,
+.quill-field .ql-editor h3:first-child {
+  margin-top: 0;
+}
+
+.quill-field .ql-editor ul,
+.quill-field .ql-editor ol {
+  margin-top: 14px;
+  margin-bottom: 16px;
+}
+
+.quill-field .ql-editor li {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.quill-field .ql-toolbar .ql-formats {
+  margin-right: 8px;
+}
+
+.quill-field .ql-picker.ql-header .ql-picker-label::before,
+.quill-field .ql-picker.ql-header .ql-picker-item::before {
+  content: 'Normaal';
+}
+
+.quill-field .ql-picker.ql-header .ql-picker-label[data-value='1']::before,
+.quill-field .ql-picker.ql-header .ql-picker-item[data-value='1']::before {
+  content: 'Kop 1';
+}
+
+.quill-field .ql-picker.ql-header .ql-picker-label[data-value='2']::before,
+.quill-field .ql-picker.ql-header .ql-picker-item[data-value='2']::before {
+  content: 'Heading';
+}
+
+.quill-field .ql-picker.ql-header .ql-picker-label[data-value='3']::before,
+.quill-field .ql-picker.ql-header .ql-picker-item[data-value='3']::before {
+  content: 'Subheading';
+}
+
+.quill-field__source {
+  display: none !important;
+}
+
+.quill-field.is-invalid {
+  border-color: #dc2626;
+}

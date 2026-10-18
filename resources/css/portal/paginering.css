@@ -1,0 +1,106 @@
+/* Paginering onder de vacaturelijsten (resources/views/partials/paginering.blade.php). */
+.paginering {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 28px;
+}
+
+/* Globale ul/li-stijlen (text.css) geven marges en een andere tekstgrootte; hier alles gelijk trekken. */
+.paginering__paginas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.paginering__paginas li {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.paginering__stap,
+.paginering__pagina,
+.paginering__puntjes {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--vb-border, #dedede);
+    border-radius: 5px;
+    background: #fff;
+    box-sizing: border-box;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--vb-text, #333);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+    transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+
+.paginering__stap {
+    padding: 0 14px;
+}
+
+.paginering__stap i {
+    font-size: 14px;
+}
+
+a.paginering__stap:hover,
+a.paginering__pagina:hover {
+    border-color: var(--vb-primary, var(--color-primary));
+    color: var(--vb-primary, var(--color-primary));
+    text-decoration: none;
+}
+
+a.paginering__stap:focus-visible,
+a.paginering__pagina:focus-visible {
+    outline: 2px solid var(--vb-primary, var(--color-primary));
+    outline-offset: 2px;
+}
+
+.paginering__pagina.is-active {
+    border-color: var(--vb-primary, var(--color-primary));
+    background: var(--vb-primary, var(--color-primary));
+    color: #fff;
+}
+
+.paginering__stap.is-disabled {
+    border-color: var(--vb-border, #dedede);
+    background: transparent;
+    color: #b5b5b5;
+    cursor: default;
+}
+
+.paginering__puntjes {
+    min-width: 24px;
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-text-subtle, #999);
+}
+
+@media (max-width: 520px) {
+    /* Op smalle schermen alleen de pijlen, zodat alles op één regel past. */
+    .paginering__stap {
+        width: 40px;
+        padding: 0;
+        font-size: 0;
+        gap: 0;
+    }
+
+    .paginering__stap i {
+        font-size: 16px;
+    }
+}

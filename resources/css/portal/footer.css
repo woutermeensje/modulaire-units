@@ -1,0 +1,192 @@
+/* ==========================================================================
+   Footer, nagebouwd naar sustainablejobs.com (partials/footer.blade.php).
+   ========================================================================== */
+.site-footer {
+    /* Footer in de merkkleur; tekst in wit en wit-tinten voor voldoende contrast. */
+    --footer-bg: #2B6E8F;
+    --footer-text: #ffffff;
+    --footer-muted: rgba(255, 255, 255, 0.78);
+    --footer-line: rgba(255, 255, 255, 0.16);
+
+    margin-top: 3.5rem;
+    background: var(--footer-bg);
+    color: var(--footer-text);
+    font-family: var(--font-text);
+    font-size: 0.875rem;
+    font-weight: 300;
+}
+
+/* Alle tekst en links licht; alleen de koppen en merknaam zijn dikker. */
+.site-footer a,
+.site-footer p,
+.site-footer li,
+.site-footer address {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 300;
+}
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2.5rem;
+    width: min(1100px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 0 auto;
+    padding: 3.75rem 0 3.25rem;
+}
+
+.site-footer .footer-logo {
+    display: inline-block;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--footer-text);
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.site-footer .footer-heading {
+    margin: 0 0 0.75rem;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--footer-text);
+}
+
+/* Volgende kop in dezelfde kolom, of de eerste kop onder logo en socials. */
+.site-footer .footer-heading--spaced {
+    margin-top: 1.75rem;
+}
+
+/* Links en contactgegevens 16px; de rest van de footer is 14px (0.875rem). Specifieker dan .site-footer address. */
+.site-footer .footer-list {
+    font-size: 1rem;
+}
+
+.footer-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-style: normal;
+    line-height: 1.35;
+    color: var(--footer-muted);
+}
+
+.site-footer .footer-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--footer-muted);
+}
+
+/* Categorieën als één doorlopend rijtje, zodat lange labels geen gaten maken. */
+.footer-list--columns {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.site-footer .footer-list--columns li {
+    align-items: flex-start;
+}
+
+.footer-list i {
+    font-size: 1rem;
+    color: var(--footer-muted);
+}
+
+.site-footer .footer-list a {
+    color: var(--footer-text);
+    text-decoration: none;
+    text-underline-offset: 3px;
+    transition: opacity .15s ease;
+}
+
+.site-footer .footer-list a:hover {
+    text-decoration: underline;
+}
+
+.site-footer a:focus-visible {
+    outline: 2px solid var(--footer-text);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+/* Social-iconen (LinkedIn, Instagram) onder het logo. */
+.footer-socials {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.site-footer .footer-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 5px;
+    color: var(--footer-text);
+    font-size: 20px;
+    text-decoration: none;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+
+.site-footer .footer-social:hover,
+.site-footer .footer-social:focus-visible {
+    border-color: var(--footer-text);
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+/* Partnerlogo (FutureUp) onderaan de contactkolom. */
+.site-footer .footer-partner {
+    display: inline-block;
+    margin-top: 1.75rem;
+}
+
+.site-footer .footer-partner img {
+    display: block;
+    width: 120px;
+    height: auto;
+}
+
+.footer-bottom {
+    border-top: 1px solid var(--footer-line);
+    background: color-mix(in srgb, var(--footer-bg) 88%, white);
+}
+
+.site-footer .footer-bottom p {
+    width: min(1100px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding: 1.25rem 0;
+    font-size: 0.8rem;
+    color: var(--footer-muted);
+}
+
+.site-footer .footer-bottom a {
+    color: var(--footer-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 1024px) {
+    .footer-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2rem;
+        padding: 2.75rem 0 2.25rem;
+    }
+}

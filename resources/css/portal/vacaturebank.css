@@ -1,0 +1,1823 @@
+/* ==========================================================================
+   VACATUREBANK (homepage en /vacature/{slug})
+   Overgenomen van sustainablejobs.com, met de kleuren van Sustainablejobs.nl.
+   ========================================================================== */
+
+.opdrachten-index-page {
+    --vb-primary: var(--color-primary);
+    --vb-primary-strong: var(--color-primary-strong);
+    --vb-primary-soft: color-mix(in srgb, var(--color-primary) 9%, white);
+    --vb-primary-muted: color-mix(in srgb, var(--color-primary) 22%, white);
+    --vb-text: #333333;
+    --vb-muted: #676767;
+    --vb-border: #dedede;
+
+    padding: 0 0 72px;
+    color: var(--vb-text);
+}
+
+.opdrachten-page-shell {
+    width: min(1200px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 0 auto;
+}
+
+/* Compacte zoek-hero: hoogte volgt de inhoud, zodat de eerste vacatures direct in beeld komen. */
+.opdrachten-filter-wrap {
+    display: flex;
+    align-items: center;
+    padding: 56px 0 44px;
+    box-sizing: border-box;
+}
+
+/* Proef /test-homepage: ook op desktop een schermvullende hero (op mobiel geldt de hero hieronder voor elke homepage). */
+@media (min-width: 701px) {
+    .opdrachten-index-page:has(.opdrachten-filter-wrap--hero) {
+        overflow-x: clip;
+    }
+
+    .opdrachten-filter-wrap--hero {
+        width: 100vw;
+        min-height: calc(100svh - 66px); /* hoogte desktopheader */
+        margin: 0 calc(50% - 50vw) 34px;
+        padding: 64px max(clamp(1rem, 3vw, 3rem), (100vw - 1200px) / 2);
+        background: linear-gradient(90deg, rgb(15 30 40 / 60%) 0%, rgb(15 30 40 / 25%) 65%, rgb(15 30 40 / 10%) 100%), var(--hero-image) center / cover no-repeat;
+    }
+
+    .opdrachten-filter-wrap--hero .opdrachten-job-filters {
+        text-align: left;
+    }
+
+    .opdrachten-filter-wrap--hero .filter-header,
+    .opdrachten-filter-wrap--hero .filter-row {
+        width: min(760px, 100%);
+        margin: 0;
+    }
+
+    .opdrachten-filter-wrap--hero .filter-header {
+        padding-bottom: 32px;
+    }
+
+    .opdrachten-filter-wrap--hero .filter-header .filter-header__title {
+        margin-bottom: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
+    }
+
+    .opdrachten-filter-wrap--hero .filter-header .filter-title {
+        justify-content: flex-start;
+        gap: .3em;
+        font-size: clamp(26px, 2.6vw, 32px);
+        line-height: 1.08;
+        color: #fff;
+        text-shadow: 0 2px 18px rgb(0 0 0 / 40%);
+    }
+
+    .opdrachten-filter-wrap--hero .filter-title-term {
+        color: #aad897;
+    }
+
+    .opdrachten-filter-wrap--hero .search-basic {
+        border: 0;
+        border-radius: 10px;
+        box-shadow: 0 16px 40px rgb(0 0 0 / 28%);
+    }
+
+    .opdrachten-filter-wrap--hero .search-basic input[type="text"],
+    .opdrachten-filter-wrap--hero .search_radius select,
+    .opdrachten-filter-wrap--hero .radius-trigger,
+    .opdrachten-filter-wrap--hero .opdrachten-search-submit {
+        height: 60px;
+        font-size: 16px;
+    }
+
+    .opdrachten-filter-wrap--hero .opdrachten-search-submit {
+        min-width: 72px;
+        border-radius: 0 10px 10px 0;
+    }
+
+    .opdrachten-filter-wrap--hero .opdrachten-alert-hint {
+        margin-top: 18px;
+        font-size: 15px;
+        color: #fff;
+        text-shadow: 0 1px 8px rgb(0 0 0 / 40%);
+    }
+
+    .opdrachten-filter-wrap--hero .opdrachten-alert-hint a {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    .opdrachten-filter-wrap--hero + .opdrachten-section-divider {
+        display: none;
+    }
+}
+
+/* Statusmelding (bijv. na reageren) in de full-width layout netjes uitlijnen. */
+main.w-full > .status-box {
+    width: min(1200px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 1.5rem auto 0;
+}
+
+/* ---------- Knoppen ---------- */
+
+.opdrachten-index-page .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 18px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.opdrachten-index-page .btn-primary {
+    background: var(--vb-primary);
+    border-color: var(--vb-primary);
+    color: #fff;
+}
+
+.opdrachten-index-page .btn-primary:hover {
+    background: #254F6E;
+    border-color: #254F6E;
+}
+
+.opdrachten-index-page .btn-ghost {
+    background: #fff;
+    border-color: var(--vb-primary);
+    color: var(--vb-primary);
+}
+
+.opdrachten-index-page .btn-ghost:hover {
+    background: var(--vb-primary-soft);
+}
+
+/* ---------- Zoekbalk ---------- */
+
+.opdrachten-job-filters {
+    margin: 0 auto;
+    width: 100%;
+    padding: 0;
+    text-align: center;
+}
+
+.filter-header {
+    width: min(940px, 100%);
+    margin: 0 auto;
+    padding-bottom: 14px;
+}
+
+.filter-header__eyebrow {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.filter-header__eyebrow a {
+    color: var(--vb-primary);
+    font-weight: 600;
+}
+
+.filter-header .filter-header__title {
+    margin: 0 0 12px;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--vb-primary);
+}
+
+.filter-header .filter-title {
+    margin: 0;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-weight: 700;
+    color: var(--vb-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .55rem;
+    font-size: clamp(18px, calc(4vw - 12px), 40px);
+    line-height: 1.15;
+}
+
+.filter-title-arrow {
+    color: var(--vb-primary);
+    font-size: 1.15em;
+    line-height: .8;
+}
+
+.filter-title-term {
+    color: var(--vb-primary);
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.filter-title-term.is-changing {
+    opacity: 0;
+    transform: translateY(.15em);
+}
+
+/* Vaste titel voor mobiel (welcome.blade.php); op desktop de wisselende titel. */
+.filter-header .filter-title--static {
+    display: none;
+}
+
+.filter-header__title-mobile {
+    display: none;
+}
+
+.filter-row {
+    width: min(600px, 100%);
+    margin: 0 auto;
+}
+
+.search-basic {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+    /* Geen overflow: hidden, anders valt de uitklaplijst van de straal weg; de knop krijgt zelf ronde hoeken. */
+    border: 1px solid var(--vb-border);
+    border-radius: 5px;
+    background: #fff;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.search-basic:focus-within {
+    border-color: var(--vb-primary);
+    box-shadow: 0 0 0 3px var(--vb-primary-soft);
+}
+
+.search_keywords,
+.search_location {
+    position: relative;
+    min-width: 0;
+}
+
+.search_location {
+    border-left: 1px solid var(--vb-border);
+}
+
+.search_keywords::before,
+.search_location::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 11px;
+    width: 15px;
+    height: 15px;
+    transform: translateY(-50%);
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+}
+
+.search_keywords::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F5F80' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+}
+
+.search_location::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F5F80' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z'/%3E%3Ccircle cx='12' cy='9' r='2.5'/%3E%3C/svg%3E");
+}
+
+.search-basic input[type="text"] {
+    width: 100%;
+    height: 46px;
+    padding: 0 10px 0 34px;
+    border: 0;
+    background: transparent;
+    font-size: 14px;
+    color: var(--vb-text);
+    outline: none;
+}
+
+.search_radius {
+    position: relative;
+    border-left: 1px solid var(--vb-border);
+}
+
+.search_radius select,
+.radius-trigger {
+    height: 46px;
+    padding: 0 32px 0 12px;
+    border: 0;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B6E8F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center / 14px;
+    color: var(--vb-text);
+    font: inherit;
+    font-size: 14px;
+    white-space: nowrap;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.radius-trigger:focus-visible {
+    outline: 2px solid var(--vb-primary);
+    outline-offset: -2px;
+}
+
+/* Eigen uitklaplijst (zie enhanceRadiusSelect in welcome.blade.php). */
+.radius-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 20;
+    min-width: 132px;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid var(--vb-border);
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0 10px 28px rgb(37 79 110 / 12%);
+    list-style: none;
+    outline: none;
+}
+
+.radius-menu__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    color: var(--vb-text);
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.radius-menu__option.is-active {
+    background: var(--vb-primary-soft);
+}
+
+.radius-menu__option[aria-selected="true"] {
+    color: var(--vb-primary);
+    font-weight: 600;
+}
+
+.radius-menu__option[aria-selected="true"]::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B6E8F' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.opdrachten-search-submit {
+    border-radius: 0 4px 4px 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    /* Alleen het vergrootglas; de naam staat in aria-label. */
+    min-width: 56px;
+    height: 46px;
+    padding: 0 16px;
+    border: 0;
+    background: #aad897;
+    color: #254F6E;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color .18s ease;
+}
+
+.opdrachten-search-submit:hover,
+.opdrachten-search-submit:focus-visible {
+    background: #97cb82;
+    outline: none;
+}
+
+.opdrachten-search-submit i {
+    font-size: 20px;
+    /* Phosphor kent geen gewicht 600 (alleen regular/bold); een dunne rand geeft de lijn dat zwaardere gewicht. */
+    -webkit-text-stroke: 1px currentColor;
+}
+
+.opdrachten-alert-hint {
+    margin: 12px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--vb-muted);
+}
+
+.opdrachten-alert-hint a {
+    color: var(--vb-primary);
+    font-weight: 700;
+}
+
+.opdrachten-alert-hint a:hover {
+    color: var(--vb-primary-strong);
+}
+
+.opdrachten-filter__fallback {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 16px;
+}
+
+.opdrachten-section-divider {
+    height: 1px;
+    margin: 0 0 34px;
+    background: var(--vb-border);
+}
+
+/* ---------- Resultaten ---------- */
+
+.opdrachten-results-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.opdrachten-results-count {
+    margin: 0;
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.opdrachten-reset-link {
+    font-weight: 600;
+    color: var(--vb-primary);
+}
+
+.opdrachten-content-layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+}
+
+.opdrachten-results-section {
+    grid-column: 2;
+}
+
+.opdrachten-results {
+    display: grid;
+    gap: 12px;
+}
+
+.opdrachten-index-page .card {
+    border: 1px solid var(--vb-border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* Vacaturekaart naar Sustainablejobs.nl: logotegel die half over de linkerrand steekt,
+   organisatie in de metaregel, hart en datum rechts. */
+.opdrachten-index-page {
+    --vb-logo-size: 104px;
+}
+
+.opdrachten-index-page .opdracht-card {
+    padding: 0; /* .nl-kaarten hebben standaard padding; hier zorgen body en paneel zelf voor ruimte */
+}
+
+.opdracht-card {
+    position: relative;
+    margin-left: calc(var(--vb-logo-size) / 2);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.opdracht-card:has(.opdracht-card__body:hover) {
+    border-color: var(--vb-primary-muted);
+    box-shadow: 0 10px 24px -20px rgba(37, 79, 110, .45);
+}
+
+/* Spotlight-vacature: lichtgroene border van 5px, net als op de WordPress-site. */
+.opdrachten-index-page .opdracht-card--spotlight,
+.opdrachten-index-page .opdracht-card--spotlight:has(.opdracht-card__body:hover) {
+    border: 5px solid #C5D77F;
+}
+
+.opdracht-card__logo {
+    position: absolute;
+    top: calc(50% - var(--vb-logo-size) / 2);
+    left: calc(var(--vb-logo-size) / -2);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--vb-logo-size);
+    height: var(--vb-logo-size);
+    padding: 12px;
+    border: 1px solid var(--vb-border);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 6px 16px -10px rgba(37, 79, 110, .35);
+    pointer-events: none;
+}
+
+.opdracht-card__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.opdracht-card__logo-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--vb-primary-soft);
+    color: var(--vb-primary-strong);
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.opdracht-card__body {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: calc(var(--vb-logo-size) + 44px);
+    padding: 22px 28px 22px calc(var(--vb-logo-size) / 2 + 28px);
+    border-radius: 8px;
+    color: inherit;
+    text-decoration: none;
+    transition: background .15s ease;
+}
+
+.opdracht-card__body:hover {
+    background: var(--vb-primary-soft);
+    text-decoration: none;
+}
+
+.opdracht-card__body:focus-visible {
+    outline: 2px solid var(--vb-primary);
+    outline-offset: -2px;
+}
+
+.opdracht-card__main {
+    flex: 1;
+    min-width: 0;
+    padding-right: 150px;
+}
+
+.opdracht-card__title {
+    margin: 0;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--vb-text);
+}
+
+.opdracht-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 22px;
+    margin-top: 8px;
+}
+
+.opdracht-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--vb-text);
+}
+
+.opdracht-meta-item i {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: var(--vb-primary);
+}
+
+.opdracht-card__excerpt {
+    margin: 10px 0 0;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--vb-text);
+}
+
+.opdracht-card__date {
+    position: absolute;
+    top: 50%;
+    right: 28px;
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--vb-muted);
+    white-space: nowrap;
+}
+
+.opdracht-card__favorite {
+    position: absolute;
+    top: 30px;
+    right: 22px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--vb-primary);
+    font-size: 28px;
+    cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+}
+
+.opdracht-card__favorite:hover {
+    background: var(--vb-primary-soft);
+    transform: scale(1.06);
+}
+
+.opdracht-card__favorite:focus-visible {
+    outline: 2px solid var(--vb-primary);
+    outline-offset: 2px;
+}
+
+.opdracht-panel__divider {
+    height: 1px;
+    margin: 0 24px;
+    background: var(--vb-border);
+}
+
+.opdracht-panel__inner {
+    display: grid;
+    gap: 20px;
+    padding: 24px 24px 28px;
+}
+
+.opdracht-panel__details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.opdracht-panel__detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--vb-primary-muted);
+    border-radius: 999px;
+    background: var(--vb-primary-soft);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.opdracht-panel__detail i {
+    font-size: 14px;
+    color: var(--vb-primary);
+}
+
+.opdracht-panel__description {
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.opdracht-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.opdracht-panel__cta-text {
+    width: 100%;
+    margin: 0;
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.opdracht-panel__external {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vb-primary);
+}
+
+.opdracht-responded {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid rgba(87, 174, 148, .35);
+    border-radius: 6px;
+    background: rgba(87, 174, 148, .1);
+    font-size: 14px;
+    font-weight: 600;
+    color: #2A7A5A;
+}
+
+.opdracht-respond-form {
+    margin: 0 -24px -28px;
+    padding: 20px 24px 24px;
+    border-top: 1px solid var(--vb-border);
+    background: #fff;
+}
+
+.respond-form__title {
+    margin: 0 0 14px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.respond-form__field {
+    margin-bottom: 14px;
+}
+
+.respond-form__textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px 14px;
+    border: 1px solid var(--vb-border);
+    border-radius: 5px;
+    background: #fff;
+    font-family: var(--font-text);
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color .2s ease;
+}
+
+.respond-form__textarea:focus {
+    border-color: var(--vb-primary);
+    outline: none;
+}
+
+.respond-form__error {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #b42318;
+}
+
+.respond-form__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.respond-form__hint {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--vb-muted);
+}
+
+.respond-form__hint--top {
+    margin: 0 0 14px;
+}
+
+.respond-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+}
+
+.respond-form__label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.respond-form__optional {
+    font-weight: 400;
+    color: var(--vb-muted);
+}
+
+.respond-form__input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--vb-border);
+    border-radius: 5px;
+    background: #fff;
+    font-family: var(--font-text);
+    font-size: 14px;
+    transition: border-color .2s ease;
+}
+
+.respond-form__input:focus {
+    border-color: var(--vb-primary);
+    outline: none;
+}
+
+.respond-form__upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 22px 16px;
+    border: 1.5px dashed var(--vb-primary-muted);
+    border-radius: 6px;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease;
+}
+
+.respond-form__upload:hover,
+.respond-form__upload:focus-within,
+.respond-form__upload.is-dragover {
+    border-color: var(--vb-primary);
+    background: var(--vb-primary-soft);
+}
+
+.respond-form__upload.has-file {
+    border-style: solid;
+    border-color: var(--vb-primary);
+}
+
+.respond-form__upload > i {
+    font-size: 22px;
+    color: var(--vb-primary);
+}
+
+.respond-form__upload-hint {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--vb-muted);
+}
+
+/* Promo tussen de resultaten (zelfde blok als op de WordPress-site) */
+.opdracht-promo {
+    --promo-green: #C5E4A0;
+    --promo-ink: var(--brand-midnight-blue, #254F6E);
+
+    position: relative;
+    overflow: hidden;
+    /* Lijnt uit met de kaarten, niet met de uitstekende logo's. */
+    margin-left: calc(var(--vb-logo-size) / 2);
+    border-radius: 6px;
+    background-color: var(--promo-ink);
+    background-size: cover;
+    background-position: center;
+}
+
+.opdracht-promo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        115deg,
+        rgba(37, 79, 110, .92) 0%,
+        rgba(22, 138, 173, .78) 55%,
+        rgba(22, 138, 173, .55) 100%
+    );
+}
+
+.opdracht-promo__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 112px;
+    padding: 20px 32px;
+}
+
+.opdracht-promo__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.opdracht-promo__eyebrow {
+    display: inline-block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--promo-green);
+}
+
+.opdracht-promo__title {
+    margin: 0;
+    overflow: hidden;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #fff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.opdracht-promo__desc {
+    max-width: 500px;
+    margin: 2px 0 0;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, .85);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.opdracht-promo__btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: var(--promo-green);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .18);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--promo-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity .15s ease, transform .15s ease;
+}
+
+.opdracht-promo__btn:hover {
+    opacity: .9;
+    transform: translateY(-1px);
+}
+
+/* Variant voor werkzoekenden: twee keer zo hoog, met opsomming. */
+.opdracht-promo--werkzoekende .opdracht-promo__inner {
+    min-height: 152px;
+    padding: 28px 36px;
+}
+
+.opdracht-promo--werkzoekende .opdracht-promo__eyebrow {
+    margin-bottom: 4px;
+}
+
+.opdracht-promo--werkzoekende .opdracht-promo__title {
+    font-size: 21px;
+    white-space: normal;
+}
+
+.opdracht-promo--werkzoekende .opdracht-promo__desc {
+    max-width: 580px;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: normal;
+}
+
+.opdracht-promo--werkzoekende .opdracht-promo__btn {
+    padding: 12px 22px;
+    font-size: 15px;
+}
+
+.opdracht-empty {
+    padding: 20px;
+}
+
+.opdracht-empty h2 {
+    margin: 0 0 8px;
+}
+
+.opdracht-empty p {
+    margin: 0;
+    color: var(--vb-muted);
+}
+
+.opdracht-pagination {
+    margin-top: 18px;
+}
+
+/* ---------- Zijbalkfilters ---------- */
+
+.opdrachten-sidebar {
+    position: sticky;
+    top: 24px;
+    grid-row: 1;
+    grid-column: 1;
+    /* Hoger dan het scherm: zelf laten scrollen, anders zijn de onderste filters onbereikbaar. */
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.sidebar-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-filter-group {
+    overflow: hidden;
+    border: 1px solid var(--vb-border);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.sidebar-filter-group__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 13px 16px;
+    border: 0;
+    background: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vb-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidebar-filter-group__header i {
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.sidebar-filter-group__body {
+    display: none;
+    padding: 4px 0 10px;
+    border-top: 1px solid var(--vb-border);
+}
+
+.sidebar-filter-group.is-open .sidebar-filter-group__body {
+    display: block;
+}
+
+.sidebar-filter-option[hidden] {
+    display: none;
+}
+
+.sidebar-filter-more {
+    display: block;
+    margin: 4px 16px 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--vb-primary);
+    cursor: pointer;
+}
+
+.sidebar-filter-more:hover {
+    text-decoration: underline;
+}
+
+.sidebar-filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 16px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.sidebar-filter-option:hover {
+    background: #f9fafb;
+}
+
+.sidebar-filter-option input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--vb-primary);
+    cursor: pointer;
+}
+
+.sidebar-filter-option__label {
+    flex: 1;
+    font-weight: 300;
+}
+
+.sidebar-filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-width: 22px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--vb-primary-soft);
+    color: var(--vb-primary-strong);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sidebar-filter-links a {
+    display: block;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--vb-text);
+}
+
+.sidebar-filter-links a:hover,
+.sidebar-filter-links a.is-active {
+    background: #f9fafb;
+    color: var(--vb-primary);
+}
+
+.sidebar-filter-links a.is-active {
+    font-weight: 600;
+}
+
+.sidebar-filter-reset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    font-size: 13px;
+    color: var(--vb-muted);
+}
+
+.sidebar-filter-reset:hover {
+    color: #b42318;
+}
+
+/* ---------- Mobiele filters (multiselect) ---------- */
+
+.mobile-filters {
+    display: none;
+}
+
+.mobile-filter {
+    position: relative;
+}
+
+/* Alleen voor schermlezers; in het veld zelf staat "Alle sectoren" enz. */
+.mobile-filter__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.mobile-filter select[multiple] {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid var(--vb-border);
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.multiselect__trigger {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 54px;
+    padding: 0 22px 0 20px;
+    border: 1px solid var(--vb-border);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vb-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.multiselect__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.multiselect__icon {
+    flex: 0 0 auto;
+    font-size: 22px;
+    color: var(--vb-primary);
+}
+
+.multiselect__caret {
+    flex: 0 0 auto;
+    font-size: 18px;
+    color: var(--vb-text);
+    /* Phosphor regular is dun; een rand maakt het pijltje net zo vet als op fondsen.org. */
+    -webkit-text-stroke: 1px currentColor;
+    transition: transform .15s ease;
+}
+
+.mobile-filter.is-open .multiselect__trigger {
+    border-color: var(--vb-primary);
+    box-shadow: 0 0 0 3px var(--vb-primary-soft);
+}
+
+.mobile-filter.is-open .multiselect__caret {
+    transform: rotate(180deg);
+}
+
+.multiselect__panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid var(--vb-border);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.multiselect__panel[hidden] {
+    display: none;
+}
+
+.multiselect__search {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--vb-border);
+    border-radius: 8px;
+    /* 16px voorkomt inzoomen op iOS. */
+    font-size: 16px;
+}
+
+.multiselect__search:focus {
+    outline: none;
+    border-color: var(--vb-primary);
+}
+
+.multiselect__list {
+    max-height: 280px;
+    margin: 8px -10px 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.multiselect__option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 6px 16px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.multiselect__option[hidden] {
+    display: none;
+}
+
+.multiselect__option:active {
+    background: #f9fafb;
+}
+
+/* Geen zichtbare vakjes: de checkbox blijft voor toetsenbord en screenreaders, gekozen opties krijgen een achtergrond. */
+.multiselect__option input[type="checkbox"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.multiselect__option:has(input:checked) {
+    background: var(--vb-primary-soft);
+    color: var(--vb-primary-strong);
+}
+
+.multiselect__option:has(input:focus-visible) {
+    outline: 2px solid var(--vb-primary);
+    outline-offset: -2px;
+}
+
+.multiselect__option-label {
+    flex: 1;
+}
+
+.multiselect__empty {
+    margin: 12px 6px;
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.multiselect__apply {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ---------- Responsive ---------- */
+
+/* ---------- SEO-tekst onder de vacaturebank ---------- */
+
+/* Box, typografie en lijsten komen uit .text-block en .text-content (text.css). */
+
+@media (max-width: 980px) {
+    .opdrachten-results-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 860px) {
+    .opdrachten-content-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Op mobiel nemen de multiselectfilters boven de resultaten het over. */
+    .opdrachten-sidebar {
+        display: none;
+    }
+
+    .mobile-filters {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .opdrachten-results-section {
+        grid-column: auto;
+    }
+
+    .opdrachten-section-divider {
+        margin: 0 0 24px;
+    }
+
+    .opdracht-promo__inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 32px 28px;
+    }
+
+    .opdracht-promo__title {
+        font-size: 22px;
+        white-space: normal;
+    }
+
+    .opdracht-promo__desc {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 700px) {
+    /* Schermvullende hero: afbeelding over de volle breedte, tekst en zoekvelden erop. */
+    .opdrachten-index-page {
+        overflow-x: clip;
+    }
+
+    .opdrachten-filter-wrap {
+        position: relative;
+        width: 100vw;
+        min-height: calc(100svh - 65px); /* min. hoogte mobiele header */
+        margin: 0 calc(50% - 50vw) 28px;
+        padding: 48px clamp(1rem, 5vw, 1.5rem);
+        /* Overlay in de donkere huisstijlkleur midnight blue (#254F6E), onderaan iets dichter voor de leesbaarheid. */
+        background: linear-gradient(180deg, rgb(37 79 110 / 55%) 0%, rgb(37 79 110 / 75%) 100%), var(--hero-image) center / cover no-repeat;
+    }
+
+    .opdrachten-filter-wrap .opdrachten-job-filters {
+        text-align: left;
+    }
+
+    .opdrachten-filter-wrap .filter-header {
+        padding-bottom: 24px;
+    }
+
+    .opdrachten-filter-wrap .filter-header .filter-header__title {
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
+    }
+
+    .opdrachten-filter-wrap .filter-header .filter-title {
+        justify-content: flex-start;
+        gap: .3em;
+        font-size: 34px;
+        line-height: 1.12;
+        color: #fff;
+        text-shadow: 0 2px 14px rgb(0 0 0 / 40%);
+    }
+
+    .opdrachten-filter-wrap .filter-title-term {
+        color: #aad897;
+    }
+
+    .filter-header:has(.filter-title--static) .filter-title:not(.filter-title--static) {
+        display: none;
+    }
+
+    .filter-header__title:has(.filter-header__title-mobile) .filter-header__title-desktop {
+        display: none;
+    }
+
+    .filter-header__title-mobile {
+        display: inline;
+    }
+
+    .opdrachten-filter-wrap .filter-header .filter-title--static {
+        display: block;
+        font-size: 30px;
+        font-weight: 600;
+    }
+
+
+    .opdrachten-filter-wrap .search-basic {
+        border: 0;
+        border-radius: 5px;
+        box-shadow: 0 12px 32px rgb(0 0 0 / 25%);
+    }
+
+    .opdrachten-filter-wrap .search-basic input[type="text"],
+    .opdrachten-filter-wrap .search_radius select,
+    .opdrachten-filter-wrap .radius-trigger,
+    .opdrachten-filter-wrap .opdrachten-search-submit {
+        height: 52px;
+        font-size: 16px; /* voorkomt inzoomen op iOS */
+    }
+
+    .opdrachten-filter-wrap .opdrachten-alert-hint {
+        margin-top: 16px;
+        color: #fff;
+        text-shadow: 0 1px 8px rgb(0 0 0 / 40%);
+    }
+
+    .opdrachten-filter-wrap .opdrachten-alert-hint a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .opdrachten-filter-wrap + .opdrachten-section-divider {
+        display: none;
+    }
+
+    .search-basic {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .search_location,
+    .search_radius {
+        border-top: 1px solid var(--vb-border);
+        border-left: 0;
+    }
+
+    .search_radius select,
+    .radius-trigger {
+        width: 100%;
+        text-align: left;
+    }
+
+    .radius-menu {
+        left: 0;
+        right: 0;
+    }
+
+    .opdrachten-search-submit {
+        border-radius: 0 0 5px 5px;
+    }
+
+    .opdrachten-index-page {
+        --vb-logo-size: 56px;
+    }
+
+    .opdracht-card,
+    .opdracht-promo {
+        margin-left: 0;
+    }
+
+    .opdracht-card__logo {
+        top: 16px;
+        left: 16px;
+        padding: 6px;
+        box-shadow: none;
+    }
+
+    .opdracht-card__logo-initials {
+        font-size: 18px;
+    }
+
+    .opdracht-card__body {
+        align-items: flex-start;
+        min-height: 0;
+        padding: 16px 16px 16px calc(var(--vb-logo-size) + 30px);
+    }
+
+    .opdracht-card__main {
+        padding-right: 34px;
+    }
+
+    .opdracht-card__date {
+        position: static;
+        display: none;
+    }
+
+    .opdracht-card__favorite {
+        top: 10px;
+        right: 8px;
+        width: 34px;
+        height: 34px;
+        font-size: 22px;
+    }
+
+    .opdracht-card__title {
+        font-size: 17px;
+    }
+
+    .opdracht-card__meta {
+        gap: 2px 14px;
+    }
+
+    .opdracht-card__excerpt,
+    .opdracht-meta-item {
+        font-size: 13px;
+    }
+
+    .opdracht-meta-item i {
+        font-size: 16px;
+    }
+
+    .opdracht-panel__inner {
+        padding: 16px 16px 20px;
+    }
+
+    .opdracht-panel__divider {
+        margin: 0 16px;
+    }
+
+    .opdracht-respond-form {
+        margin: 0 -16px -20px;
+        padding: 16px 16px 20px;
+    }
+
+    .respond-form__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .opdracht-promo__inner,
+    .opdracht-promo--werkzoekende .opdracht-promo__inner {
+        padding: 24px 20px;
+    }
+
+    .opdracht-promo__title,
+    .opdracht-promo--werkzoekende .opdracht-promo__title {
+        font-size: 19px;
+    }
+}
+
+/* ---------- Vacaturepagina (/vacature/{slug}) ---------- */
+
+.vacancy-detail-page {
+    padding-top: 32px;
+}
+
+.vacancy-detail__breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--vb-muted);
+}
+
+.vacancy-detail__breadcrumbs a {
+    color: var(--vb-primary);
+}
+
+.vacancy-detail__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 28px;
+    align-items: start;
+}
+
+.vacancy-detail {
+    display: grid;
+    gap: 22px;
+    padding: 28px;
+}
+
+.vacancy-detail__header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.vacancy-detail__logo {
+    flex: 0 0 88px;
+    width: 88px;
+    height: 88px;
+    padding: 10px;
+    border: 1px solid var(--vb-border);
+    border-radius: 6px;
+    background: #fff;
+}
+
+.vacancy-detail__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.vacancy-detail__title {
+    margin: 0 0 8px;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.2;
+    color: var(--vb-text);
+}
+
+.vacancy-detail__apply {
+    display: grid;
+    gap: 14px;
+    padding-top: 22px;
+    border-top: 1px solid var(--vb-border);
+    scroll-margin-top: 24px;
+}
+
+.vacancy-detail__apply-title,
+.vacancy-detail__aside-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.vacancy-detail__apply .opdracht-panel__external {
+    margin-left: 0;
+}
+
+.vacancy-detail__form {
+    margin: 0;
+    padding: 0;
+    border-top: 0;
+}
+
+.vacancy-detail__aside {
+    display: grid;
+    gap: 14px;
+}
+
+.vacancy-detail__related {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.vacancy-detail__related a {
+    display: grid;
+    gap: 2px;
+    padding: 14px 16px;
+    border: 1px solid var(--vb-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--vb-text);
+    transition: border-color .15s ease;
+}
+
+.vacancy-detail__related a:hover {
+    border-color: var(--vb-primary-muted);
+}
+
+.vacancy-detail__related span {
+    font-size: 13px;
+    color: var(--vb-muted);
+}
+
+.vacancy-detail__back {
+    margin-left: 0;
+}
+
+@media (max-width: 860px) {
+    .vacancy-detail__layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .vacancy-detail {
+        padding: 20px 16px;
+    }
+
+    .vacancy-detail__logo {
+        flex-basis: 56px;
+        width: 56px;
+        height: 56px;
+        padding: 6px;
+    }
+}
+
+/* ---------- Skills (kaart en vacaturepagina) ---------- */
+
+.vacancy-skills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.vacancy-skills__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--vb-muted);
+}
+
+.vacancy-skills__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.vacancy-skills__item {
+    padding: 3px 10px;
+    border: 1px solid var(--vb-border);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--vb-text);
+}
+
+/* Hartje op de vacaturepagina: rechtsboven in de kop, niet absoluut zoals op de kaart. */
+.vacancy-detail__header {
+    position: relative;
+}
+
+.vacancy-detail__header > div:not(.vacancy-detail__logo) {
+    flex: 1;
+    min-width: 0;
+}
+
+.vacancy-detail__favorite {
+    position: static;
+    align-self: flex-start;
+    flex-shrink: 0;
+}
+
+/* Alleen voor schermlezers (labels in de zoekbalk). */
+.opdrachten-index-page .sr-only,
+.vacancy-detail-page .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- SEO-tekst onder de vacaturebank ---------- */
+
+.opdrachten-seo {
+    width: min(1200px, 100%);
+    margin: 48px auto 0;
+    padding: clamp(24px, 4vw, 44px);
+    border: 1px solid var(--vb-border);
+    border-radius: 8px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.opdrachten-seo h2 {
+    margin: 0 0 14px;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: clamp(22px, 2.4vw, 28px);
+    color: var(--vb-text);
+}
+
+.opdrachten-seo h3 {
+    margin: 28px 0 8px;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: 18px;
+    color: var(--vb-text);
+}
+
+.opdrachten-seo p {
+    margin: 0 0 12px;
+    line-height: 1.7;
+    color: var(--vb-muted);
+}
+
+.opdrachten-seo a {
+    color: var(--vb-primary);
+}

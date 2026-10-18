@@ -1,0 +1,417 @@
+/* ==========================================================================
+   Nieuwsbrief en job alerts (resources/views/aanmelden).
+   ========================================================================== */
+
+/* Honeypot: onzichtbaar voor bezoekers, wel ingevuld door bots. */
+.aanmeld-hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Formulierblok, nagebouwd van de shortcodes [job-alerts] en [sj-nieuwsbrief]
+   (sustainablejobs-nl child theme, css/forms.css: .sj-ja).
+   -------------------------------------------------------------------------- */
+
+.aanmeld {
+    --aanmeld-primary: #168AAD;
+    --aanmeld-text: #333333;
+    --aanmeld-border: #DEDEDE;
+    --aanmeld-green-border: #DDE8C5;
+
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 32px 0 48px;
+    color: var(--aanmeld-text);
+}
+
+.aanmeld *,
+.aanmeld *::before,
+.aanmeld *::after {
+    box-sizing: border-box;
+}
+
+.aanmeld__block {
+    margin-top: 16px;
+    padding: 28px;
+    border: 1px solid var(--aanmeld-border);
+    border-radius: 5px;
+    background: #fff;
+}
+
+.aanmeld__header {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--aanmeld-border);
+}
+
+.aanmeld__title {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #333;
+}
+
+.aanmeld__subtitle {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.aanmeld__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 14px;
+    margin-bottom: 24px;
+}
+
+.aanmeld__field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.aanmeld__field--full {
+    grid-column: 1 / -1;
+}
+
+.aanmeld__label {
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 300;
+}
+
+.aanmeld__req {
+    margin-left: 2px;
+    color: #e53e3e;
+}
+
+.aanmeld__input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.aanmeld__icon {
+    position: absolute;
+    left: 13px;
+    font-size: 18px;
+    color: var(--aanmeld-primary);
+    pointer-events: none;
+}
+
+.aanmeld .aanmeld__input,
+.aanmeld .aanmeld__select {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid var(--aanmeld-border);
+    border-radius: 5px;
+    background: #fff;
+    font: inherit;
+    font-size: 15px;
+    color: var(--aanmeld-text);
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.aanmeld .aanmeld__select {
+    padding-left: 14px;
+}
+
+/* Gewone keuzelijst (afstand): zelfde hoogte en pijl als de velden en de categorieën-dropdown. */
+.aanmeld .aanmeld__input,
+.aanmeld .aanmeld__select:not([multiple]) {
+    height: 46px;
+    line-height: 1.5;
+}
+
+.aanmeld .aanmeld__select:not([multiple]) {
+    padding-right: 40px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1.5l6 6 6-6' fill='none' stroke='%23111' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    cursor: pointer;
+}
+
+.aanmeld .aanmeld__hint {
+    margin: -12px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+.aanmeld .aanmeld__input:focus,
+.aanmeld .aanmeld__select:focus {
+    border-color: var(--aanmeld-primary);
+    box-shadow: 0 0 0 3px rgba(22, 138, 173, .15);
+}
+
+.aanmeld .aanmeld__input::placeholder {
+    color: #9ca3af;
+}
+
+/* Na het script: de echte lijst verbergen, de dropdown neemt het over. */
+.aanmeld .aanmeld__select--enhanced {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+/* Categorieën-dropdown (sj-select) */
+.aanmeld-select {
+    position: relative;
+}
+
+.aanmeld-select__btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--aanmeld-border);
+    border-radius: 5px;
+    background: #fff;
+    font: inherit;
+    font-size: 15px;
+    color: var(--aanmeld-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.aanmeld-select__btn:focus-visible,
+.aanmeld-select.is-open .aanmeld-select__btn {
+    border-color: var(--aanmeld-primary);
+    box-shadow: 0 0 0 3px rgba(22, 138, 173, .15);
+    outline: none;
+}
+
+.aanmeld-select__label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.aanmeld-select__label.is-placeholder {
+    color: #9ca3af;
+}
+
+.aanmeld-select__chev {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    margin-left: 10px;
+    border-right: 2px solid #111;
+    border-bottom: 2px solid #111;
+    transform: rotate(45deg);
+    transition: transform .2s ease;
+}
+
+.aanmeld-select.is-open .aanmeld-select__chev {
+    transform: rotate(-135deg);
+}
+
+.aanmeld-select__options {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 30;
+    max-height: 280px;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid var(--aanmeld-green-border);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 40px -5px rgba(0, 0, 0, .12);
+    overflow: auto;
+}
+
+.aanmeld-select__options[hidden],
+.aanmeld-select__option[hidden] {
+    display: none;
+}
+
+.aanmeld-select__search {
+    position: sticky;
+    top: -8px;
+    z-index: 1;
+    padding: 4px 4px 10px;
+    background: #fff;
+}
+
+.aanmeld .aanmeld-select__search input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--aanmeld-green-border);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+}
+
+.aanmeld .aanmeld-select__search input:focus {
+    border-color: var(--aanmeld-primary);
+    box-shadow: 0 0 0 2px rgba(22, 138, 173, .16);
+    outline: none;
+}
+
+.aanmeld-select__option {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.aanmeld-select__option:hover,
+.aanmeld-select__option:focus-visible {
+    background: #F3F7E4;
+    outline: none;
+}
+
+.aanmeld-select__option.is-selected {
+    font-weight: 700;
+    color: var(--aanmeld-primary);
+}
+
+/* Gekozen categorieën als chips; in het job alert-formulier staan ze binnen het veldenraster. */
+.aanmeld__fields .aanmeld__chips {
+    margin: -8px 0 0;
+}
+
+.aanmeld__chips {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -12px 0 20px;
+}
+
+.aanmeld__chips.has-items {
+    display: flex;
+}
+
+.aanmeld__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px 6px 14px;
+    border: 1px solid #B8D06F;
+    border-radius: 999px;
+    background: #F1F6DE;
+    box-shadow: 0 10px 24px -18px rgba(37, 79, 110, .38);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brand-midnight-blue, #254F6E);
+}
+
+.aanmeld__chip-remove {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    color: inherit;
+    cursor: pointer;
+}
+
+.aanmeld__chip-remove:hover,
+.aanmeld__chip-remove:focus-visible {
+    color: var(--aanmeld-primary);
+    opacity: .7;
+}
+
+.aanmeld__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+.aanmeld__submit {
+    align-self: flex-start;
+    padding: 12px 28px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--aanmeld-primary);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+
+.aanmeld__submit:hover,
+.aanmeld__submit:focus-visible {
+    opacity: .88;
+}
+
+.aanmeld__submit:disabled {
+    opacity: .65;
+    cursor: default;
+}
+
+/* Meldingen (sj-ja-notice) */
+.aanmeld-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 16px 18px;
+    border-radius: 5px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.aanmeld-notice i {
+    flex-shrink: 0;
+    font-size: 22px;
+}
+
+.aanmeld-notice--success {
+    border: 1px solid #a3e6c3;
+    background: #edfdf4;
+    color: #1a6640;
+}
+
+.aanmeld-notice--error {
+    border: 1px solid #f5b7b7;
+    background: #fff5f5;
+    color: #9b2020;
+}
+
+.aanmeld-notice strong {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.aanmeld-notice p,
+.aanmeld-notice ul {
+    margin: 0;
+}
+
+.aanmeld-notice ul {
+    padding-left: 18px;
+}
+
+@media (max-width: 540px) {
+    .aanmeld__block {
+        padding: 18px;
+    }
+
+    .aanmeld__fields {
+        grid-template-columns: 1fr;
+    }
+
+    .aanmeld__submit {
+        width: 100%;
+    }
+}

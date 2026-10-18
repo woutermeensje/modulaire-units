@@ -1,0 +1,217 @@
+
+/* ===============================
+   Root
+================================ */
+
+/* ===============================
+   VACATURE PLAATSEN (Werkgever)
+   Sustainablejobs-stijl
+================================ */
+
+.vacature-page{
+  max-width: 1180px;
+  margin: 24px auto;
+  padding: 24px;
+}
+
+.vacature-header{
+  margin-bottom: 18px;
+}
+
+.vacature-header h1{
+  margin: 0;
+}
+
+.vacature-header p{
+  margin-top: 8px;
+  max-width: 720px;
+}
+
+.vacature-grid{
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 16px;
+  align-items: start;
+  padding: 24px;
+}
+
+.card.vacature-card {
+  border: 1px solid #DEDEDE;
+}
+
+/* cards in deze pagina mogen iets “luchtiger” */
+.vacature-card{
+  padding: 20px;
+  border: 1px solid #DEDEDE;
+}
+
+.portal-layout__main.vacature-card{
+  padding: 28px 28px 34px;
+}
+
+.portal-layout__main.vacature-card .vacature-stepper{
+  margin-bottom: 28px;
+}
+
+.portal-layout__main.vacature-card .vacature-stepper__item{
+  padding: 14px 16px;
+}
+
+.portal-layout__main.vacature-card .form-section{
+  margin-top: 36px;
+  margin-bottom: 22px;
+}
+
+.portal-layout__main.vacature-card .form-field{
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.portal-layout__main.vacature-card .form-field-two{
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.portal-layout__main.vacature-card .form-field-two .form-field{
+  margin-bottom: 0;
+}
+
+.portal-layout__main.vacature-card .form-help,
+.portal-layout__main.vacature-card .portal-help{
+  margin-top: 6px;
+  color: #333;
+}
+
+.portal-layout__main.vacature-card .toggle-group{
+  margin-top: 10px;
+  row-gap: 10px;
+}
+
+.portal-layout__main.vacature-card .vacature-actions{
+  margin-top: 32px;
+}
+
+/* sectie intro binnen card */
+.vacature-card-intro{
+  margin-bottom: 14px;
+}
+
+.vacature-card-intro h3{
+  margin: 0;
+}
+
+.vacature-card-intro p{
+  margin-top: 6px;
+}
+
+/* 2 koloms form row (oud / algemeen) */
+.vacature-form-row{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* 2-column form row (50/50) — jouw classnaam in de Blade */
+
+/* textarea iets ruimer */
+.vacature-textarea{
+  min-height: 220px;
+  resize: vertical;
+}
+
+/* actions */
+.vacature-actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+/* sidebar */
+.vacature-sidebar{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===============================
+   Sticky sidebar
+================================ */
+
+.vacature-sidebar {
+  position: sticky;
+  top: 72px; /* afstand vanaf bovenkant */
+  align-self: start; /* belangrijk bij grid */
+}
+
+
+.vacature-checklist{
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.vacature-structure{
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.vacature-structure b{
+  font-family: var(--font-ui);
+  color: var(--color-text);
+}
+
+/* errors card spacing */
+.vacature-errors{
+  margin-bottom: 14px;
+}
+
+
+/* Labels, .form-field, multiselect (.ms*) en chips (.chip*)
+   zijn verplaatst naar forms.css */
+
+
+/* ===============================
+   Two fields in one row
+================================ */
+
+
+
+
+/* ===============================
+   Responsive
+================================ */
+
+@media (max-width: 900px){
+  .vacature-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .vacature-form-row{
+    grid-template-columns: 1fr;
+  }
+
+  .form-row-2{
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ===============================
+   FIX: labels + 50/50 row uitlijning
+================================ */
+
+
+/* Contact gegevens */
+
+/* ===============================
+   Contact Card Styling
+================================ */
+
+.contact-card p{
+  margin-bottom: 16px;
+}
+
+
+/* File upload (.file-upload, .file-drop, .file-preview, .file-remove),
+   .form-help en .toggle-group/.toggle-option zijn verplaatst naar forms.css */

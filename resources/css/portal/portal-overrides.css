@@ -1,0 +1,156 @@
+/* Aanpassingen voor ModulaireHuisvesting.nl bovenop de inlogomgeving-styling. */
+.backend-sidebar__brand-logo {
+  max-height: 44px;
+  width: auto;
+}
+
+.auth-shell {
+  min-height: 100dvh;
+  padding: 32px 16px 48px;
+  background: var(--color-bg);
+}
+
+.auth-shell__brand {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.auth-shell__brand img {
+  height: 56px;
+  width: auto;
+}
+
+.auth-shell__back {
+  display: block;
+  margin-top: 18px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.code-input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 420px;
+  white-space: pre;
+}
+
+.portal-thumb {
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.portal-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.portal-gallery-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.portal-gallery-grid img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.portal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.portal-filters .portal-input {
+  max-width: 280px;
+}
+
+.portal-help {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.portal-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.dl-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.dl-grid dt {
+  font-weight: 600;
+}
+
+.dl-grid dd {
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* Beheerformulieren: velden in een 2-koloms grid, volle breedte waar nodig. */
+.admin-fields > .portal-field {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.admin-field--full {
+  grid-column: 1 / -1;
+}
+
+.admin-terms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px 24px;
+}
+
+.admin-terms__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@media (max-width: 760px) {
+  .admin-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loginpagina's: formulier direct onder het logo i.p.v. verticaal gecentreerd. */
+.auth-shell .auth-page {
+  min-height: 0;
+  padding-top: 8px;
+  justify-content: flex-start;
+}
+
+.admin-fields {
+  align-items: start;
+}
+
+.admin-fields .portal-media-image {
+  width: auto;
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+}

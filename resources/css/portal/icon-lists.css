@@ -1,0 +1,239 @@
+/* ===============================
+   ICON LISTS (REUSABLE)
+================================ */
+
+.ui-list,
+.portal-list,
+.portal-list-reset,
+.vacature-checklist,
+.admin-list,
+.form-alert__list {
+  --ui-list-icon: "✓";
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ui-list li,
+.portal-list li,
+.portal-list-reset li,
+.vacature-checklist li,
+.admin-list li,
+.form-alert__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.ui-list li::before,
+.portal-list li::before,
+.portal-list-reset li::before,
+.vacature-checklist li::before,
+.admin-list li::before,
+.form-alert__list li::before {
+  content: var(--ui-list-icon, "✓");
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 1px solid rgba(146, 233, 171, 0.55);
+  background: rgba(146, 233, 171, 0.18);
+  color: #2a7f45;
+  flex: 0 0 24px;
+  margin-top: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* Gewone opsommingen in lopende tekst: normale opsommingstekens, geen icoontjes. */
+.app-main ul:not([class]) {
+  list-style: disc;
+  margin: 0 0 1em;
+  padding-left: 1.4em;
+}
+
+.app-main ul:not([class]) > li + li {
+  margin-top: 6px;
+}
+
+.ui-list li:nth-child(4n+1)::before,
+.portal-list li:nth-child(4n+1)::before,
+.portal-list-reset li:nth-child(4n+1)::before,
+.vacature-checklist li:nth-child(4n+1)::before,
+.admin-list li:nth-child(4n+1)::before,
+.form-alert__list li:nth-child(4n+1)::before {
+  border-color: rgba(146, 233, 171, 0.55);
+  background: rgba(146, 233, 171, 0.18);
+}
+
+.ui-list li:nth-child(4n+2)::before,
+.portal-list li:nth-child(4n+2)::before,
+.portal-list-reset li:nth-child(4n+2)::before,
+.vacature-checklist li:nth-child(4n+2)::before,
+.admin-list li:nth-child(4n+2)::before,
+.form-alert__list li:nth-child(4n+2)::before {
+  border-color: rgba(146, 233, 171, 0.55);
+  background: rgba(146, 233, 171, 0.18);
+}
+
+.ui-list li:nth-child(4n+3)::before,
+.portal-list li:nth-child(4n+3)::before,
+.portal-list-reset li:nth-child(4n+3)::before,
+.vacature-checklist li:nth-child(4n+3)::before,
+.admin-list li:nth-child(4n+3)::before,
+.form-alert__list li:nth-child(4n+3)::before {
+  border-color: rgba(146, 233, 171, 0.55);
+  background: rgba(146, 233, 171, 0.18);
+}
+
+.ui-list li:nth-child(4n+4)::before,
+.portal-list li:nth-child(4n+4)::before,
+.portal-list-reset li:nth-child(4n+4)::before,
+.vacature-checklist li:nth-child(4n+4)::before,
+.admin-list li:nth-child(4n+4)::before,
+.form-alert__list li:nth-child(4n+4)::before {
+  border-color: rgba(146, 233, 171, 0.55);
+  background: rgba(146, 233, 171, 0.18);
+}
+
+.ui-list--compact {
+  gap: 8px;
+}
+
+.ui-list--compact li::before {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  flex-basis: 20px;
+  font-size: 12px;
+}
+
+.alert-danger .ui-list,
+.alert-danger .portal-list-reset,
+.alert-danger .form-alert__list {
+  --ui-list-icon: "!";
+}
+
+.form-alert--error .form-alert__list {
+  --ui-list-icon: "!";
+}
+
+.form-alert--error .form-alert__list li::before,
+.form-alert--error .form-alert__list li:nth-child(4n+1)::before,
+.form-alert--error .form-alert__list li:nth-child(4n+2)::before,
+.form-alert--error .form-alert__list li:nth-child(4n+3)::before,
+.form-alert--error .form-alert__list li:nth-child(4n+4)::before {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+  color: #B42318;
+}
+
+.alert-success .ui-list,
+.alert-success .portal-list-reset,
+.alert-success .form-alert__list {
+  --ui-list-icon: "✓";
+}
+
+.ui-icon-list,
+.contact-list,
+.membership-list,
+.icon-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ui-icon-item,
+.contact-list li,
+.membership-list li,
+.icon-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.ui-icon-badge,
+.contact-icon,
+.membership-icon,
+.icon-chip {
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+  background: rgba(10, 107, 141, 0.08);
+  border: 1px solid rgba(10, 107, 141, 0.16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex: 0 0 34px;
+}
+
+.ui-icon-item:nth-child(4n+1) .ui-icon-badge,
+.contact-list li:nth-child(4n+1) .contact-icon,
+.membership-list li:nth-child(4n+1) .membership-icon,
+.icon-item:nth-child(4n+1) .icon-chip {
+  background: rgba(10, 107, 141, 0.08);
+  border-color: rgba(10, 107, 141, 0.16);
+}
+
+.ui-icon-item:nth-child(4n+2) .ui-icon-badge,
+.contact-list li:nth-child(4n+2) .contact-icon,
+.membership-list li:nth-child(4n+2) .membership-icon,
+.icon-item:nth-child(4n+2) .icon-chip {
+  background: rgba(15, 140, 122, 0.08);
+  border-color: rgba(15, 140, 122, 0.18);
+}
+
+.ui-icon-item:nth-child(4n+3) .ui-icon-badge,
+.contact-list li:nth-child(4n+3) .contact-icon,
+.membership-list li:nth-child(4n+3) .membership-icon,
+.icon-item:nth-child(4n+3) .icon-chip {
+  background: rgba(47, 158, 102, 0.1);
+  border-color: rgba(47, 158, 102, 0.2);
+}
+
+.ui-icon-item:nth-child(4n+4) .ui-icon-badge,
+.contact-list li:nth-child(4n+4) .contact-icon,
+.membership-list li:nth-child(4n+4) .membership-icon,
+.icon-item:nth-child(4n+4) .icon-chip {
+  background: rgba(134, 99, 183, 0.1);
+  border-color: rgba(134, 99, 183, 0.2);
+}
+
+.ui-icon-link,
+.icon-link,
+.contact-list a {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.ui-icon-link:hover,
+.icon-link:hover,
+.contact-list a:hover {
+  text-decoration: underline;
+}
+
+.ui-icon-text,
+.icon-text {
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text);
+}

@@ -1,0 +1,443 @@
+/* ==========================================================================
+   DUURZAME EVENEMENTEN (/duurzame-evenementen)
+   Overzicht van de events die werkgevers in hun portaal plaatsen.
+   Filterband in dezelfde stijl als de beroepengids (beroepen.css).
+   ========================================================================== */
+
+.evenementen {
+    --ev-filter: #EEF6F4;
+    --ev-filter-border: #C0D8D4;
+    --ev-primary: #168AAD;
+    --ev-ink: var(--brand-midnight-blue, #254F6E);
+    --ev-text: #333333;
+    --ev-muted: #6B6B6B;
+    --ev-border: #DEDEDE;
+
+    color: var(--ev-text);
+}
+
+.evenementen .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.evenementen__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+/* Hero met titel, CTA voor werkgevers en filters */
+.evenementen__hero {
+    margin-bottom: 40px;
+    padding: 40px 0 48px;
+    border-top: 1px solid var(--ev-filter-border);
+    border-bottom: 1px solid var(--ev-filter-border);
+    background: var(--ev-filter);
+}
+
+.evenementen__hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 32px;
+    align-items: start;
+    margin-top: 16px;
+}
+
+.evenementen__title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--ev-ink);
+}
+
+.evenementen__intro {
+    max-width: 680px;
+    margin: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ev-muted);
+}
+
+.evenementen__cta {
+    padding: 20px 22px;
+    border: 1px solid var(--ev-filter-border);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.evenementen__cta h2 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ev-ink);
+}
+
+.evenementen__cta p {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ev-muted);
+}
+
+.evenementen__filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.evenementen__search {
+    position: relative;
+    flex: 1 1 320px;
+}
+
+.evenementen__search::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23168AAD' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat center / contain;
+    pointer-events: none;
+}
+
+.evenementen__filter input,
+.evenementen__filter select {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #DDE8C5;
+    border-radius: 8px;
+    background-color: #fff;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ev-text);
+    box-sizing: border-box;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.evenementen__filter input {
+    padding-left: 40px;
+}
+
+.evenementen__filter select {
+    flex: 0 1 200px;
+    width: auto;
+    min-width: 170px;
+    cursor: pointer;
+}
+
+.evenementen__filter input:focus,
+.evenementen__filter select:focus {
+    outline: none;
+    border-color: var(--ev-primary);
+    box-shadow: 0 0 0 3px rgba(22, 138, 173, .15);
+}
+
+.evenementen__filter input::placeholder {
+    font-style: italic;
+    color: #7c7c7c;
+}
+
+.evenementen__filter .btn {
+    height: 46px;
+}
+
+/* Resultaten */
+.evenementen__results {
+    padding-bottom: 64px;
+}
+
+.evenementen__section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+}
+
+.evenementen__heading {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.evenementen__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: #EEF7E9;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ev-ink);
+}
+
+.evenementen__reset {
+    margin-left: auto;
+    font-size: 14px;
+    color: var(--ev-primary);
+}
+
+.evenementen__maand {
+    margin-top: 28px;
+}
+
+.evenementen__maand-titel {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 14px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ev-ink);
+}
+
+.evenementen__maand-titel::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ev-border);
+}
+
+.evenementen__lijst {
+    display: grid;
+    gap: 16px;
+}
+
+/* Eventkaart */
+.event-kaart {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+    gap: 22px;
+    padding: 22px;
+    border: 1px solid var(--ev-border);
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.event-kaart:hover {
+    border-color: var(--ev-filter-border);
+    box-shadow: 0 6px 20px rgba(37, 79, 110, .08);
+}
+
+.event-kaart__datum {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    padding: 12px 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--brand-aqua-deep, #2C8FAF), var(--brand-ocean-mint, #57AE94));
+    color: #fff;
+    text-align: center;
+    line-height: 1;
+}
+
+.event-kaart__dag {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.event-kaart__maand {
+    margin-top: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.event-kaart__weekdag {
+    margin-top: 6px;
+    font-size: 12px;
+    opacity: .85;
+}
+
+.event-kaart__labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.event-kaart__label {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--icon-azure-soft, #dff1f7);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--icon-azure, #0a6b8d);
+}
+
+.event-kaart__label--bijeenkomst {
+    background: var(--icon-mint-soft, #e3f3ea);
+    color: var(--icon-mint, #2f9e66);
+}
+
+.event-kaart__label--seminar {
+    background: var(--icon-violet-soft, #eee8f8);
+    color: var(--icon-violet, #8663b7);
+}
+
+.event-kaart__label--online,
+.event-kaart__label--locatie {
+    background: #F3F3F1;
+    color: var(--ev-muted);
+}
+
+.event-kaart__titel {
+    margin: 0 0 10px;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ev-ink);
+}
+
+.event-kaart__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    color: var(--ev-muted);
+}
+
+.event-kaart__meta li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.event-kaart__meta svg,
+.evenementen__leeg svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: var(--ev-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.event-kaart__meta a {
+    color: var(--ev-primary);
+}
+
+.event-kaart__omschrijving {
+    margin: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.event-kaart__acties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.event-kaart__acties:empty {
+    display: none;
+}
+
+.event-kaart__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    padding: 10px;
+    border: 1px solid var(--ev-border);
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.event-kaart__logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Lege staat */
+.evenementen__leeg {
+    margin-top: 24px;
+    padding: 48px 24px;
+    border: 1px dashed var(--ev-filter-border);
+    border-radius: 12px;
+    background: #FAFCFB;
+    text-align: center;
+}
+
+.evenementen__leeg svg {
+    width: 40px;
+    height: 40px;
+    stroke-width: 1.6;
+}
+
+.evenementen__leeg h3 {
+    margin: 12px 0 6px;
+    font-size: 18px;
+    color: var(--ev-ink);
+}
+
+.evenementen__leeg p {
+    margin: 0 0 18px;
+    color: var(--ev-muted);
+}
+
+@media (max-width: 900px) {
+    .evenementen__hero-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .evenementen__inner {
+        padding: 0 16px;
+    }
+
+    .evenementen__title {
+        font-size: 24px;
+    }
+
+    .evenementen__filter select,
+    .evenementen__filter .btn {
+        flex: 1 1 100%;
+    }
+
+    .event-kaart {
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .event-kaart__dag {
+        font-size: 24px;
+    }
+
+    .event-kaart__logo {
+        display: none;
+    }
+}

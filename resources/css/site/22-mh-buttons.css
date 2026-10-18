@@ -1,0 +1,222 @@
+/* source: wp-content/themes/modulairehuisvesting/css/buttons.css */
+.mh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 20px;
+  border-radius: 5px;
+  border: 1.5px solid transparent;
+  font-family:'Work Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.mh-btn--has-badge {
+  position: relative;
+  gap: 10px;
+}
+
+.mh-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-secondary, #4188AA);
+  color: #fff;
+  font-family:'Work Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.mh-btn--outline {
+  color: var(--color-primary, #25476B);
+  border-color: var(--color-primary, #25476B);
+  background: transparent;
+}
+
+.mh-btn--outline:hover {
+  color: #fff;
+  background: var(--color-primary, #25476B);
+}
+
+.mh-btn--accent {
+  color: #fff;
+  border-color: var(--color-primary, #25476B);
+  background: var(--color-primary, #25476B);
+}
+
+.mh-btn--accent:hover {
+  color: #fff;
+  background: var(--color-secondary, #4188AA);
+  border-color: var(--color-secondary, #4188AA);
+}
+
+.mh-btn--nav-quote {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-width: 1px;
+  border-color: rgba(65, 136, 170, 0.36);
+  background: var(--color-surface-alt, #F1F8EE);
+  color: var(--color-primary, #25476B);
+  box-shadow: none;
+}
+
+.mh-btn--nav-quote:hover {
+  background: var(--color-primary, #25476B);
+  border-color: var(--color-primary, #25476B);
+  color: #fff;
+}
+
+.mh-btn--nav-contact {
+  min-height: 44px;
+  padding: 10px 20px;
+  border-width: 1px;
+  border-color: var(--color-primary, #25476B);
+  background: var(--color-primary, #25476B);
+  color: #fff;
+  box-shadow: none;
+}
+
+.mh-btn--nav-contact:hover {
+  background: var(--color-secondary, #4188AA);
+  border-color: var(--color-secondary, #4188AA);
+  color: #fff;
+}
+
+/* Live overrides: protect button styling from global theme rules. */
+.mh-btn,
+a.mh-btn,
+button.mh-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 9px 20px !important;
+  border-radius: 5px !important;
+  border: 1.5px solid transparent !important;
+  font-family:'Work Sans', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+
+.mh-btn--has-badge {
+  position: relative !important;
+  gap: 10px !important;
+}
+
+.mh-nav-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  padding: 0 6px !important;
+  border-radius: 999px !important;
+  background: var(--color-secondary, #4188AA) !important;
+  color: #fff !important;
+  font-family:'Work Sans', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+.mh-btn--outline,
+a.mh-btn--outline,
+button.mh-btn--outline,
+.mh-btn--nav-quote,
+a.mh-btn--nav-quote,
+button.mh-btn--nav-quote {
+  color: var(--color-primary, #25476B) !important;
+  border-color: rgba(65, 136, 170, 0.36) !important;
+  background: var(--color-surface, #fff) !important;
+  box-shadow: none !important;
+}
+
+.mh-btn--outline:hover,
+.mh-btn--outline:focus,
+a.mh-btn--outline:hover,
+a.mh-btn--outline:focus,
+button.mh-btn--outline:hover,
+button.mh-btn--outline:focus,
+.mh-btn--nav-quote:hover,
+.mh-btn--nav-quote:focus,
+a.mh-btn--nav-quote:hover,
+a.mh-btn--nav-quote:focus,
+button.mh-btn--nav-quote:hover,
+button.mh-btn--nav-quote:focus {
+  color: #fff !important;
+  background: var(--color-primary, #25476B) !important;
+  border-color: var(--color-primary, #25476B) !important;
+}
+
+.mh-btn--accent,
+a.mh-btn--accent,
+button.mh-btn--accent {
+  color: #fff !important;
+  border-color: var(--color-primary, #25476B) !important;
+  background: var(--color-primary, #25476B) !important;
+  box-shadow: none !important;
+}
+
+.mh-btn--nav-contact,
+a.mh-btn--nav-contact,
+button.mh-btn--nav-contact {
+  color: #fff !important;
+  border-color: var(--color-primary, #25476B) !important;
+  background: var(--color-primary, #25476B) !important;
+  box-shadow: none !important;
+}
+
+.mh-btn--accent:hover,
+.mh-btn--accent:focus,
+a.mh-btn--accent:hover,
+a.mh-btn--accent:focus,
+button.mh-btn--accent:hover,
+button.mh-btn--accent:focus {
+  color: #fff !important;
+  background: var(--color-secondary, #4188AA) !important;
+  border-color: var(--color-secondary, #4188AA) !important;
+}
+
+.mh-btn--nav-contact:hover,
+.mh-btn--nav-contact:focus,
+a.mh-btn--nav-contact:hover,
+a.mh-btn--nav-contact:focus,
+button.mh-btn--nav-contact:hover,
+button.mh-btn--nav-contact:focus {
+  color: #fff !important;
+  background: var(--color-secondary, #4188AA) !important;
+  border-color: var(--color-secondary, #4188AA) !important;
+}
+
+.mh-btn--nav-quote,
+a.mh-btn--nav-quote,
+button.mh-btn--nav-quote,
+.mh-btn--nav-contact,
+a.mh-btn--nav-contact,
+button.mh-btn--nav-contact {
+  min-height: 44px !important;
+  padding: 10px 20px !important;
+  border-width: 1px !important;
+}
+
+.mh-btn--nav-quote,
+a.mh-btn--nav-quote,
+button.mh-btn--nav-quote {
+  padding: 10px 18px !important;
+}

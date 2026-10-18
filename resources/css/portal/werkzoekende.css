@@ -1,0 +1,346 @@
+/* Fonts */
+
+
+
+.vacature-grid.card {
+    border: none !important;
+    background: none !important;
+}
+
+/* ===============================
+   Sustainablejobs UI – Werkzoekende
+   Profiel + Dashboard
+================================ */
+
+
+
+/* ===============================
+   Layout
+================================ */
+
+.vacature-page{
+  max-width: 1180px;
+  margin: 24px auto;
+  padding: 24px 18px;
+}
+
+.vacature-header{
+  margin-bottom: 18px;
+}
+
+.vacature-header h1{
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.vacature-header p{
+  margin-top: 8px;
+  max-width: 720px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  color: var(--color-text-muted);
+}
+
+/* Grid */
+.vacature-grid{
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 16px;
+  align-items: start;
+  padding: 24px;
+}
+
+/* ===============================
+   Cards
+================================ */
+
+.card{
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.vacature-card{
+  border: 1px solid var(--color-border);
+}
+
+.vacature-card-intro{
+  margin-bottom: 14px;
+}
+
+.vacature-card-intro h3{
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.vacature-card-intro p{
+  margin-top: 6px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* ===============================
+   Alerts
+================================ */
+
+.alert{
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-family: var(--font-text);
+}
+
+.alert-success{
+  border-color: rgba(16,185,129,.35);
+  background: rgba(16,185,129,.10);
+  color: #065F46;
+}
+
+.alert-danger{
+  border-color: rgba(239,68,68,.35);
+  background: rgba(239,68,68,.10);
+  color: #7F1D1D;
+}
+
+/* .form-field is verplaatst naar forms.css */
+
+
+/* ===============================
+   Buttons
+================================ */
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+}
+
+.btn:active{
+  transform: translateY(0);
+}
+
+.btn-primary{
+  background: var(--btn-blue-green);
+  color: #ffffff;
+  border-color: var(--btn-blue-green);
+}
+
+.btn-primary:hover{
+  background: color-mix(in srgb, var(--btn-blue-green) 88%, #000000 12%);
+  border-color: color-mix(in srgb, var(--btn-blue-green) 88%, #000000 12%);
+  color: #ffffff;
+}
+
+.btn-secondary{
+  background: var(--btn-green);
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-secondary:hover{
+  background: color-mix(in srgb, var(--btn-green) 88%, #ffffff 12%);
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn-ghost{
+  background: var(--btn-rose);
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-ghost:hover{
+  background: color-mix(in srgb, var(--btn-rose) 88%, #ffffff 12%);
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn-basic{
+  background: #fff;
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-basic:hover{
+  background: var(--btn-rose);
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn-soft{
+  background: linear-gradient(135deg, var(--btn-rose), var(--btn-green));
+  color: var(--btn-blue-green);
+  border-color: var(--btn-blue-green);
+}
+
+.btn-soft:hover{
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--btn-rose) 88%, #ffffff 12%),
+    color-mix(in srgb, var(--btn-green) 88%, #ffffff 12%)
+  );
+  border-color: var(--btn-blue-green);
+  color: var(--btn-blue-green);
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"]{
+  opacity: .6;
+  pointer-events: none;
+  transform: none;
+}
+
+.btn:focus,
+.btn:focus-visible{
+  outline: none;
+}
+
+/* ===============================
+   Actions + Sidebar
+================================ */
+
+.vacature-actions{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.vacature-sidebar{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 72px;
+  align-self: start;
+}
+
+/* ===============================
+   Checklist
+================================ */
+
+.vacature-checklist{
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-family: var(--font-text);
+  color: var(--color-text-muted);
+}
+
+.vacature-checklist li{
+  margin-top: 8px;
+}
+
+/* ===============================
+   Responsive
+================================ */
+
+@media (max-width: 900px){
+  .vacature-page{
+    margin: 14px auto;
+    padding: 14px 12px;
+  }
+
+  .vacature-grid{
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  .vacature-sidebar{
+    position: static;
+  }
+
+  .vacature-actions .btn{
+    width: 100%;
+  }
+}
+
+
+.card-title{
+  margin: 0 0 10px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-text);
+}
+
+.card-muted{
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.vacature-header {
+  width: 100%;
+  max-width: 1080px;
+  border: var(--border-default);
+  border-radius: 5px;
+  margin: 24px auto;
+}
+
+.vacature-grid.card {
+  border: none !important; 
+  background-color: none !important; 
+}
+
+/* Vaste knop rechtsonder in de werkzoekende-omgeving naar de vacaturebank. */
+.werkzoekende-vacatures-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(31, 47, 58, .2);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.werkzoekende-vacatures-btn:hover,
+.werkzoekende-vacatures-btn:focus-visible {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(31, 47, 58, .25);
+}
+
+.werkzoekende-vacatures-btn i {
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .werkzoekende-vacatures-btn {
+    right: 16px;
+    bottom: 16px;
+    padding: 10px 16px;
+  }
+}

@@ -1,0 +1,7 @@
+/**
+ * Klantomgeving & beheer — de volledige styling van de inlogomgeving (Sustainablejobs-platform),
+ * 1-op-1 overgenomen in ./portal. Alleen geladen door layouts/portal.blade.php.
+ */
+@import './portal/app.css';
+@import './portal/admin.css';
+@import './portal/portal-overrides.css';

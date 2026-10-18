@@ -1,0 +1,222 @@
+/* ==========================================================================
+   CV DATABASE (/cv-database): landingspagina voor werkgevers.
+   ========================================================================== */
+
+.cvdb {
+    --cvdb-primary: var(--color-primary, #2C8FAF);
+    --cvdb-ink: var(--brand-midnight-blue, #254F6E);
+    --cvdb-soft: #EEF6F4;
+    --cvdb-text: #333333;
+    --cvdb-muted: #6b7280;
+    --cvdb-border: #DEDEDE;
+
+    color: var(--cvdb-text);
+}
+
+.cvdb__shell {
+    width: min(1100px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+    margin: 0 auto;
+}
+
+.cvdb__eyebrow {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--cvdb-primary);
+}
+
+/* Knop: zelfde stijl als "Vacature plaatsen" in de header (.rn-btn). */
+.cvdb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    border-radius: 5px;
+    background: #2B6E8F;
+    color: #fff;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: .01em;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background .15s ease;
+}
+
+.cvdb-btn:hover {
+    background: #254F6E;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Kop: op de standaard achtergrond van de applicatie. */
+.cvdb-hero {
+    padding: 28px 0 64px;
+}
+
+.cvdb-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 48px;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.cvdb-hero__title {
+    margin: 0;
+    font-size: clamp(30px, 4.2vw, 46px);
+    font-weight: 800;
+    line-height: 1.12;
+    color: #333;
+}
+
+.cvdb-hero__lead {
+    max-width: 560px;
+    margin: 18px 0 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--cvdb-muted);
+}
+
+.cvdb-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.cvdb-hero__count {
+    margin: 16px 0 0;
+    font-size: 15px;
+    color: var(--cvdb-text);
+}
+
+.cvdb-hero__count strong {
+    font-size: 30px;
+    line-height: 1;
+}
+
+/* Secties */
+.cvdb-section {
+    padding: 72px 0;
+}
+
+.cvdb-section__title {
+    margin: 0 0 28px;
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--cvdb-text);
+}
+
+/* Stappen */
+.cvdb-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cvdb-step {
+    padding: 26px;
+    border: 1px solid var(--cvdb-border);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.cvdb-step__icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 10px;
+    background: var(--cvdb-soft);
+    font-size: 24px;
+    color: var(--cvdb-primary);
+}
+
+.cvdb-step__number {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--cvdb-muted);
+}
+
+.cvdb-step__title {
+    margin: 6px 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.cvdb-step__text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--cvdb-muted);
+}
+
+/* Screenshot naast de titel */
+.cvdb-preview__frame {
+    margin: 0;
+    border: 1px solid var(--cvdb-border);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 24px 50px -28px rgba(37, 79, 110, .45);
+    overflow: hidden;
+}
+
+.cvdb-preview__bar {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--cvdb-border);
+    background: #f7f7f7;
+}
+
+.cvdb-preview__bar span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #dcdcdc;
+}
+
+.cvdb-preview__frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.cvdb-preview__frame figcaption {
+    padding: 10px 14px;
+    border-top: 1px solid var(--cvdb-border);
+    font-size: 13px;
+    color: var(--cvdb-muted);
+}
+
+@media (max-width: 900px) {
+    .cvdb-hero__grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 32px;
+    }
+
+    .cvdb-steps {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .cvdb-section {
+        padding: 48px 0;
+    }
+
+    .cvdb-hero__actions .cvdb-btn {
+        width: 100%;
+    }
+}

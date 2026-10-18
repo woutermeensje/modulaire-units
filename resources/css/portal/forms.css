@@ -1,0 +1,1635 @@
+/* ===============================
+   Root
+================================ */
+
+/* ===================================================
+   ALLE FORMULIER-STYLING VAN DE APPLICATIE STAAT IN
+   DIT BESTAND. Voeg geen los input/label/select-CSS
+   meer toe aan andere .css-bestanden of in <style>-
+   blokken binnen blade-views.
+=================================================== */
+
+/* ===============================
+   Labels — uniforme regel, overal
+   Verplicht: 15px, #333, 700, Work Sans, nooit hoofdletters
+================================ */
+
+label,
+.portal-label,
+.sj-label,
+.label-basis,
+.page-dashboard .field label {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.3;
+}
+
+.sj-label,
+.label-basis {
+  display: block;
+  margin: 0 0 4px;
+}
+
+.portal-label--with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.portal-label--with-icon i {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-primary);
+}
+
+/* ===============================
+   Global Form Controls
+================================ */
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-default);
+  background: var(--field-bg);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #333;
+  line-height: 1.4;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="tel"]:hover,
+input[type="url"]:hover,
+input[type="password"]:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--field-border-hover);
+}
+
+/* Focus state */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--field-focus);
+}
+
+/* Textarea specifiek */
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #999999;
+  opacity: 1; /* voorkomt extra fade in sommige browsers */
+  font-family: 'Work Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+}
+
+/* Keep entered and placeholder text consistent across all form controls. */
+:where(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="month"],
+  input[type="week"],
+  input[type="time"],
+  select,
+  textarea,
+  .portal-input,
+  .portal-textarea,
+  .basis-input,
+  .textarea
+) {
+  font-family: 'Work Sans', sans-serif!important;
+  font-style: normal !important;
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  color: #333 !important;
+  -webkit-text-fill-color: #333;
+}
+
+:where(
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="month"],
+  input[type="week"],
+  input[type="time"],
+  textarea,
+  .portal-input,
+  .portal-textarea,
+  .basis-input,
+  .textarea
+)::placeholder {
+  font-family: 'Work Sans', sans-serif!important;
+  font-style: normal !important;
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  color: #999999 !important;
+  -webkit-text-fill-color: #999999;
+  opacity: 1;
+}
+
+/* ===============================
+   Token input (vrije chips)
+================================ */
+
+.form-token-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-default);
+  background: var(--field-bg);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+}
+
+.form-token-input:hover {
+  border-color: var(--field-border-hover);
+}
+
+.form-token-input:focus-within {
+  border-color: var(--field-focus);
+  box-shadow: var(--field-shadow-focus);
+}
+
+.form-token-input__chips {
+  display: contents;
+}
+
+.form-token-input__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary-strong);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.form-token-input__chip:hover {
+  border-color: var(--color-secondary);
+}
+
+.form-token-input__chip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form-token-input__chip i {
+  flex: 0 0 auto;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.form-token-input input[type="text"] {
+  flex: 1 1 120px;
+  width: auto;
+  min-width: 80px;
+  min-height: 28px;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.form-token-input input[type="text"]:hover,
+.form-token-input input[type="text"]:focus {
+  border-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+/* ===============================
+   Form Layout Styling (legacy .form-container systeem)
+================================ */
+
+.form-container{
+  position: relative;
+  background: var(--color-bg-white);
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  padding: 24px;
+  margin: 24px auto;
+  width: 400px;
+}
+
+.auth-page{
+  padding: 24px 14px 36px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-page .form-container{
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.auth-page .form-container--wide{
+  max-width: 680px;
+  margin: 32px auto;
+}
+
+.form-container--wide{
+  width: min(100%, 980px);
+  padding: 20px 22px;
+}
+
+.form-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Field wrapper (legacy, o.a. auth/dashboard pagina's) */
+.form-field{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;              /* consistente label → veld spacing */
+  margin-bottom: 14px;   /* spacing tussen velden */
+}
+
+/* Section titles */
+.form-section{
+  font-family: 'Work Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 32px;
+  margin-bottom: 16px;
+  line-height: 1.25;
+}
+
+.form-container--wide .form-section{
+  margin-top: 32px;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.form-container--wide .form-field{
+  margin-bottom: 10px;
+}
+
+/* Button spacing inside forms */
+.form-container button{
+  margin-top: 12px;
+}
+
+/* ===============================
+   Optional: legacy support
+   (als je nog class="basis-input" gebruikt)
+================================ */
+
+.basis-input{
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-default);
+  background: var(--field-bg);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #333;
+  line-height: 1.4;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+
+.basis-input:hover{
+  border-color: var(--field-border-hover);
+}
+
+.basis-input:focus{
+  outline: none;
+  border-color: var(--field-focus);
+}
+
+/* Textarea (legacy) */
+.textarea{
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-default);
+  background: var(--field-bg);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #333;
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+
+.textarea:hover{
+  border-color: var(--field-border-hover);
+}
+
+.textarea:focus,
+.textarea:focus-visible{
+  outline: none;
+  border-color: var(--field-focus);
+}
+
+/* ===============================
+   Two-column form layout (legacy)
+================================ */
+
+.form-field-two{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-field-two .form-field{
+  margin-bottom: 0;
+}
+
+/* ===============================
+   Portal formuliersysteem
+   (werkzoekende/werkgever portaalpagina's, o.a. profiel)
+================================ */
+
+.portal-form {
+  --portal-field-spacing: 20px;
+  display: grid;
+  gap: var(--portal-field-spacing);
+}
+
+.portal-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--portal-field-spacing, 20px) 18px;
+}
+
+.portal-field {
+  display: grid;
+  gap: 6px; /* label → veld */
+}
+
+/* Velden en rijen die los onder elkaar in een kaart staan (geen grid-gap): vaste afstand ertussen.
+   Directe kinderen van .portal-form en velden binnen een rij krijgen hun afstand al van gap. */
+:where(.portal-field, .portal-form__row) + :where(.portal-field, .portal-form__row) {
+  margin-top: var(--portal-field-spacing, 20px);
+}
+
+.portal-form > :where(.portal-field, .portal-form__row),
+.portal-form__row > .portal-field {
+  margin-top: 0;
+}
+
+.portal-field--kvk {
+  position: relative;
+}
+
+.portal-input,
+.portal-textarea {
+  width: 100%;
+  border: 1px solid #d8dee6;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #333;
+  outline: none;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+
+.portal-input:hover,
+.portal-textarea:hover {
+  border-color: #c9d2dc;
+}
+
+.portal-textarea {
+  resize: vertical;
+}
+
+.portal-input:focus,
+.portal-textarea:focus {
+  border-color: rgba(10, 107, 141, 0.45);
+}
+
+.portal-input--url-example::placeholder {
+  color: #7d93a6 !important;
+  -webkit-text-fill-color: #7d93a6;
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  letter-spacing: 0;
+  opacity: 1;
+}
+
+.portal-help {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-subtle);
+}
+
+.form-alert {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-default);
+  background: #fff;
+}
+
+.form-alert--error {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: #7F1D1D;
+}
+
+.form-alert--error .form-alert__list li {
+  color: #7F1D1D;
+}
+
+.portal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* Sectiekoppen binnen een formulier (bv. "Basisgegevens") */
+.portal-section-head {
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+.portal-section-head__title {
+  margin: 0 0 6px;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.portal-section-head__text {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Foto-upload als eigen blok (bijv. profielfoto / omslagfoto naast elkaar) */
+.portal-field--photo-block{
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg);
+  padding: 16px;
+}
+
+.portal-field--photo-block .file-field{
+  background: var(--color-bg-white);
+}
+
+/* ===============================
+   Portal multiselect (.portal-select-multiselect)
+================================ */
+
+.portal-ms {
+  position: relative;
+}
+
+.portal-ms__control {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.portal-ms.is-open .portal-ms__control {
+  border-color: rgba(10, 107, 141, 0.45);
+}
+
+.portal-ms__value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 26px;
+  align-items: center;
+}
+
+.portal-ms__value.is-placeholder {
+  color: #333;
+  font-family: var(--font-text);
+  font-size: 14px;
+}
+
+.portal-ms__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(10, 107, 141, 0.35);
+  background: rgba(10, 107, 141, 0.08);
+  color: #0a4f68;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.portal-ms__chev {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.portal-ms__panel {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 25;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: #fff;
+  padding: 10px;
+}
+
+.portal-ms.is-open .portal-ms__panel {
+  display: block;
+}
+
+.portal-ms__search {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: #fff;
+  padding: 9px 11px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  outline: none;
+}
+
+.portal-ms__search:focus {
+  border-color: rgba(10, 107, 141, 0.45);
+}
+
+.portal-ms__options {
+  margin-top: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: grid;
+  gap: 6px;
+}
+
+.portal-ms__option,
+.portal-ms__create {
+  border: 0;
+  width: 100%;
+  text-align: left;
+  border-radius: 5px;
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.portal-ms__option:hover,
+.portal-ms__create:hover {
+  background: #f3f4f6;
+}
+
+.portal-ms__option.is-selected {
+  background: rgba(10, 107, 141, 0.1);
+  color: #0a4f68;
+  font-weight: 600;
+}
+
+.portal-ms__create {
+  border: 1px dashed rgba(10, 107, 141, 0.45);
+  color: #0a4f68;
+  font-weight: 600;
+}
+
+.portal-ms__empty {
+  padding: 8px 10px;
+  color: var(--color-text-subtle);
+  font-size: 13px;
+}
+
+/* ===============================
+   SJ formuliersysteem
+   (vacature plaatsen, content beheer)
+================================ */
+
+.sj-field{ margin: 0; }
+
+.sj-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sj-grid--single{
+  grid-template-columns: 1fr;
+}
+
+.sj-input,
+.sj-textarea,
+.sj-select{
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 12px 12px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color .15s ease;
+}
+
+.sj-input::placeholder,
+.sj-textarea::placeholder{
+  color: rgba(17,24,39,.45);
+}
+
+.sj-input:focus,
+.sj-textarea:focus,
+.sj-select:focus{
+  border-color: rgba(10, 107, 141, .55);
+}
+
+.sj-textarea{
+  min-height: 180px;
+  resize: vertical;
+}
+
+/* Select caret (merk-teal) */
+.sj-select{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 44px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(10,107,141,.85) 50%),
+    linear-gradient(135deg, rgba(10,107,141,.85) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.sj-hint{
+  margin-top: 8px;
+  font-family: var(--font-text);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* File input */
+.sj-file{ padding: 10px; }
+
+.sj-file::file-selector-button{
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-right: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sj-file::file-selector-button:hover{
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.sj-image-preview {
+  margin-top: 12px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.sj-image-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* SJ multiselect (vacature plaatsen) */
+.sj-multi{ position: relative; }
+
+.sj-multi__btn{
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 12px 12px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color .15s ease, background .15s ease;
+  margin: 0;
+}
+
+.sj-multi__btn:hover{ background: var(--color-bg); }
+
+.sj-multi__btn:focus{
+  outline: none;
+  border-color: rgba(10, 107, 141, .55);
+}
+
+.sj-multi__panel{
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  display: none;
+  z-index: 50;
+}
+
+.sj-multi.is-open .sj-multi__panel{ display: block; }
+
+.sj-option{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.sj-option:hover{ background: rgba(0,0,0,.04); }
+
+.sj-option input{
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+}
+
+.sj-chips{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sj-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sj-chip__x{
+  border: 0;
+  background: transparent;
+  color: var(--color-text-subtle);
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sj-chip__x:hover{ color: var(--color-text); }
+
+/* ===============================
+   Legacy multiselect ("Fondsen.org look")
+================================ */
+
+.ms{
+  position: relative;
+  width: 100%;
+}
+
+.ms-trigger{
+  width: 100%;
+  padding: 10px 12px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg-white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.ms-trigger:focus,
+.ms-trigger:focus-visible{
+  outline: none;
+  border: 1px solid var(--color-primary);
+}
+
+.ms-placeholder{
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  color: #333;
+}
+
+.ms-placeholder.has-values{
+  color: var(--color-text);
+  font-weight: 600;
+  font-family: var(--font-ui);
+}
+
+.ms-caret{
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #111;
+  border-bottom: 2px solid #111;
+  transform: rotate(45deg);
+  opacity: .65;
+  margin-top: -2px;
+}
+
+.ms-panel{
+  position: relative;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #fff;
+  border: var(--border-default);
+  border-radius: 5px;
+  padding: 10px;
+  display: none;
+  z-index: 80;
+}
+
+.ms.is-open .ms-panel{
+  display: block;
+}
+
+.ms-option{
+  width: 100%;
+  padding: 14px 14px;
+  border: 0;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  transition: background .12s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ms-option:hover{
+  background: #F3F4F6;
+}
+
+.ms-option.is-selected{
+  background: #F3F4F6;
+}
+
+.ms-option.is-selected::after{
+  content: "✓";
+  font-size: 16px;
+  font-weight: 800;
+  opacity: .7;
+}
+
+.ms-option-content{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ms-icon{
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ms-icon-sj-nl{
+  background: rgba(16,185,129,.12);
+  color: #10B981;
+}
+
+.ms-icon-sj-nl::before{
+  content: "🌿";
+  font-size: 16px;
+}
+
+.ms-icon-sj-com{
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.ms-icon-sj-com::before{
+  content: "🌍";
+  font-size: 16px;
+}
+
+.ms-icon-fondsen{
+  background: rgba(224,208,225,.35);
+  color: #7C3AED;
+}
+
+.ms-icon-fondsen::before{
+  content: "💙";
+  font-size: 16px;
+}
+
+.selected-options{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: var(--border-default);
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.chip-x{
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #E5E7EB;
+  color: var(--color-primary);
+  font-size: 14px;
+  line-height: 1;
+  background: #fff;
+  cursor: pointer;
+}
+
+.selected-empty{
+  margin-top: 10px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ===============================
+   Dashboard formuliervelden (.page-dashboard .field)
+================================ */
+
+.page-dashboard .dash-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 14px;
+}
+
+.page-dashboard .field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-dashboard .field input,
+.page-dashboard .field select,
+.page-dashboard .field textarea {
+  width: 100%;
+  border: 1px solid #d8dee6;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  padding: 12px 14px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color .16s ease, background-color .16s ease, transform .12s ease;
+}
+
+.page-dashboard .field input:hover,
+.page-dashboard .field select:hover,
+.page-dashboard .field textarea:hover {
+  border-color: #bac7d4;
+}
+
+.page-dashboard .field textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.page-dashboard .field input:focus,
+.page-dashboard .field select:focus,
+.page-dashboard .field textarea:focus {
+  border-color: rgba(10, 107, 141, .45);
+  transform: translateY(-1px);
+}
+
+.page-dashboard .field input:active,
+.page-dashboard .field select:active,
+.page-dashboard .field textarea:active {
+  transform: translateY(0);
+}
+
+.page-dashboard .field--full {
+  grid-column: 1 / -1;
+}
+
+/* ===============================
+   File upload (custom, gedeeld door alle varianten)
+================================ */
+
+.file-input{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+.file-field{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg-white);
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease, background .15s ease;
+}
+
+.file-field:hover{
+  transform: translateY(-1px);
+  background: var(--color-bg);
+}
+
+.file-field:focus-within{
+  border-color: var(--color-primary);
+}
+
+.file-icon{
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex: 0 0 36px;
+}
+
+.file-text{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.file-title{
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.file-subtitle{
+  font-family: var(--font-text);
+  font-size: 13px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-cta{
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  background: var(--color-primary);
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.file-field:hover .file-cta{
+  background: #0B1220;
+}
+
+/* File upload — "drop zone" variant (bv. logo/afbeelding uploaden) */
+.file-upload{
+  width: 100%;
+}
+
+.file-drop{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px dashed color-mix(in srgb, var(--color-primary) 35%, transparent);
+  border-radius: var(--radius-default);
+  background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+  cursor: pointer;
+  transition: border .15s ease, background .15s ease, transform .15s ease;
+}
+
+.file-drop:hover{
+  border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  transform: translateY(-1px);
+}
+
+.file-drop-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 5px;
+  background: var(--color-primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.file-drop-text{
+  flex: 1;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.file-drop-text strong{
+  font-family: var(--font-ui);
+  font-weight: 700;
+}
+
+.file-drop-sub{
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.file-drop-btn{
+  flex-shrink: 0;
+}
+
+.file-preview{
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg-white);
+}
+
+.file-preview-left{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-preview img{
+  width: 44px;
+  height: 44px;
+  border-radius: 5px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+.file-preview-name{
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.file-preview-hint{
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.file-remove{
+  border: 1px solid rgba(239,68,68,.35);
+  color: #B91C1C;
+  background: rgba(239,68,68,.08);
+  border-radius: 5px;
+  padding: 8px 10px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.file-remove:hover{
+  background: rgba(239,68,68,.12);
+}
+
+/* ===============================
+   Form help text
+================================ */
+
+.form-help{
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--color-text-subtle);
+  font-family: var(--font-text);
+}
+
+.form-help a{
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-help a:hover{
+  text-decoration: underline;
+}
+
+/* ===============================
+   Checkbox / radio / toggle / switch
+================================ */
+
+.toggle-group{
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.toggle-option{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.toggle-option input[type="radio"]{
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Eenvoudige checkbox + label, zonder omkaderd blok */
+.portal-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.portal-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.portal-checkbox span {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ===============================
+   Responsive
+================================ */
+
+@media (max-width: 900px){
+  .sj-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px){
+  .form-container--wide{
+    width: 100%;
+    padding: 16px;
+  }
+
+  .form-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .form-field-two{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px){
+  .auth-page{
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* ===============================
+   Stappenbalk registratie (werkgever en werkzoekende)
+================================ */
+
+.register-steps{
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.register-step{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.register-step__num{
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-white);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .2s ease;
+}
+
+.register-step__label{
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.register-step__connector{
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+  min-width: 16px;
+  margin: 0 10px;
+}
+
+.register-step.is-active .register-step__num{
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.register-step.is-active .register-step__label{
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+/* Taalkeuze staat rechtsboven in het formulier; de titel mag daar niet onder lopen. */
+.auth-page .form-container > h1{
+  padding-right: 44px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px){
+  /* Alle labels naast elkaar passen niet: alleen de huidige stap krijgt een label, de rest alleen een nummer. */
+  .register-step:not(.is-active) .register-step__label{
+    display: none;
+  }
+
+  .register-step.is-active{
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .register-step.is-active .register-step__label{
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .register-step__connector{
+    margin: 0 8px;
+  }
+
+  /* Niet verticaal centreren: op een telefoon geeft dat een lege strook boven het formulier. */
+  .auth-page{
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  .auth-page .form-container--wide{
+    margin-top: 8px;
+  }
+
+  /* Gestapelde velden: alleen de marge van het veld, anders komt de rijruimte van de grid er nog bij. */
+  .auth-page .form-grid{
+    row-gap: 0;
+  }
+
+  .auth-page .form-container > h1{
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  /* iOS zoomt in op velden met een kleinere letter dan 16px. */
+  .auth-page .basis-input{
+    font-size: 16px;
+  }
+
+  .auth-page .portal-actions .btn{
+    flex: 1 1 auto;
+  }
+}
+
+
+/* ===============================
+   Admin logo-upload (vacature toevoegen/bewerken)
+================================ */
+
+.admin-logo-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 18px 14px;
+  border: 1px dashed color-mix(in srgb, var(--color-primary) 35%, transparent);
+  border-radius: var(--radius-default);
+  background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.admin-logo-drop:hover,
+.admin-logo-upload.is-dragover .admin-logo-drop,
+.admin-logo-upload .file-input:focus-visible + .admin-logo-drop {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.admin-logo-drop__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  overflow: hidden;
+}
+
+.admin-logo-drop__preview img {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  object-fit: contain;
+}
+
+.admin-logo-drop__preview i {
+  font-size: 32px;
+  color: var(--color-text-muted);
+}
+
+.admin-logo-drop__title {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary);
+  word-break: break-word;
+}
+
+.admin-logo-drop__sub {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.admin-logo-drop__meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.admin-logo-upload__source {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.admin-logo-upload__actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: var(--border-default);
+  font-size: 14px;
+}
+
+.admin-logo-upload__actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

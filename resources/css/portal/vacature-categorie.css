@@ -1,0 +1,117 @@
+/* ==========================================================================
+   VACATURECATEGORIE (/vacatures/{slug}, bijv. /vacatures/ecologie)
+   Kop zonder bannerfoto, de vacatures van de categorie en daaronder de
+   overgenomen SEO-tekst van de WordPress-site.
+   ========================================================================== */
+
+/* Smaller dan de homepage: hier staat geen filterkolom naast de vacatures. */
+.vacancy-category-page .opdrachten-page-shell {
+    width: min(960px, 100% - 2 * clamp(1rem, 3vw, 3rem));
+}
+
+.vacancy-category__header {
+    padding: 28px 0 36px;
+    border-bottom: 1px solid var(--vb-border);
+    background: var(--vb-primary-soft);
+}
+
+.vacancy-category__eyebrow {
+    margin: 20px 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--vb-primary);
+}
+
+.vacancy-category__title {
+    margin: 0;
+    font-family: var(--font-heading, 'Work Sans', var(--font-ui));
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--vb-text);
+}
+
+.vacancy-category__lead {
+    max-width: 680px;
+    margin: 12px 0 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--vb-muted);
+}
+
+.vacancy-category__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-top: 20px;
+}
+
+.vacancy-category__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--vb-primary-muted);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vb-primary-strong);
+}
+
+.vacancy-category__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vb-primary);
+    text-decoration: none;
+}
+
+.vacancy-category__link:hover {
+    text-decoration: underline;
+}
+
+.vacancy-category__results {
+    padding-top: 32px;
+}
+
+/* Overgenomen WordPress-tekst */
+.vacancy-category__content {
+    margin-top: 48px;
+    padding: 28px 32px;
+    border: 1px solid var(--vb-border);
+    border-radius: 5px;
+    background: #fff;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.vacancy-category__content > :first-child {
+    margin-top: 0;
+}
+
+.vacancy-category__content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Andere categorieën: tegels uit beroepen.css (paginas/partials/tegels.blade.php) */
+.vacancy-category__others {
+    margin-top: 48px;
+}
+
+@media (max-width: 700px) {
+    .vacancy-category__header {
+        padding: 20px 0 28px;
+    }
+
+    .vacancy-category__content {
+        padding: 20px;
+    }
+}

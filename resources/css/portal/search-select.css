@@ -1,0 +1,89 @@
+/* Tom Select in de stijl van .basis-input (wordt mee ingeladen met resources/js/search-select.js). */
+
+/* Tom Select kopieert de classes van de select naar de wrapper; de rand hoort alleen op .ts-control. */
+.ts-wrapper.basis-input {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.ts-wrapper.basis-input .ts-control {
+  min-height: 0;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-default);
+  background: var(--field-bg);
+  box-shadow: none;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #333;
+  transition: border-color .16s ease;
+}
+
+.ts-wrapper.basis-input .ts-control:hover {
+  border-color: var(--field-border-hover);
+}
+
+.ts-wrapper.basis-input.focus .ts-control {
+  border-color: var(--field-focus);
+  box-shadow: var(--field-shadow-focus, none);
+}
+
+.ts-wrapper.basis-input .ts-control > input {
+  font: inherit;
+  color: inherit;
+}
+
+.ts-wrapper.basis-input .ts-control > input::placeholder {
+  color: #999;
+}
+
+/* Pijltje zoals bij een gewone select. */
+.ts-wrapper.basis-input.single .ts-control::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 7px;
+  height: 7px;
+  margin-top: -6px;
+  border-right: 1.5px solid #555;
+  border-bottom: 1.5px solid #555;
+  border-width: 0 1.5px 1.5px 0;
+  border-style: solid;
+  border-color: #555;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.ts-wrapper.basis-input.single.dropdown-active .ts-control::after {
+  margin-top: -2px;
+  transform: rotate(-135deg);
+}
+
+.ts-wrapper.basis-input.plugin-clear_button .clear {
+  right: 32px;
+}
+
+.ts-wrapper.basis-input .ts-dropdown {
+  margin-top: 4px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-default);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.ts-wrapper.basis-input .ts-dropdown .option,
+.ts-wrapper.basis-input .ts-dropdown .create,
+.ts-wrapper.basis-input .ts-dropdown .no-results {
+  padding: 8px 12px;
+}
+
+.ts-wrapper.basis-input .ts-dropdown .active {
+  background: var(--color-primary-soft, #f1f6f8);
+  color: inherit;
+}

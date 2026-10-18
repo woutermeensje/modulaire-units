@@ -1,0 +1,73 @@
+/* ==========================================================================
+   NIEUWS (/nieuws), in de opmaak van /test-homepage (zie test-homepage.css).
+   Hier alleen wat het nieuwsoverzicht extra heeft: zoeken, datums en paginering.
+   ========================================================================== */
+
+/* Zonder slider (zoeken, vervolgpagina) begint de lijst direct naast de vacatures */
+.fh-top--no-slider {
+    grid-template-areas:
+        "feed vacancies"
+        "feed cta";
+    row-gap: 40px;
+}
+
+.fh-top--no-slider .fh-cta-list {
+    margin-top: 0;
+}
+
+/* Zoekveld met de knop er direct aan vast, zoals het nieuwsbriefformulier */
+.fh-search {
+    display: flex;
+    margin-bottom: 28px;
+}
+
+.fh-search input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--field-border);
+    border-right: 0;
+    border-radius: var(--radius-default) 0 0 var(--radius-default);
+    background: var(--field-bg);
+    font: inherit;
+}
+
+.fh-search input:focus {
+    border-color: var(--field-focus);
+    outline: none;
+    box-shadow: var(--field-shadow-focus);
+}
+
+.fh-search .btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    border-radius: 0 var(--radius-default) var(--radius-default) 0;
+}
+
+.fh-feed-date {
+    color: var(--color-primary);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.fh-feed-empty {
+    color: var(--fh-muted);
+}
+
+.fh--nieuws .fh-feed .opdracht-promo {
+    margin: 8px 0;
+}
+
+.fh--nieuws .fh-feed-section > nav {
+    margin-top: 36px;
+}
+
+@media (max-width: 960px) {
+    .fh-top--no-slider {
+        grid-template-areas: "feed" "vacancies" "cta";
+    }
+}

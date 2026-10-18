@@ -1,0 +1,34 @@
+/**
+ * ModulaireHuisvesting.nl — frontend styles.
+ *
+ * The files in ./site are the stylesheets of the original WordPress theme
+ * (Hello Elementor + child theme "modulairehuisvesting" + mh-units/team plugins),
+ * cleaned up so every font is Work Sans and every upload points to /storage/media.
+ * Site specific additions and overrides live in ./site/90-*.css.
+ */
+@import './site/01-reset.css';
+@import './site/02-theme.css';
+@import './site/03-block-library.css';
+@import './site/04-wp-global-styles.css';
+@import './site/10-elementor-frontend.css';
+@import './site/11-elementor-widgets.css';
+@import './site/12-elementor-kit.css';
+@import './site/20-mh-theme.css';
+@import './site/21-mh-header.css';
+@import './site/22-mh-buttons.css';
+@import './site/23-mh-forms.css';
+@import './site/24-mh-hero.css';
+@import './site/25-mh-intro.css';
+@import './site/26-mh-job-manager.css';
+@import './site/27-mh-shortcodes.css';
+@import './site/28-mh-blog.css';
+@import './site/30-mh-units.css';
+@import './site/31-mh-team.css';
+@import './site/32-job-listings.css';
+@import './site/40-subpage-grid.css';
+@import './site/41-unit-single.css';
+@import './site/42-vacancy-single.css';
+@import './site/43-quote.css';
+@import './site/44-wp-custom.css';
+@import './site/90-layout.css';
+@import './site/91-components.css';

@@ -1,0 +1,317 @@
+/* ===============================
+   OVERZICHTEN (LIST TABLES)
+================================ */
+
+.table-wrap,
+.mb-list__wrap {
+  border: 1px solid #d7d7d7;
+  border-radius: 5px;
+  background: #fafafa;
+  overflow-x: auto;
+}
+
+.table,
+.mb-list__table {
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  min-width: 820px;
+}
+
+.table thead th,
+.mb-list__table thead th {
+  background: #f3f3f3;
+  color: #2f2f2f;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 14px;
+  text-align: left;
+  border-bottom: 1px solid #dddddd;
+  white-space: nowrap;
+}
+
+.table tbody td,
+.mb-list__table tbody td {
+  padding: 14px;
+  font-size: 15px;
+  color: #323232;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  vertical-align: middle;
+}
+
+.table tbody tr,
+.mb-list__table tbody tr {
+  border: 0 !important;
+}
+
+.table tbody tr:hover,
+.mb-list__table tbody tr:hover {
+  background: #f5f5f5;
+}
+
+.mb-list__check {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  border: 2px solid #cfcfcf;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.mb-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Basis eerst, zodat de kleurvarianten hieronder winnen. */
+.badge {
+  background: #ececec;
+  color: #2f2f2f;
+}
+
+.mb-pill--warning,
+.badge-warning {
+  background: var(--color-secondary);
+}
+
+.mb-pill--danger,
+.badge-danger {
+  background: var(--color-danger);
+}
+
+.mb-pill--success,
+.badge-success {
+  background: var(--color-secondary);
+}
+
+.mb-pill--muted {
+  background: #8a8a8a;
+}
+
+.badge,
+.mb-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  border: 0;
+}
+
+.badge-success,
+.badge-danger,
+.badge-warning {
+  color: #fff;
+}
+
+.badge-muted {
+  background: #8a8a8a;
+  color: #fff;
+}
+
+.mb-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mb-action-link,
+.table td .admin-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d0d0d0 !important;
+  background: #fff !important;
+  border-radius: 5px;
+  padding: 8px 12px;
+  color: #2f2f2f !important;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mb-action-link:hover,
+.table td .admin-actions .btn:hover {
+  text-decoration: none;
+  background: #f0f0f0;
+}
+
+@media (max-width: 900px) {
+  .table thead th,
+  .mb-list__table thead th {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+
+  .table tbody td,
+  .mb-list__table tbody td {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+
+  .badge,
+  .mb-pill {
+    min-width: 96px;
+    min-height: 28px;
+    padding: 4px 9px;
+    font-size: 13px;
+  }
+}
+
+/* Admin vacatureoverzicht: compacte rijen */
+.vacature-list tbody tr + tr td {
+  border-top: 1px solid #ececec !important;
+}
+
+.vacature-list__title {
+  font-weight: 600;
+  color: #2f2f2f;
+  text-decoration: none;
+}
+
+.vacature-list__title:hover {
+  text-decoration: underline;
+}
+
+.vacature-list__num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.vacature-list__pakket {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid #d7d7d7;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.vacature-list__actions {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+/* Statusfilter (multi-select met chips) */
+.status-filter {
+  position: relative;
+}
+
+.status-filter__trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 12px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.status-filter.is-open .status-filter__trigger,
+.status-filter__trigger:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.status-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.status-filter__chip {
+  padding: 4px 6px 4px 10px;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.status-filter__placeholder {
+  color: var(--color-text-muted, #6b7280);
+  font-size: 15px;
+}
+
+.status-filter__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 80;
+  padding: 6px;
+  border: var(--border-default);
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+}
+
+.status-filter__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 5px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.status-filter__option:hover {
+  background: #f3f4f6;
+}
+
+.status-filter__option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+}
+
+/* Vacaturestatussen: elke status een eigen kleur (badge in admin, pill bij werkgever). */
+.badge.vacature-status,
+.mb-pill.vacature-status {
+  color: #fff;
+  border: 0;
+}
+
+.vacature-status--approved            { background: #2f8f5b; } /* Gepubliceerd: groen */
+.vacature-status--pending             { background: #d98a1c; } /* In behandeling: oranje */
+.vacature-status--draft               { background: #4a7fb5; } /* Concept: blauw */
+.vacature-status--offline_requested   { background: #b8860b; } /* Wordt offline gehaald: oker */
+.vacature-status--temporarily_offline { background: #9a8fb5; } /* Tijdelijk offline: lila-grijs */
+.vacature-status--offline             { background: #7a7a7a; } /* Offline: grijs */
+.vacature-status--deleted             { background: #3f3f46; } /* Verwijderd: donkergrijs */
+.vacature-status--rejected            { background: var(--color-danger, #EF4444); } /* Afgekeurd: rood */
