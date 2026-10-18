@@ -45,6 +45,26 @@ class CustomerPortalTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_login_page_uses_the_site_header_with_top_bar_and_account_links(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('mh-top-bar', false)
+            ->assertSee('id="mh-header"', false)
+            ->assertDontSee('>Aanmelden<', false)
+            ->assertSee('noindex', false);
+    }
+
+    public function test_header_shows_account_link_instead_of_login_when_authenticated(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('login'))
+            ->assertRedirect();
+
+        $this->get(route('register'))->assertRedirect();
+        $this->get(route('search'))->assertOk()->assertSee('Mijn account')->assertDontSee('>Aanmelden<', false);
+    }
+
     public function test_dashboard_requires_login(): void
     {
         $this->get(route('dashboard'))->assertRedirect(route('login'));

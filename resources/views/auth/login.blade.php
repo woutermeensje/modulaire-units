@@ -1,9 +1,9 @@
-@extends('layouts.portal')
+@extends('layouts.site', ['seo' => new \App\Support\Seo(title: \App\Support\Seo::withSiteName('Inloggen'), noindex: true)])
 
-@section('title', 'Inloggen')
+@section('body_class', 'page mh-auth-page')
 
 @section('content')
-<section class="auth-page">
+<main id="content" class="mh-auth">
     <div class="form-container">
         <h1>Inloggen</h1>
         @include('auth.partials.errors')
@@ -29,5 +29,5 @@
             <a href="{{ route('register') }}">Nog geen account? Registreer je hier</a>
         </div>
     </div>
-</section>
+</main>
 @endsection

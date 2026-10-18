@@ -41,7 +41,11 @@
         <div class="mh-header__divider"></div>
 
         <div class="mh-header__cta">
-            <a href="{{ route('login') }}" class="mh-header__login">Inloggen</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="mh-header__login">Mijn account</a>
+            @else
+                <a href="{{ route('login') }}" class="mh-header__login">Inloggen</a>
+            @endauth
             <a href="{{ url('offerte-aanvragen') }}/" class="mh-btn mh-btn--solid mh-btn--nav-contact">Informatie aanvragen</a>
         </div>
 
@@ -101,7 +105,11 @@
                     <span class="mh-nav-badge">{{ $quoteCount }}</span>
                 @endif
             </a>
-            <a href="{{ route('login') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Inloggen</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Mijn account</a>
+            @else
+                <a href="{{ route('login') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Inloggen</a>
+            @endauth
             <a href="{{ url('offerte-aanvragen') }}/" class="mh-btn mh-btn--solid mh-btn--nav-contact mh-mobile-nav__cta">Informatie aanvragen</a>
         </div>
     </div>

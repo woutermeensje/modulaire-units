@@ -521,6 +521,16 @@ class ImportWordPress extends Command
                     'sort' => $childIndex,
                 ]);
             }
+
+            if ($parent->label === 'Contact') {
+                MenuItem::query()->create([
+                    'menu' => 'main',
+                    'parent_id' => $parent->id,
+                    'label' => 'Account aanmaken',
+                    'url' => '/'.trim(route('register', [], false), '/'),
+                    'sort' => $parent->children()->count(),
+                ]);
+            }
         }
 
         $footer = $document->querySelector('footer.elementor-location-footer');

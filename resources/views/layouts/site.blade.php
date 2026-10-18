@@ -31,6 +31,7 @@
 <body class="elementor-kit-6 @yield('body_class')">
     <a class="skip-link screen-reader-text" href="#content">Ga naar de inhoud</a>
 
+    @include('partials.top-bar')
     @include('partials.header')
 
     @yield('content')

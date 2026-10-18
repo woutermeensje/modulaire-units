@@ -1,9 +1,9 @@
-@extends('layouts.portal')
+@extends('layouts.site', ['seo' => new \App\Support\Seo(title: \App\Support\Seo::withSiteName('Nieuw wachtwoord instellen'), noindex: true)])
 
-@section('title', 'Nieuw wachtwoord instellen')
+@section('body_class', 'page mh-auth-page')
 
 @section('content')
-<section class="auth-page">
+<main id="content" class="mh-auth">
     <div class="form-container">
         <h1>Nieuw wachtwoord instellen</h1>
         @include('auth.partials.errors')
@@ -26,5 +26,5 @@
             <button class="btn btn-primary" type="submit">Wachtwoord opslaan</button>
         </form>
     </div>
-</section>
+</main>
 @endsection

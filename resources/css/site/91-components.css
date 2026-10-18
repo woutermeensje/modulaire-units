@@ -403,3 +403,10 @@
 .mh-blog__sidebar a.mh-sidebar-newsletter__btn:hover {
   color: #fff;
 }
+
+/* ── Geen box-shadows op het platform. Focus-ringen (:focus-visible) blijven staan voor toetsenbordgebruikers. ── */
+*:not(:focus-visible),
+*::before,
+*::after {
+  box-shadow: none !important;
+}

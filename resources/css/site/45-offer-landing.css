@@ -1,0 +1,430 @@
+/* ==========================================================================
+   Huur- en koopagina's (/huren/, /kopen/) — opbouw van de /inhuren/-landingspagina's
+   van OnlineMarketingjobs.nl, in de kleuren van ModulaireHuisvesting.nl.
+   ========================================================================== */
+
+.mh-offer {
+  padding-bottom: 4rem;
+}
+
+/* ── Hero: blauw paneel met schuine rand, foto rechts ── */
+.mh-offer-hero {
+  position: relative;
+  display: grid;
+  min-height: 500px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #eef3f7;
+}
+
+.mh-offer-hero__image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: var(--mh-offer-hero-image);
+  background-size: cover;
+  background-position: center 40%;
+}
+
+.mh-offer-hero__image::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, rgba(23, 44, 66, 0.22) 0%, rgba(23, 44, 66, 0.04) 58%);
+}
+
+.mh-offer-hero__panel {
+  position: relative;
+  z-index: 2;
+  width: min(64%, 980px);
+  min-height: 500px;
+  background: #39749B;
+  color: #fff;
+  clip-path: polygon(0 0, 86% 0, 70% 100%, 0 100%);
+}
+
+.mh-offer-hero__content {
+  display: grid;
+  align-content: center;
+  gap: 0.875rem;
+  width: min(560px, calc(100% - 150px));
+  height: 100%;
+  margin: 0 auto 0 clamp(1.5rem, 4vw, 4.5rem);
+}
+
+.mh-offer-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mh-offer-hero__lead {
+  max-width: 52ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.mh-offer-hero__actions,
+.mh-offer-request__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.45rem;
+}
+
+/* ── Knoppen ── */
+.mh-offer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid #39749B;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+}
+
+.mh-offer-btn:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.mh-offer .mh-offer-btn--primary,
+.mh-offer .mh-offer-btn--primary:visited {
+  background: #39749B;
+  color: #fff;
+}
+
+.mh-offer .mh-offer-hero .mh-offer-btn--primary {
+  border-color: var(--color-button, #75B77D);
+  background: var(--color-button, #75B77D);
+  color: #fff;
+}
+
+/* Op het blauwe hero-vlak wordt de groene knop bij hover donkerblauw. */
+.mh-offer .mh-offer-hero .mh-offer-btn--primary:hover,
+.mh-offer .mh-offer-hero .mh-offer-btn--primary:focus {
+  border-color: var(--color-primary, #25476B);
+  background: var(--color-primary, #25476B);
+  color: #fff;
+}
+
+.mh-offer .mh-offer-btn--primary:hover,
+.mh-offer .mh-offer-btn--primary:focus {
+  border-color: var(--color-secondary, #4188AA);
+  background: var(--color-secondary, #4188AA);
+  color: #fff;
+}
+
+/* ── Tekstblok met zijbalk ── */
+.mh-offer-overlap {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(300px, 0.9fr);
+  gap: 1.75rem;
+  width: min(1200px, calc(100% - 2rem));
+  margin: 56px auto 0;
+  align-items: start;
+}
+
+.mh-offer-intro,
+.mh-offer-request,
+.mh-offer-related-card {
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 5px;
+  background: #fff;
+}
+
+.mh-offer-intro,
+.mh-offer-request {
+  padding: clamp(1.25rem, 2.8vw, 1.75rem);
+}
+
+.mh-offer-intro__platform {
+  margin: 0 0 1.5rem;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.mh-offer-intro__platform--bottom {
+  margin: 0;
+}
+
+.mh-offer .mh-offer-intro a {
+  color: var(--color-secondary, #4188AA);
+}
+
+.mh-offer-intro__heading,
+.mh-offer-intro__body h2,
+.mh-offer-request h2,
+.mh-offer-related h2 {
+  margin: 0 0 0.85rem;
+  color: var(--color-text, #333);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mh-offer-intro__heading--sub,
+.mh-offer-intro__body h2 {
+  margin-top: 1.75rem;
+}
+
+.mh-offer-intro__body {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.mh-offer-intro__body h3,
+.mh-offer-intro__body h4 {
+  margin: 1.5rem 0 0.6rem;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mh-offer-intro__body p {
+  margin: 0 0 0.9rem;
+}
+
+.mh-offer-intro__body ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.mh-offer-intro__body li p {
+  margin: 0;
+}
+
+.mh-offer-intro__body img {
+  display: block;
+  margin: 1rem 0;
+  border-radius: 5px;
+}
+
+/* ── Zijbalk "Mogelijkheden" ── */
+.mh-offer-request {
+  position: sticky;
+  top: calc(var(--mh-header-h, 68px) + 1rem);
+}
+
+.mh-offer-contact {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.75rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.mh-offer-contact li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: center;
+  font-size: 15px;
+}
+
+.mh-offer-contact svg {
+  color: var(--color-primary, #25476B);
+}
+
+.mh-offer .mh-offer-contact a {
+  color: var(--color-text, #333);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.mh-offer .mh-offer-contact a:hover {
+  color: var(--color-primary, #25476B);
+  text-decoration: underline;
+}
+
+.mh-offer-options {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.mh-offer .mh-offer-option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.35rem 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 5px;
+  color: var(--color-text, #333);
+  text-decoration: none;
+  transition: background-color .15s ease, transform .15s ease;
+}
+
+.mh-offer .mh-offer-option:hover {
+  background: rgba(37, 71, 107, 0.04);
+  color: var(--color-text, #333);
+  transform: translateY(-1px);
+}
+
+.mh-offer-option__meta {
+  grid-row: span 2;
+  align-self: start;
+  min-width: 70px;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--color-primary, #25476B);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.mh-offer-option strong {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mh-offer-option span:last-child {
+  color: #555;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.mh-offer-option--highlight {
+  background: var(--color-surface-alt, #F1F8EE);
+}
+
+.mh-offer-request__actions {
+  display: grid;
+  margin-top: 1rem;
+}
+
+.mh-offer-request__actions .mh-offer-btn {
+  width: 100%;
+}
+
+/* ── Overige blokken (bijv. formulier) en "Bekijk ook" ── */
+.mh-offer-block,
+.mh-offer-related {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 56px auto 0;
+}
+
+.mh-offer-related__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mh-offer .mh-offer-related-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 92px;
+  padding: 1rem;
+  color: var(--color-text, #333);
+  text-decoration: none;
+  transition: transform .15s ease;
+}
+
+.mh-offer .mh-offer-related-card:hover {
+  color: var(--color-text, #333);
+  transform: translateY(-2px);
+}
+
+.mh-offer-related-card strong {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mh-offer-related-card svg {
+  flex-shrink: 0;
+  color: var(--color-primary, #25476B);
+}
+
+.mh-offer-btn:focus-visible,
+.mh-offer-option:focus-visible,
+.mh-offer-related-card:focus-visible {
+  outline: 2px solid var(--color-secondary, #4188AA);
+  outline-offset: 2px;
+}
+
+@media (max-width: 980px) {
+  .mh-offer-hero {
+    min-height: 0;
+  }
+
+  .mh-offer-hero__image {
+    position: relative;
+    order: 1;
+    height: 250px;
+  }
+
+  .mh-offer-hero__panel {
+    order: 2;
+    width: 100%;
+    min-height: 0;
+    clip-path: none;
+  }
+
+  .mh-offer-hero__content {
+    width: min(680px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  .mh-offer-overlap {
+    grid-template-columns: 1fr;
+    margin-top: 1rem;
+  }
+
+  .mh-offer-request {
+    position: static;
+  }
+
+  .mh-offer-related__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .mh-offer {
+    padding-bottom: 3rem;
+  }
+
+  .mh-offer-hero__image {
+    height: 220px;
+  }
+
+  .mh-offer-hero h1 {
+    font-size: 28px;
+  }
+
+  .mh-offer-hero__actions .mh-offer-btn {
+    width: 100%;
+  }
+
+  .mh-offer-overlap,
+  .mh-offer-block,
+  .mh-offer-related {
+    width: min(100% - 1.5rem, 1200px);
+  }
+
+  .mh-offer-intro,
+  .mh-offer-request,
+  .mh-offer-related-card {
+    padding: 1rem;
+  }
+}

@@ -58,6 +58,88 @@ a.mh-btn--solid.mh-btn--nav-contact:hover {
   color: #fff !important;
 }
 
+/* "Informatie aanvragen" in de header: iets kleiner en minder zwaar dan de overige knoppen. */
+.mh-header a.mh-btn--solid.mh-btn--nav-contact,
+.mh-mobile-nav a.mh-btn--solid.mh-btn--nav-contact {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
+
+/* ── Balk boven de header (zelfde opbouw als de partnerbalk van Fondsen.org) ── */
+.mh-top-bar {
+  background: var(--color-surface-alt, #F1F8EE);
+  border-bottom: 1px solid var(--color-border, #dedede);
+}
+
+.mh-top-bar__inner {
+  width: min(100% - 96px, 1840px);
+  min-height: 40px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  font-size: 14px;
+  color: var(--color-text, #333);
+}
+
+.mh-top-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.mh-top-bar__label {
+  font-weight: 600;
+}
+
+.mh-top-bar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mh-top-bar__item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.mh-top-bar__item + .mh-top-bar__item::before {
+  content: "";
+  width: 1px;
+  height: 14px;
+  margin: 0 14px;
+  background: var(--color-border, #dedede);
+}
+
+.mh-top-bar__link {
+  color: var(--color-text, #333);
+  text-decoration: none;
+  transition: color .15s ease;
+}
+
+.mh-top-bar__link:hover {
+  color: var(--color-primary, #25476B);
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .mh-top-bar__inner {
+    width: 100%;
+    padding: 0 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .mh-top-bar__inner::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (min-width: 961px) {
   .mh-header__quote-icon--always {
     display: inline-flex;

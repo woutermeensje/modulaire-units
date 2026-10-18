@@ -1,9 +1,9 @@
-@extends('layouts.portal')
+@extends('layouts.site', ['seo' => new \App\Support\Seo(title: \App\Support\Seo::withSiteName('Wachtwoord vergeten'), noindex: true)])
 
-@section('title', 'Wachtwoord vergeten')
+@section('body_class', 'page mh-auth-page')
 
 @section('content')
-<section class="auth-page">
+<main id="content" class="mh-auth">
     <div class="form-container">
         <h1>Wachtwoord vergeten</h1>
         <p>Vul je e-mailadres in. We sturen je een link waarmee je een nieuw wachtwoord kunt instellen.</p>
@@ -22,5 +22,5 @@
             <a href="{{ route('login') }}">Terug naar inloggen</a>
         </div>
     </div>
-</section>
+</main>
 @endsection

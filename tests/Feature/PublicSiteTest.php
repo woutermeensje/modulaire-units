@@ -75,6 +75,62 @@ class PublicSiteTest extends TestCase
             ->assertSee('1 resultaat');
     }
 
+    public function test_rent_pages_use_the_offer_layout_without_units_catalog(): void
+    {
+        Unit::factory()->create(['title' => 'Bouwunit 20ft']);
+        $rent = Page::factory()->create(['slug' => 'huren']);
+        $buy = Page::factory()->create(['slug' => 'kopen']);
+        Page::factory()->create(['slug' => 'bouwunits', 'parent_id' => $buy->id, 'title' => 'Bouwunits kopen']);
+        Page::factory()->create(['slug' => 'kantines', 'parent_id' => $rent->id, 'title' => 'Kantines huren']);
+        Page::factory()->create([
+            'slug' => 'bouwunits',
+            'parent_id' => $rent->id,
+            'title' => 'Bouwunits huren',
+            'content' => '<div class="elementor">'
+                .'<section style="background-image:url(\'/storage/media/banner.png\')"><div class="elementor-widget elementor-widget-heading"><h2 class="elementor-heading-title">Oude banner</h2></div></section>'
+                .'<section><div class="elementor-widget elementor-widget-shortcode">[units_catalog title="Bouwunits huren" type="bouw-unit"]</div></section>'
+                .'<section><div class="elementor-widget elementor-widget-text-editor"><h2>Tijdelijk bouwunits huren</h2><p>Snel leverbaar op de bouwplaats.</p></div></section>'
+                .'</div>',
+        ]);
+
+        $this->get('/huren/bouwunits/')
+            ->assertOk()
+            ->assertSee('mh-offer-hero', false)
+            ->assertSee('/storage/media/banner.png', false)
+            ->assertSee('Tijdelijk bouwunits huren')
+            ->assertSee('Snel leverbaar op de bouwplaats.')
+            ->assertDontSee('Oude banner')
+            ->assertDontSee('Bouwunit 20ft')
+            ->assertSee('href="/kopen/bouwunits/"', false)
+            ->assertSee('Kantines huren');
+    }
+
+    public function test_buy_pages_and_overviews_use_the_offer_layout(): void
+    {
+        Unit::factory()->create(['title' => 'Bouwunit 20ft']);
+        $rent = Page::factory()->create(['slug' => 'huren', 'title' => 'Huren']);
+        $buy = Page::factory()->create(['slug' => 'kopen', 'title' => 'Kopen', 'content' => '[units_catalog title="Kopen"]<h1>Modulaire units kopen</h1>']);
+        Page::factory()->create(['slug' => 'bouwunits', 'parent_id' => $rent->id, 'title' => 'Bouwunits huren']);
+        Page::factory()->create(['slug' => 'bouwunits', 'parent_id' => $buy->id, 'title' => 'Bouwunits kopen', 'content' => '[units_catalog title="Bouwunits"]<p>Bouwunits kopen tekst</p>']);
+
+        $this->get('/kopen/bouwunits/')
+            ->assertOk()
+            ->assertSee('mh-offer-hero', false)
+            ->assertSee('Bouwunits kopen tekst')
+            ->assertSee('href="/huren/bouwunits/"', false)
+            ->assertSee('Liever flexibel en zonder investering?')
+            ->assertDontSee('Bouwunit 20ft')
+            ->assertDontSee('mh-units-catalog', false);
+
+        $this->get('/kopen/')
+            ->assertOk()
+            ->assertSee('<h2 class="mh-offer-intro__heading">Modulaire units kopen</h2>', false)
+            ->assertSee('Alle mogelijkheden:')
+            ->assertSee('href="/kopen/bouwunits/"', false)
+            ->assertSee('href="/huren/"', false)
+            ->assertDontSee('mh-units-catalog', false);
+    }
+
     public function test_unit_detail_and_taxonomy_archive(): void
     {
         $term = UnitTerm::factory()->create(['taxonomy' => UnitTerm::CONDITION, 'name' => 'Nieuw', 'slug' => 'nieuw']);

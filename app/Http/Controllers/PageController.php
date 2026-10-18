@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Redirect;
+use App\Services\Content\OfferLanding;
 use App\Services\Content\ShortcodeRenderer;
 use App\Support\Seo;
 use Illuminate\Http\RedirectResponse;
@@ -57,6 +58,14 @@ class PageController extends Controller
 
     private function renderPage(Page $page): View
     {
+        if (OfferLanding::appliesTo($page)) {
+            return view('pages.offer', [
+                'page' => $page,
+                'landing' => app(OfferLanding::class)->build($page),
+                'seo' => Seo::for($page, $page->excerpt),
+            ]);
+        }
+
         return view('pages.show', [
             'page' => $page,
             'content' => $this->shortcodes->render($page->content, $page),
