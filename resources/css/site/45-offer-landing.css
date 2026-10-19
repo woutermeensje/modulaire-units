@@ -38,7 +38,7 @@
   z-index: 2;
   width: min(64%, 980px);
   min-height: 500px;
-  background: #25476B;
+  background: #2B6E8F;
   color: #fff;
   clip-path: polygon(0 0, 86% 0, 70% 100%, 0 100%);
 }
@@ -84,7 +84,7 @@
   justify-content: center;
   min-height: 44px;
   padding: 0.75rem 1.25rem;
-  border: 1px solid #25476B;
+  border: 1px solid #2B6E8F;
   border-radius: 8px;
   font-size: 15px;
   font-weight: 500;
@@ -100,28 +100,21 @@
 
 .mh-offer .mh-offer-btn--primary,
 .mh-offer .mh-offer-btn--primary:visited {
-  background: #25476B;
+  background: #2B6E8F;
   color: #fff;
 }
 
 .mh-offer .mh-offer-hero .mh-offer-btn--primary {
-  border-color: var(--color-button, #6FAA7B);
-  background: var(--color-button, #6FAA7B);
-  color: #fff;
+  border-color: #fff;
+  background: #fff;
+  color: var(--color-primary-text, #2B6E8F);
 }
 
-/* Op het blauwe hero-vlak wordt de groene knop bij hover donkerblauw. */
+/* Op het gekleurde hero-vlak wordt de witte knop bij hover een tint donkerder. */
 .mh-offer .mh-offer-hero .mh-offer-btn--primary:hover,
 .mh-offer .mh-offer-hero .mh-offer-btn--primary:focus {
-  border-color: var(--color-primary, #25476B);
-  background: var(--color-primary, #25476B);
-  color: #fff;
-}
-
-.mh-offer .mh-offer-btn--primary:hover,
-.mh-offer .mh-offer-btn--primary:focus {
-  border-color: var(--color-secondary, #25476B);
-  background: var(--color-secondary, #25476B);
+  border-color: var(--color-primary-dark, #1F5670);
+  background: var(--color-primary-dark, #1F5670);
   color: #fff;
 }
 
@@ -162,7 +155,7 @@
 }
 
 .mh-offer .mh-offer-intro a {
-  color: var(--color-secondary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
 }
 
 .mh-offer-intro__heading,
@@ -236,7 +229,7 @@
 }
 
 .mh-offer-contact svg {
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
 }
 
 .mh-offer .mh-offer-contact a {
@@ -246,7 +239,7 @@
 }
 
 .mh-offer .mh-offer-contact a:hover {
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   text-decoration: underline;
 }
 
@@ -268,7 +261,7 @@
 }
 
 .mh-offer .mh-offer-option:hover {
-  background: rgba(37, 71, 107, 0.04);
+  background: rgba(43, 110, 143, 0.04);
   color: var(--color-text, #333);
   transform: translateY(-1px);
 }
@@ -281,7 +274,7 @@
   border: 1px solid var(--color-border, #dedede);
   border-radius: 5px;
   background: #fff;
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
@@ -301,7 +294,7 @@
 }
 
 .mh-offer-option--highlight {
-  background: var(--color-surface-alt, #EEF2F6);
+  background: var(--color-surface-alt, #EEF4F7);
 }
 
 .mh-offer-request__actions {
@@ -351,13 +344,13 @@
 
 .mh-offer-related-card svg {
   flex-shrink: 0;
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
 }
 
 .mh-offer-btn:focus-visible,
 .mh-offer-option:focus-visible,
 .mh-offer-related-card:focus-visible {
-  outline: 2px solid var(--color-secondary, #25476B);
+  outline: 2px solid var(--color-secondary, #2B6E8F);
   outline-offset: 2px;
 }
 

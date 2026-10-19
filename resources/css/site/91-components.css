@@ -50,7 +50,7 @@
 }
 
 .mh-units-catalog__select-option.is-selected {
-  background: #EEF2F6;
+  background: #EEF4F7;
   color: #111;
   font-weight: 600;
 }
@@ -71,7 +71,7 @@
   border: 1px solid var(--color-border, #dedede);
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 14px 34px rgba(37, 71, 107, .08);
+  box-shadow: 0 14px 34px rgba(43, 110, 143, .08);
 }
 
 .mh-form__title {
@@ -123,8 +123,8 @@
 .mh-form__field select:focus,
 .mh-form__field textarea:focus {
   outline: none;
-  border-color: var(--color-secondary, #25476B);
-  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, .22));
+  border-color: var(--color-secondary, #2B6E8F);
+  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(43, 110, 143, .22));
 }
 
 .mh-form__error {
@@ -154,17 +154,17 @@
 }
 
 .mh-form-notice--success {
-  border: 1px solid #6FAA7B;
-  background: #EEF2F6;
-  color: #25476B;
+  border: 1px solid #2B6E8F;
+  background: #EEF4F7;
+  color: #1F5670;
 }
 
 .mh-quote-cta__notice {
   margin: 0 0 12px;
   padding: 10px 14px;
   border-radius: 5px;
-  background: #EEF2F6;
-  color: #25476B;
+  background: #EEF4F7;
+  color: #1F5670;
   font-size: 14px;
 }
 
@@ -191,7 +191,7 @@
   padding: 5px 12px;
   border-radius: 999px;
   background: rgba(191, 227, 150, .3);
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .06em;
@@ -268,7 +268,7 @@
 }
 
 .mh-post__related-card:hover {
-  border-color: var(--color-secondary, #25476B);
+  border-color: var(--color-secondary, #2B6E8F);
   transform: translateY(-2px);
 }
 
@@ -299,7 +299,7 @@
 }
 
 .mh-blog__page-link {
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   font-weight: 600;
   text-decoration: none;
 }
@@ -338,7 +338,7 @@
 }
 
 .mh-search__results a {
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   font-weight: 600;
   font-size: 17px;
 }
@@ -362,7 +362,7 @@
 .mh-gallery-empty {
   aspect-ratio: 3 / 2;
   border-radius: 8px;
-  background: linear-gradient(180deg, #fff 0%, #EEF2F6 100%);
+  background: linear-gradient(180deg, #fff 0%, #EEF4F7 100%);
 }
 
 /* Tegeltitels in [subpage_grid] blijven wit (de Elementor-kit kleurt alle h3's donker). */

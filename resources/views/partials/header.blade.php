@@ -2,7 +2,6 @@
     $mainMenu = \App\Models\MenuItem::tree('main');
     $currentPath = request()->path();
     $quoteCount = app(\App\Services\QuoteCart::class)->count();
-    $searchIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
 @endphp
 <header id="mh-header" class="mh-header" role="banner">
     <div class="mh-header__inner">
@@ -29,15 +28,6 @@
             </ul>
         </nav>
 
-        <div class="mh-header__search mh-header-search">
-            <button type="button" class="mh-header-search__toggle" aria-label="Zoek units" aria-expanded="false" aria-controls="mh-header-search-form">{!! $searchIcon !!}</button>
-            <form id="mh-header-search-form" class="mh-header-search__form" method="get" action="{{ route('search') }}/">
-                <label class="screen-reader-text" for="mh-header-search-input">Zoek units</label>
-                <input id="mh-header-search-input" class="mh-header-search__input" type="search" name="s" placeholder="Zoek units" value="{{ request('s') }}">
-                <button type="submit" class="mh-header-search__submit">Zoeken</button>
-            </form>
-        </div>
-
         <div class="mh-header__divider"></div>
 
         <div class="mh-header__cta">
@@ -47,15 +37,6 @@
                 <a href="{{ route('login') }}" class="mh-header__login">Inloggen</a>
             @endauth
             <a href="{{ url('offerte-aanvragen') }}/" class="mh-btn mh-btn--solid mh-btn--nav-contact">Informatie aanvragen</a>
-        </div>
-
-        <div class="mh-header__mobile-search mh-header-search">
-            <button type="button" class="mh-header-search__toggle mh-header__mobile-search-toggle" aria-label="Zoek units" aria-expanded="false" aria-controls="mh-header-mobile-search-form">{!! $searchIcon !!}</button>
-            <form id="mh-header-mobile-search-form" class="mh-header-search__form mh-header__mobile-search-form" method="get" action="{{ route('search') }}/">
-                <label class="screen-reader-text" for="mh-header-mobile-search-input">Zoek units</label>
-                <input id="mh-header-mobile-search-input" class="mh-header-search__input" type="search" name="s" placeholder="Zoek units" value="{{ request('s') }}">
-                <button type="submit" class="mh-header-search__submit">Zoeken</button>
-            </form>
         </div>
 
         <a href="{{ route('quote.show') }}/" class="mh-header__quote-icon mh-header__quote-icon--always" aria-label="Mijn offerte">

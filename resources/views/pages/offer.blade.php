@@ -17,7 +17,7 @@
 
 @section('content')
 <main id="content" class="mh-offer" aria-labelledby="mh-offer-title">
-    <header class="mh-offer-hero" @if ($landing['image']) style="--mh-offer-hero-image: url('{{ $landing['image'] }}');" @endif>
+    <header class="mh-offer-hero" @if ($landing['image']) style="--mh-offer-hero-image: url('{{ url($landing['image']) }}');" @endif>
         <div class="mh-offer-hero__panel">
             <div class="mh-offer-hero__content">
                 <h1 id="mh-offer-title">{{ $page->title }}</h1>

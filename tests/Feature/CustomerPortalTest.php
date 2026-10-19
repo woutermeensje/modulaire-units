@@ -45,11 +45,11 @@ class CustomerPortalTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_login_page_uses_the_site_header_with_top_bar_and_account_links(): void
+    public function test_login_page_uses_the_site_header_with_account_links(): void
     {
         $this->get(route('login'))
             ->assertOk()
-            ->assertSee('mh-top-bar', false)
+            ->assertDontSee('mh-top-bar', false)
             ->assertSee('id="mh-header"', false)
             ->assertDontSee('>Aanmelden<', false)
             ->assertSee('noindex', false);

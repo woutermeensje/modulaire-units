@@ -37,7 +37,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     gap: 4px;
     max-width: 1200px;
     margin: 48px auto;
-    background: #25476B;
+    background: #2B6E8F;
     border-radius: 5px;
     border: 1px solid #DEDEDE;
     overflow: hidden;
@@ -49,7 +49,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    background: #25476B;
+    background: #2B6E8F;
 }
 
 .mh-blog__hero--main {
@@ -83,7 +83,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 .mh-blog__hero-placeholder {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #25476B 0%, #25476B 100%);
+    background: linear-gradient(135deg, #2B6E8F 0%, #2B6E8F 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,7 +101,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     background: linear-gradient(
         to top,
         rgba(22, 43, 62, 0.9) 0%,
-        rgba(37, 71, 107, 0.45) 50%,
+        rgba(43, 110, 143, 0.45) 50%,
         transparent 100%
     );
 }
@@ -117,8 +117,8 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 
 .mh-blog__hero-cat {
     display: inline-block;
-    background: #6FAA7B;
-    color: #25476B;
+    background: #2B6E8F;
+    color: #1F5670;
     font-family:'Work Sans', sans-serif;
     font-size: 11px;
     font-weight: 700;
@@ -149,7 +149,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__hero-author {
-    color: #6FAA7B;
+    color: #2B6E8F;
     font-weight: 600;
 }
 
@@ -210,7 +210,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__row:hover .mh-blog__row-title {
-    color: #25476B;
+    color: #1F5670;
 }
 
 .mh-blog__row-img-wrap {
@@ -261,7 +261,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-weight: 700;
     letter-spacing: 0;
     text-transform: none;
-    color: #25476B;
+    color: #1F5670;
     margin-bottom: 10px;
     display: block;
 }
@@ -303,7 +303,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__row-author {
-    color: #25476B;
+    color: #1F5670;
     font-weight: 600;
 }
 
@@ -323,21 +323,21 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-family:'Work Sans', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: #25476B;
+    color: #1F5670;
     text-decoration: none;
     padding: 10px 20px;
-    border: 2px solid #25476B;
+    border: 2px solid #2B6E8F;
     border-radius: 5px;
     transition: background 0.2s ease, color 0.2s ease;
 }
 
 .mh-blog__pagination a:hover {
-    background: #25476B;
+    background: #2B6E8F;
     color: #fff;
 }
 
 .mh-sidebar-newsletter {
-    background: #6FAA7B;
+    background: #2B6E8F;
     border-radius: 5px;
     padding: 32px 24px;
     margin-bottom: 16px;
@@ -356,7 +356,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-weight: 600;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: #25476B;
+    color: #1F5670;
     margin: 0 0 8px;
 }
 
@@ -364,7 +364,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-family:'Work Sans', sans-serif;
     font-size: 20px;
     font-weight: 700;
-    color: #25476B;
+    color: #1F5670;
     line-height: 1.25;
     margin: 0 0 20px;
 }
@@ -374,7 +374,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: #25476B;
+    background: #2B6E8F;
     border-radius: 4px;
     font-family:'Work Sans', sans-serif;
     font-size: 15px;
@@ -393,7 +393,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-sidebar-newsletter__btn:hover {
-    background: #25476B;
+    background: #2B6E8F;
     color: #ffffff;
 }
 
@@ -417,7 +417,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-sidebar-link:hover {
-    border-color: #25476B;
+    border-color: #2B6E8F;
     box-shadow: 0 0 0 3px rgba(57, 116, 155, 0.08);
 }
 
@@ -430,7 +430,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     height: 40px;
     background: #EEF3F0;
     border-radius: 50%;
-    color: #25476B;
+    color: #1F5670;
 }
 
 .mh-sidebar-link__icon svg {
@@ -466,7 +466,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     flex-shrink: 0;
     width: 14px;
     height: 14px;
-    color: #25476B;
+    color: #1F5670;
     opacity: 0.5;
     transition: opacity 0.2s ease;
 }

@@ -18,14 +18,14 @@
 		gap: 14px;
 		background: #f0fdf4;
 		border: 1px solid #86efac;
-		border-left: 4px solid #6FAA7B;
+		border-left: 4px solid #2B6E8F;
 		border-radius: 10px;
 		padding: 20px 24px;
 		margin-bottom: 32px;
 	}
 	.mh-qp__sent-icon {
 		flex-shrink: 0;
-		color: #6FAA7B;
+		color: #2B6E8F;
 		margin-top: 1px;
 	}
 	.mh-qp__sent-title {
@@ -69,7 +69,7 @@
 		align-items: center;
 		height: 44px;
 		padding: 0 24px;
-		background: var(--color-primary, #25476B);
+		background: var(--color-primary, #2B6E8F);
 		color: #fff;
 		border-radius: 8px;
 		font-weight: 700;
@@ -77,7 +77,7 @@
 		text-decoration: none;
 		transition: background 0.15s;
 	}
-	.mh-qp__empty a:hover { background: var(--color-secondary, #25476B); }
+	.mh-qp__empty a:hover { background: var(--color-secondary, #2B6E8F); }
 
 	/* ── Sectie-kaarten ── */
 	.mh-qp__card {
@@ -112,7 +112,7 @@
 		min-width: 22px;
 		height: 22px;
 		padding: 0 6px;
-		background: var(--color-primary, #25476B);
+		background: var(--color-primary, #2B6E8F);
 		color: #fff;
 		border-radius: 999px;
 		font-size: 11px;
@@ -169,7 +169,7 @@
 		text-overflow: ellipsis;
 		margin-bottom: 2px;
 	}
-	.mh-qp__product-name:hover { color: var(--color-primary, #25476B); }
+	.mh-qp__product-name:hover { color: var(--color-primary-text, #2B6E8F); }
 	.mh-qp__product-cat {
 		font-size: 12px;
 		color: #999;
@@ -210,7 +210,7 @@
 	}
 	.mh-qp__qty-btn:hover {
 		background: var(--color-bg, #f5f5f5);
-		color: var(--color-primary, #25476B);
+		color: var(--color-primary-text, #2B6E8F);
 	}
 	.mh-qp__qty-btn svg { display: block; pointer-events: none; }
 	.mh-qp__qty-input {
@@ -290,17 +290,17 @@
 		white-space: nowrap;
 	}
 	.mh-qp__btn--primary {
-		background: var(--color-primary, #25476B);
+		background: var(--color-primary, #2B6E8F);
 		color: #fff;
-		border-color: var(--color-primary, #25476B);
+		border-color: var(--color-primary, #2B6E8F);
 	}
-	.mh-qp__btn--primary:hover { background: var(--color-secondary, #25476B); border-color: var(--color-secondary, #25476B); color: #fff; }
+	.mh-qp__btn--primary:hover { background: var(--color-secondary, #2B6E8F); border-color: var(--color-secondary, #2B6E8F); color: #fff; }
 	.mh-qp__btn--outline {
 		background: #fff;
-		color: var(--color-primary, #25476B);
+		color: var(--color-primary-text, #2B6E8F);
 		border-color: var(--color-border, #dedede);
 	}
-	.mh-qp__btn--outline:hover { border-color: var(--color-primary, #25476B); }
+	.mh-qp__btn--outline:hover { border-color: var(--color-primary, #2B6E8F); }
 
 	/* ── Formulier ── */
 	.mh-qp__fields {
@@ -341,8 +341,8 @@
 	.mh-qp__input:focus,
 	.mh-qp__textarea:focus {
 		outline: none;
-		border-color: var(--color-secondary, #25476B);
-		box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
+		border-color: var(--color-secondary, #2B6E8F);
+		box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(43, 110, 143, 0.22));
 	}
 	.mh-qp__textarea { resize: vertical; min-height: 100px; }
 

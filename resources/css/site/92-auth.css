@@ -14,7 +14,7 @@
   background: var(--color-surface, #fff);
   border: 1px solid var(--color-border, #dedede);
   border-radius: 8px;
-  box-shadow: 0 8px 28px var(--color-shadow, rgba(37, 71, 107, 0.12));
+  box-shadow: 0 8px 28px var(--color-shadow, rgba(43, 110, 143, 0.12));
 }
 
 .mh-auth .form-container--wide {
@@ -25,7 +25,7 @@
   margin: 0 0 18px;
   font-size: 28px;
   font-weight: 600;
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
 }
 
 .mh-auth .form-section {
@@ -65,8 +65,8 @@
 
 .mh-auth .basis-input:focus {
   outline: none;
-  border-color: var(--color-secondary, #25476B);
-  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
+  border-color: var(--color-secondary, #2B6E8F);
+  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(43, 110, 143, 0.22));
 }
 
 .mh-auth .portal-checkbox {
@@ -78,7 +78,7 @@
 }
 
 .mh-auth .portal-checkbox a {
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   text-decoration: underline;
 }
 
@@ -87,9 +87,9 @@
   min-height: 44px;
   margin-top: 6px;
   padding: 10px 20px;
-  border: 1px solid #25476B;
+  border: 1px solid #2B6E8F;
   border-radius: 8px;
-  background: #25476B;
+  background: #2B6E8F;
   color: #fff;
   font-size: 15px;
   font-weight: 500;
@@ -97,8 +97,8 @@
 
 .mh-auth .btn-primary:hover,
 .mh-auth .btn-primary:focus {
-  border-color: var(--color-primary, #25476B);
-  background: var(--color-primary, #25476B);
+  border-color: var(--color-primary, #2B6E8F);
+  background: var(--color-primary, #2B6E8F);
   color: #fff;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .mh-auth .auth-links a {
-  color: var(--color-primary, #25476B);
+  color: var(--color-primary-text, #2B6E8F);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;

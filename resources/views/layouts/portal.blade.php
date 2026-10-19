@@ -15,7 +15,8 @@
     <link rel="icon" href="{{ asset('images/favicon-32x32.png') }}" sizes="32x32">
     <link rel="apple-touch-icon" href="{{ asset('images/favicon-180x180.png') }}">
 
-    @fonts
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap&amp;subset=latin">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">

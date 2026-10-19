@@ -12,7 +12,7 @@
     position: relative;
     width: 100%;
     height: clamp(300px, 38vw, 540px);
-    background-color: var(--color-primary, #25476B);
+    background-color: var(--color-primary, #2B6E8F);
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -26,7 +26,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(37, 71, 107, 0.78);
+    background: rgba(31, 86, 112, 0.78);
     z-index: 1;
     pointer-events: none;
 }
@@ -44,7 +44,7 @@
     display: inline-block;
     margin: 0 0 14px;
     padding-bottom: 6px;
-    border-bottom: 3px solid var(--color-secondary, #25476B);
+    border-bottom: 3px solid var(--color-secondary, #2B6E8F);
     font-family:'Work Sans', sans-serif;
     font-size: 13px;
     font-weight: 700;
@@ -107,29 +107,29 @@
 }
 
 .mh-lp__btn--primary {
-    background: linear-gradient(135deg, var(--color-secondary, #25476B) 0%, var(--color-secondary, #25476B) 46%, var(--color-secondary, #25476B) 100%);
-    border-color: var(--color-secondary, #25476B);
-    color: var(--color-primary, #25476B);
-    box-shadow: 0 12px 24px rgba(37, 71, 107, 0.20);
+    background: linear-gradient(135deg, var(--color-secondary, #2B6E8F) 0%, var(--color-secondary, #2B6E8F) 46%, var(--color-secondary, #2B6E8F) 100%);
+    border-color: var(--color-secondary, #2B6E8F);
+    color: var(--color-primary-text, #2B6E8F);
+    box-shadow: 0 12px 24px rgba(43, 110, 143, 0.20);
 }
 
 .mh-lp__btn--primary:hover {
-    background: linear-gradient(135deg, var(--color-secondary, #25476B) 0%, var(--color-secondary, #25476B) 52%, var(--color-secondary, #25476B) 100%);
-    border-color: var(--color-secondary, #25476B);
+    background: linear-gradient(135deg, var(--color-secondary, #2B6E8F) 0%, var(--color-secondary, #2B6E8F) 52%, var(--color-secondary, #2B6E8F) 100%);
+    border-color: var(--color-secondary, #2B6E8F);
     color: #ffffff;
 }
 
 .mh-lp__btn--outline {
-    background: var(--color-button, #6FAA7B);
-    border-color: var(--color-button, #6FAA7B);
+    background: var(--color-button, #2B6E8F);
+    border-color: var(--color-button, #2B6E8F);
     color: #ffffff;
     font-family:'Work Sans', sans-serif;
     font-weight: 600;
 }
 
 .mh-lp__btn--outline:hover {
-    background: var(--color-button, #6FAA7B);
-    border-color: var(--color-button, #6FAA7B);
+    background: var(--color-button, #2B6E8F);
+    border-color: var(--color-button, #2B6E8F);
     color: #ffffff;
 }
 
@@ -192,7 +192,7 @@
     position: relative !important;
     width: 100% !important;
     height: clamp(300px, 38vw, 540px) !important;
-    background-color: var(--color-primary, #25476B) !important;
+    background-color: var(--color-primary, #2B6E8F) !important;
     background-size: cover !important;
     background-position: center !important;
     overflow: hidden !important;
@@ -206,7 +206,7 @@
     content: '' !important;
     position: absolute !important;
     inset: 0 !important;
-    background: rgba(37, 71, 107, 0.78) !important;
+    background: rgba(31, 86, 112, 0.78) !important;
     z-index: 1 !important;
     pointer-events: none !important;
 }
@@ -225,7 +225,7 @@
     display: inline-block !important;
     margin: 0 0 14px !important;
     padding-bottom: 6px !important;
-    border-bottom: 3px solid var(--color-secondary, #25476B) !important;
+    border-bottom: 3px solid var(--color-secondary, #2B6E8F) !important;
     font-family:'Work Sans', sans-serif !important;
     font-size: 13px !important;
     font-weight: 700 !important;
@@ -288,8 +288,8 @@
 }
 
 .mh-home-hero .mh-lp__btn--outline {
-    background: var(--color-button, #6FAA7B) !important;
-    border-color: var(--color-button, #6FAA7B) !important;
+    background: var(--color-button, #2B6E8F) !important;
+    border-color: var(--color-button, #2B6E8F) !important;
     color: #ffffff !important;
     font-family:'Work Sans', sans-serif !important;
     font-weight: 600 !important;
@@ -297,8 +297,8 @@
 
 .mh-home-hero .mh-lp__btn--outline:hover,
 .mh-home-hero .mh-lp__btn--outline:focus {
-    background: var(--color-button, #6FAA7B) !important;
-    border-color: var(--color-button, #6FAA7B) !important;
+    background: var(--color-button, #2B6E8F) !important;
+    border-color: var(--color-button, #2B6E8F) !important;
     color: #ffffff !important;
 }
 

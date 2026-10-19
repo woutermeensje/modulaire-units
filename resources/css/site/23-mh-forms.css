@@ -25,7 +25,7 @@
     font-family:'Work Sans', sans-serif;
     font-size: 24px;
     font-weight: 700;
-    color: var(--color-primary, #25476B);
+    color: var(--color-primary-text, #2B6E8F);
     margin: 0 0 6px;
     line-height: 1.2;
 }
@@ -80,7 +80,7 @@
     margin-bottom: 6px;
     line-height: 1.4;
 }
-.mh-form .mh-form__req { color: var(--color-secondary, #25476B); margin-left: 2px; }
+.mh-form .mh-form__req { color: var(--color-primary-text, #2B6E8F); margin-left: 2px; }
 .mh-form .mh-form__opt { font-size: 12px; font-weight: 400; color: var(--color-text-soft, #333); margin-left: 4px; }
 
 /* ── Inputs ──────────────────────────────────────────────── */
@@ -102,8 +102,8 @@
     height: auto;
 }
 .mh-form .mh-form__input:focus {
-    border-color: var(--color-secondary, #25476B);
-    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
+    border-color: var(--color-secondary, #2B6E8F);
+    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(43, 110, 143, 0.22));
     outline: none;
 }
 .mh-form .mh-form__input::placeholder {
@@ -125,7 +125,7 @@
     display: block;
     line-height: 1.5;
 }
-.mh-form .mh-form__hint a { color: var(--color-primary, #25476B); text-decoration: none; }
+.mh-form .mh-form__hint a { color: var(--color-primary-text, #2B6E8F); text-decoration: none; }
 .mh-form .mh-form__hint a:hover { text-decoration: underline; }
 
 /* ── Footer & submit ─────────────────────────────────────── */
@@ -144,8 +144,8 @@
     font-family:'Work Sans', sans-serif;
     font-size: 15px;
     font-weight: 600;
-    background-color: var(--color-primary, #25476B);
-    border: 2px solid var(--color-primary, #25476B);
+    background-color: var(--color-primary, #2B6E8F);
+    border: 2px solid var(--color-primary, #2B6E8F);
     color: #fff;
     padding: 10px 28px;
     border-radius: 5px;
@@ -155,8 +155,8 @@
     transition: background-color .15s ease, border-color .15s ease;
 }
 .mh-form .mh-form__submit:hover {
-    background-color: var(--color-secondary, #25476B);
-    border-color: var(--color-secondary, #25476B);
+    background-color: var(--color-secondary, #2B6E8F);
+    border-color: var(--color-secondary, #2B6E8F);
 }
 .mh-form .mh-form__footer-note {
     font-family:'Work Sans', sans-serif;
@@ -166,7 +166,7 @@
     text-align: center;
     margin: 0;
 }
-.mh-form .mh-form__footer-note a { color: var(--color-primary, #25476B); }
+.mh-form .mh-form__footer-note a { color: var(--color-primary-text, #2B6E8F); }
 
 /* ── Notices ─────────────────────────────────────────────── */
 .mh-form-notice {
@@ -213,14 +213,14 @@
 .gform_wrapper.gravity-theme input:focus,
 .gform_wrapper.gravity-theme textarea:focus,
 .gform_wrapper.gravity-theme select:focus {
-    border-color: var(--color-secondary, #25476B);
-    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
+    border-color: var(--color-secondary, #2B6E8F);
+    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(43, 110, 143, 0.22));
     outline: none;
 }
 .gform_wrapper.gravity-theme .gform_footer input[type="submit"],
 .gform_wrapper.gravity-theme .gform_page_footer input[type="submit"] {
-    background-color: var(--color-primary, #25476B);
-    border-color: var(--color-primary, #25476B);
+    background-color: var(--color-primary, #2B6E8F);
+    border-color: var(--color-primary, #2B6E8F);
     color: #fff;
     font-family:'Work Sans', sans-serif;
     font-size: 15px;
@@ -231,8 +231,8 @@
     transition: background-color .15s ease;
 }
 .gform_wrapper.gravity-theme .gform_footer input[type="submit"]:hover {
-    background-color: var(--color-secondary, #25476B);
-    border-color: var(--color-secondary, #25476B);
+    background-color: var(--color-secondary, #2B6E8F);
+    border-color: var(--color-secondary, #2B6E8F);
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
