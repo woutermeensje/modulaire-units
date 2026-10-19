@@ -1,17 +1,17 @@
 /* source: wp-content/plugins/mh-units/assets/css/units.css */
 :root {
   --mh-units-primary: #25476B;
-  --mh-units-secondary: #39749B;
-  --mh-units-ocean: #4188AA;
-  --mh-units-turquoise: #559EA3;
-  --mh-units-accent: #8AC697;
-  --mh-units-highlight: #BFE396;
-  --mh-units-lime: #CCDA91;
+  --mh-units-secondary: #25476B;
+  --mh-units-ocean: #25476B;
+  --mh-units-turquoise: #25476B;
+  --mh-units-accent: #6FAA7B;
+  --mh-units-highlight: #6FAA7B;
+  --mh-units-lime: #6FAA7B;
   --mh-units-surface: #FFFFFF;
-  --mh-units-surface-alt: #F1F8EE;
+  --mh-units-surface-alt: #EEF2F6;
   --mh-units-text: #25476B;
-  --mh-units-text-soft: #39749B;
-  --mh-units-bg: #F7FBF7;
+  --mh-units-text-soft: #25476B;
+  --mh-units-bg: #FBFAF8;
 }
 
 .mh-units-catalog__intro {
@@ -127,7 +127,7 @@
   width: 100%;
   min-height: 56px;
   padding: 0 20px;
-  border: 1px solid rgba(65, 136, 170, 0.28);
+  border: 1px solid rgba(37, 71, 107, 0.28);
   border-radius: 5px;
   background: #fff;
   color: #333;
@@ -141,7 +141,7 @@
 
 .mh-units-catalog__search:hover,
 .mh-units-catalog__select-btn:hover {
-  border-color: rgba(65, 136, 170, 0.45);
+  border-color: rgba(37, 71, 107, 0.45);
   box-shadow: 0 12px 30px rgba(37, 71, 107, 0.12);
 }
 
@@ -150,7 +150,7 @@
 .mh-units-catalog__select-search:focus {
   outline: none;
   border-color: var(--mh-units-turquoise);
-  box-shadow: 0 0 0 3px rgba(85, 158, 163, 0.16), 0 12px 30px rgba(37, 71, 107, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 71, 107, 0.16), 0 12px 30px rgba(37, 71, 107, 0.12);
 }
 
 .mh-units-catalog__select {
@@ -166,7 +166,7 @@
   width: 100%;
   min-height: 56px;
   padding: 0 20px;
-  border: 1px solid rgba(65, 136, 170, 0.28);
+  border: 1px solid rgba(37, 71, 107, 0.28);
   border-radius: 5px;
   background: #fff;
   color: #333;
@@ -270,7 +270,7 @@
 }
 
 .mh-units-catalog__select-option.is-selected {
-  background: #f1f8ee;
+  background: #EEF2F6;
   color: #111;
   font-weight: 600;
 }
@@ -631,8 +631,8 @@
 
 .mh-units-grid .mh-unit-card a.mh-unit-card__action-button--quote-added,
 .mh-units-grid .mh-unit-card .mh-unit-card__quote--added {
-  border-color: #8AC697 !important;
-  background: #f1f8ee !important;
+  border-color: #6FAA7B !important;
+  background: #EEF2F6 !important;
   color: #2c6a4d !important;
 }
 
@@ -644,8 +644,8 @@
 }
 
 .mh-unit-card__quote--added {
-  border-color: #8AC697;
-  background: #f1f8ee;
+  border-color: #6FAA7B;
+  background: #EEF2F6;
   color: #2c6a4d;
 }
 

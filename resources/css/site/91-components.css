@@ -50,7 +50,7 @@
 }
 
 .mh-units-catalog__select-option.is-selected {
-  background: #f1f8ee;
+  background: #EEF2F6;
   color: #111;
   font-weight: 600;
 }
@@ -123,8 +123,8 @@
 .mh-form__field select:focus,
 .mh-form__field textarea:focus {
   outline: none;
-  border-color: var(--color-secondary, #4188AA);
-  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(65, 136, 170, .22));
+  border-color: var(--color-secondary, #25476B);
+  box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, .22));
 }
 
 .mh-form__error {
@@ -154,8 +154,8 @@
 }
 
 .mh-form-notice--success {
-  border: 1px solid #BFE396;
-  background: #F1F8EE;
+  border: 1px solid #6FAA7B;
+  background: #EEF2F6;
   color: #25476B;
 }
 
@@ -163,7 +163,7 @@
   margin: 0 0 12px;
   padding: 10px 14px;
   border-radius: 5px;
-  background: #F1F8EE;
+  background: #EEF2F6;
   color: #25476B;
   font-size: 14px;
 }
@@ -268,7 +268,7 @@
 }
 
 .mh-post__related-card:hover {
-  border-color: var(--color-secondary, #4188AA);
+  border-color: var(--color-secondary, #25476B);
   transform: translateY(-2px);
 }
 
@@ -362,7 +362,7 @@
 .mh-gallery-empty {
   aspect-ratio: 3 / 2;
   border-radius: 8px;
-  background: linear-gradient(180deg, #fff 0%, #F1F8EE 100%);
+  background: linear-gradient(180deg, #fff 0%, #EEF2F6 100%);
 }
 
 /* Tegeltitels in [subpage_grid] blijven wit (de Elementor-kit kleurt alle h3's donker). */

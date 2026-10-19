@@ -80,7 +80,7 @@
     margin-bottom: 6px;
     line-height: 1.4;
 }
-.mh-form .mh-form__req { color: var(--color-secondary, #4188AA); margin-left: 2px; }
+.mh-form .mh-form__req { color: var(--color-secondary, #25476B); margin-left: 2px; }
 .mh-form .mh-form__opt { font-size: 12px; font-weight: 400; color: var(--color-text-soft, #333); margin-left: 4px; }
 
 /* ── Inputs ──────────────────────────────────────────────── */
@@ -102,8 +102,8 @@
     height: auto;
 }
 .mh-form .mh-form__input:focus {
-    border-color: var(--color-secondary, #4188AA);
-    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(85, 158, 163, 0.22));
+    border-color: var(--color-secondary, #25476B);
+    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
     outline: none;
 }
 .mh-form .mh-form__input::placeholder {
@@ -155,8 +155,8 @@
     transition: background-color .15s ease, border-color .15s ease;
 }
 .mh-form .mh-form__submit:hover {
-    background-color: var(--color-secondary, #4188AA);
-    border-color: var(--color-secondary, #4188AA);
+    background-color: var(--color-secondary, #25476B);
+    border-color: var(--color-secondary, #25476B);
 }
 .mh-form .mh-form__footer-note {
     font-family:'Work Sans', sans-serif;
@@ -213,8 +213,8 @@
 .gform_wrapper.gravity-theme input:focus,
 .gform_wrapper.gravity-theme textarea:focus,
 .gform_wrapper.gravity-theme select:focus {
-    border-color: var(--color-secondary, #4188AA);
-    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(85, 158, 163, 0.22));
+    border-color: var(--color-secondary, #25476B);
+    box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
     outline: none;
 }
 .gform_wrapper.gravity-theme .gform_footer input[type="submit"],
@@ -231,8 +231,8 @@
     transition: background-color .15s ease;
 }
 .gform_wrapper.gravity-theme .gform_footer input[type="submit"]:hover {
-    background-color: var(--color-secondary, #4188AA);
-    border-color: var(--color-secondary, #4188AA);
+    background-color: var(--color-secondary, #25476B);
+    border-color: var(--color-secondary, #25476B);
 }
 
 /* ── Responsive ──────────────────────────────────────────── */

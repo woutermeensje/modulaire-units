@@ -38,7 +38,7 @@
   z-index: 2;
   width: min(64%, 980px);
   min-height: 500px;
-  background: #39749B;
+  background: #25476B;
   color: #fff;
   clip-path: polygon(0 0, 86% 0, 70% 100%, 0 100%);
 }
@@ -84,7 +84,7 @@
   justify-content: center;
   min-height: 44px;
   padding: 0.75rem 1.25rem;
-  border: 1px solid #39749B;
+  border: 1px solid #25476B;
   border-radius: 8px;
   font-size: 15px;
   font-weight: 500;
@@ -100,13 +100,13 @@
 
 .mh-offer .mh-offer-btn--primary,
 .mh-offer .mh-offer-btn--primary:visited {
-  background: #39749B;
+  background: #25476B;
   color: #fff;
 }
 
 .mh-offer .mh-offer-hero .mh-offer-btn--primary {
-  border-color: var(--color-button, #75B77D);
-  background: var(--color-button, #75B77D);
+  border-color: var(--color-button, #6FAA7B);
+  background: var(--color-button, #6FAA7B);
   color: #fff;
 }
 
@@ -120,8 +120,8 @@
 
 .mh-offer .mh-offer-btn--primary:hover,
 .mh-offer .mh-offer-btn--primary:focus {
-  border-color: var(--color-secondary, #4188AA);
-  background: var(--color-secondary, #4188AA);
+  border-color: var(--color-secondary, #25476B);
+  background: var(--color-secondary, #25476B);
   color: #fff;
 }
 
@@ -162,7 +162,7 @@
 }
 
 .mh-offer .mh-offer-intro a {
-  color: var(--color-secondary, #4188AA);
+  color: var(--color-secondary, #25476B);
 }
 
 .mh-offer-intro__heading,
@@ -301,7 +301,7 @@
 }
 
 .mh-offer-option--highlight {
-  background: var(--color-surface-alt, #F1F8EE);
+  background: var(--color-surface-alt, #EEF2F6);
 }
 
 .mh-offer-request__actions {
@@ -357,7 +357,7 @@
 .mh-offer-btn:focus-visible,
 .mh-offer-option:focus-visible,
 .mh-offer-related-card:focus-visible {
-  outline: 2px solid var(--color-secondary, #4188AA);
+  outline: 2px solid var(--color-secondary, #25476B);
   outline-offset: 2px;
 }
 

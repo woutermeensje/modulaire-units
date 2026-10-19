@@ -140,7 +140,7 @@
         align-items: center;
         padding: 5px 14px;
         background: #fff;
-        border: 1px solid var(--color-border-strong, #8AC697);
+        border: 1px solid var(--color-border-strong, #6FAA7B);
         border-radius: 999px;
         font-family:'Work Sans', sans-serif;
         font-size: 13px;
@@ -164,7 +164,7 @@
         font-family:'Work Sans', sans-serif;
         font-size: 13px;
         font-weight: 600;
-        color: var(--color-text-soft, #39749B);
+        color: var(--color-text-soft, #25476B);
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin: 0 0 10px;
@@ -181,7 +181,7 @@
     .mhu-single-page .mh-qty-stepper {
         display: flex !important;
         align-items: center !important;
-        border: 1px solid var(--color-border, #BFE396) !important;
+        border: 1px solid var(--color-border, #6FAA7B) !important;
         border-radius: 8px !important;
         overflow: hidden !important;
         background: #fff !important;
@@ -215,8 +215,8 @@
         width: 44px !important;
         height: 100% !important;
         border: none !important;
-        border-left: 1px solid var(--color-border, #BFE396) !important;
-        border-right: 1px solid var(--color-border, #BFE396) !important;
+        border-left: 1px solid var(--color-border, #6FAA7B) !important;
+        border-right: 1px solid var(--color-border, #6FAA7B) !important;
         padding: 0 !important;
         font-family:'Work Sans', sans-serif !important;
         font-size: 15px !important;
@@ -251,7 +251,7 @@
     }
 
     .mhu-single-page .mh-quote-fallback-btn:hover {
-        background: var(--color-primary-hover, #325F8D) !important;
+        background: var(--color-primary-hover, #25476B) !important;
         color: #fff !important;
     }
 
@@ -272,7 +272,7 @@
     }
 
     .mhu-single-page .mh-contact-item:hover {
-        color: var(--color-secondary, #39749B);
+        color: var(--color-secondary, #25476B);
     }
 
     .mhu-single-page .mh-intro-text {
@@ -317,7 +317,7 @@
     }
 
     .mhu-single-page .mh-price-card__icon {
-        color: var(--color-secondary, #39749B);
+        color: var(--color-secondary, #25476B);
         flex-shrink: 0;
     }
 
@@ -325,7 +325,7 @@
         font-family:'Work Sans', sans-serif;
         font-size: 12px;
         font-weight: 600;
-        color: var(--color-secondary, #39749B);
+        color: var(--color-secondary, #25476B);
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }

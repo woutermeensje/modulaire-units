@@ -83,7 +83,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 .mh-blog__hero-placeholder {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #4188AA 0%, #25476B 100%);
+    background: linear-gradient(135deg, #25476B 0%, #25476B 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -117,7 +117,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 
 .mh-blog__hero-cat {
     display: inline-block;
-    background: #BFE396;
+    background: #6FAA7B;
     color: #25476B;
     font-family:'Work Sans', sans-serif;
     font-size: 11px;
@@ -149,7 +149,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__hero-author {
-    color: #BFE396;
+    color: #6FAA7B;
     font-weight: 600;
 }
 
@@ -210,7 +210,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__row:hover .mh-blog__row-title {
-    color: #39749B;
+    color: #25476B;
 }
 
 .mh-blog__row-img-wrap {
@@ -261,7 +261,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-weight: 700;
     letter-spacing: 0;
     text-transform: none;
-    color: #39749B;
+    color: #25476B;
     margin-bottom: 10px;
     display: block;
 }
@@ -303,7 +303,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__row-author {
-    color: #39749B;
+    color: #25476B;
     font-weight: 600;
 }
 
@@ -323,21 +323,21 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-family:'Work Sans', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: #39749B;
+    color: #25476B;
     text-decoration: none;
     padding: 10px 20px;
-    border: 2px solid #39749B;
+    border: 2px solid #25476B;
     border-radius: 5px;
     transition: background 0.2s ease, color 0.2s ease;
 }
 
 .mh-blog__pagination a:hover {
-    background: #39749B;
+    background: #25476B;
     color: #fff;
 }
 
 .mh-sidebar-newsletter {
-    background: #BFE396;
+    background: #6FAA7B;
     border-radius: 5px;
     padding: 32px 24px;
     margin-bottom: 16px;
@@ -393,7 +393,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-sidebar-newsletter__btn:hover {
-    background: #325F8D;
+    background: #25476B;
     color: #ffffff;
 }
 
@@ -417,7 +417,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-sidebar-link:hover {
-    border-color: #39749B;
+    border-color: #25476B;
     box-shadow: 0 0 0 3px rgba(57, 116, 155, 0.08);
 }
 
@@ -430,7 +430,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     height: 40px;
     background: #EEF3F0;
     border-radius: 50%;
-    color: #39749B;
+    color: #25476B;
 }
 
 .mh-sidebar-link__icon svg {
@@ -466,7 +466,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     flex-shrink: 0;
     width: 14px;
     height: 14px;
-    color: #39749B;
+    color: #25476B;
     opacity: 0.5;
     transition: opacity 0.2s ease;
 }

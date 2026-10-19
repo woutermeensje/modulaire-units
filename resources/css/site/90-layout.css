@@ -5,7 +5,7 @@
 body {
   margin: 0;
   font-family: 'Work Sans', sans-serif;
-  background: var(--color-bg, #F7FBF7);
+  background: var(--color-bg, #FBFAF8);
   color: var(--color-text, #333);
 }
 
@@ -43,8 +43,8 @@ button.mh-btn--solid {
   min-height: 44px;
   padding: 10px 26px !important;
   border-radius: 8px !important;
-  border-color: #39749B !important;
-  background: #39749B !important;
+  border-color: #25476B !important;
+  background: #25476B !important;
   color: #fff !important;
   font-size: 17px !important;
   font-weight: 700 !important;
@@ -65,9 +65,42 @@ a.mh-btn--solid.mh-btn--nav-contact:hover {
   font-weight: 500 !important;
 }
 
+/* Kleuren: alleen de primaire kleur (#25476B) en de groene kleur uit het logo-icoon (#6FAA7B) als uitgelichte kleur.
+   Knoppen zijn primair en worden bij hover groen. */
+:root {
+  --color-accent: #6FAA7B;
+}
+
+.mh-btn--solid:hover,
+.mh-btn--solid:focus,
+a.mh-btn--solid:hover,
+a.mh-btn--solid:focus,
+a.mh-btn--solid.mh-btn--nav-contact:hover,
+a.mh-btn--solid.mh-btn--nav-contact:focus,
+.mh-header .mh-btn--nav-contact:hover,
+.mh-header .mh-btn--nav-contact:focus,
+.mh-mobile-nav .mh-btn--nav-contact:hover,
+.mh-mobile-nav .mh-btn--nav-contact:focus,
+.mh-btn--accent:hover,
+.mh-btn--accent:focus,
+a.mh-btn--accent:hover,
+a.mh-btn--accent:focus,
+.mh-cta-bar .mh-cta-bar__btn:hover,
+.mh-cta-bar .mh-cta-bar__btn:focus,
+.mh-form .mh-form__submit:hover,
+.mh-form .mh-form__submit:focus,
+.mh-offer .mh-offer-request .mh-offer-btn--primary:hover,
+.mh-offer .mh-offer-request .mh-offer-btn--primary:focus,
+.mh-auth .btn-primary:hover,
+.mh-auth .btn-primary:focus {
+  border-color: var(--color-accent) !important;
+  background: var(--color-accent) !important;
+  color: #fff !important;
+}
+
 /* ── Balk boven de header (zelfde opbouw als de partnerbalk van Fondsen.org) ── */
 .mh-top-bar {
-  background: var(--color-surface-alt, #F1F8EE);
+  background: var(--color-surface-alt, #EEF2F6);
   border-bottom: 1px solid var(--color-border, #dedede);
 }
 
@@ -203,7 +236,7 @@ a.mh-btn--solid.mh-btn--nav-contact:hover {
 }
 
 .mh-footer a:hover {
-  color: var(--e-global-color-5e977a0, #8AC697);
+  color: var(--e-global-color-5e977a0, #6FAA7B);
 }
 
 .mh-footer__bottom {

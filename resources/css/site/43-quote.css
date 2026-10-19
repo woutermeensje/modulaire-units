@@ -18,14 +18,14 @@
 		gap: 14px;
 		background: #f0fdf4;
 		border: 1px solid #86efac;
-		border-left: 4px solid #16a34a;
+		border-left: 4px solid #6FAA7B;
 		border-radius: 10px;
 		padding: 20px 24px;
 		margin-bottom: 32px;
 	}
 	.mh-qp__sent-icon {
 		flex-shrink: 0;
-		color: #16a34a;
+		color: #6FAA7B;
 		margin-top: 1px;
 	}
 	.mh-qp__sent-title {
@@ -77,7 +77,7 @@
 		text-decoration: none;
 		transition: background 0.15s;
 	}
-	.mh-qp__empty a:hover { background: var(--color-secondary, #4188AA); }
+	.mh-qp__empty a:hover { background: var(--color-secondary, #25476B); }
 
 	/* ── Sectie-kaarten ── */
 	.mh-qp__card {
@@ -294,7 +294,7 @@
 		color: #fff;
 		border-color: var(--color-primary, #25476B);
 	}
-	.mh-qp__btn--primary:hover { background: var(--color-secondary, #4188AA); border-color: var(--color-secondary, #4188AA); color: #fff; }
+	.mh-qp__btn--primary:hover { background: var(--color-secondary, #25476B); border-color: var(--color-secondary, #25476B); color: #fff; }
 	.mh-qp__btn--outline {
 		background: #fff;
 		color: var(--color-primary, #25476B);
@@ -341,8 +341,8 @@
 	.mh-qp__input:focus,
 	.mh-qp__textarea:focus {
 		outline: none;
-		border-color: var(--color-secondary, #4188AA);
-		box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(85, 158, 163, 0.22));
+		border-color: var(--color-secondary, #25476B);
+		box-shadow: 0 0 0 3px var(--color-focus-ring, rgba(37, 71, 107, 0.22));
 	}
 	.mh-qp__textarea { resize: vertical; min-height: 100px; }
 
