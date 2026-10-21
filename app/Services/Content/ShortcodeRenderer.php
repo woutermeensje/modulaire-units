@@ -7,27 +7,25 @@ use App\Models\TeamMember;
 use App\Models\Unit;
 use App\Models\UnitTerm;
 use App\Models\Vacancy;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /**
  * Renders the dynamic blocks inside page content, written as WordPress style shortcodes:
  *
- *   [units_catalog title="Bouwunits" type="bouw-unit"]   filterable units overview
+ *   [units_catalog ...]                                 removed overview; old tags in content render nothing
  *   [units_grid type="kantoorunit" limit="3"]           plain grid of unit cards
  *   [subpage_grid parent="kopen" columns="3"]           image tiles of the child pages of a page
  *   [team columns="3"]                                  team members
  *   [vacatures]                                         open vacancies
  *   [informatie_formulier]                              information request form
+ *   [werkwijze]                                         the steps of how we work, from first contact to pick-up
  */
 class ShortcodeRenderer
 {
     /** @var list<string> */
-    public const SHORTCODES = ['units_catalog', 'units_grid', 'subpage_grid', 'team', 'vacatures', 'informatie_formulier'];
+    public const SHORTCODES = ['units_catalog', 'units_grid', 'subpage_grid', 'team', 'vacatures', 'informatie_formulier', 'werkwijze'];
 
     private ?Page $page = null;
-
-    public function __construct(private Request $request) {}
 
     public function render(?string $content, ?Page $page = null): string
     {
@@ -43,12 +41,13 @@ class ShortcodeRenderer
             $attributes = $this->parseAttributes($match[2]);
 
             return match (strtolower($match[1])) {
-                'units_catalog' => $this->unitsCatalog($attributes),
+                'units_catalog' => '',
                 'units_grid' => $this->unitsGrid($attributes),
                 'subpage_grid' => $this->subpageGrid($attributes),
                 'team' => $this->team($attributes),
                 'vacatures' => $this->vacancies(),
                 'informatie_formulier' => view('shortcodes.information-form', ['attributes' => $attributes])->render(),
+                'werkwijze' => view('shortcodes.work-steps')->render(),
             };
         }, $content);
     }
@@ -61,38 +60,6 @@ class ShortcodeRenderer
         preg_match_all('/([a-z_]+)="([^"]*)"/i', $raw, $matches, PREG_SET_ORDER);
 
         return collect($matches)->mapWithKeys(fn (array $m): array => [strtolower($m[1]) => html_entity_decode($m[2])])->all();
-    }
-
-    /**
-     * @param  array<string, string>  $attributes
-     */
-    private function unitsCatalog(array $attributes): string
-    {
-        $presetTypes = array_filter(explode(',', $attributes['type'] ?? ''));
-        $selectedTypes = $this->request->has('mh_units_filter')
-            ? array_values(array_filter((array) $this->request->input('mh_type', [])))
-            : $presetTypes;
-        $search = trim((string) $this->request->input('mh_search', ''));
-
-        $units = Unit::query()->published()->with('terms')
-            ->when($selectedTypes, fn ($query) => $query->whereHas('terms', fn ($terms) => $terms
-                ->where('taxonomy', UnitTerm::TYPE)->whereIn('slug', $selectedTypes)))
-            ->when($attributes['aanbod'] ?? null, fn ($query, string $offer) => $query->whereHas('terms', fn ($terms) => $terms
-                ->where('taxonomy', UnitTerm::OFFER)->whereIn('slug', explode(',', $offer))))
-            ->when($search !== '', fn ($query) => $query->where(fn ($q) => $q
-                ->where('title', 'like', "%{$search}%")
-                ->orWhere('content', 'like', "%{$search}%")))
-            ->orderBy('sort')->latest('published_at')
-            ->get();
-
-        return view('shortcodes.units-catalog', [
-            'page' => $this->page,
-            'title' => $attributes['title'] ?? $this->page?->title,
-            'units' => $units,
-            'types' => UnitTerm::query()->inTaxonomy(UnitTerm::TYPE)->orderBy('name')->get(),
-            'selectedTypes' => $selectedTypes,
-            'search' => $search,
-        ])->render();
     }
 
     /**

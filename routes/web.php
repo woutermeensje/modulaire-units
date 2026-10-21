@@ -10,6 +10,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\VacancyController;
 use App\Http\Middleware\EnsureTrailingSlash;
+use App\Support\SiteUrl;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/admin.php';
@@ -30,7 +31,7 @@ Route::get('{sitemap}-sitemap.xml', fn () => redirect('/sitemap.xml', 301))->whe
 | Old WordPress upload URLs keep working (Google Images, external links)
 |--------------------------------------------------------------------------
 */
-Route::get('wp-content/uploads/{path}', fn (string $path) => redirect('/storage/media/'.$path, 301))->where('path', '.*');
+Route::get('wp-content/uploads/{path}', fn (string $path) => redirect(SiteUrl::media('media/'.$path), 301))->where('path', '.*');
 
 /*
 |--------------------------------------------------------------------------

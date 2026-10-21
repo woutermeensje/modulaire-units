@@ -6,6 +6,7 @@ use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 /**
  * Stores uploads on the public disk under media/{year}/{month}/ and creates the same size
@@ -49,17 +50,17 @@ class MediaUploader
     public function generateSizes(Media $media): void
     {
         $disk = Storage::disk('public');
-        $absolute = $disk->path($media->path);
-        $info = @getimagesize($absolute);
+        $contents = $disk->get($media->path);
+        $info = $contents === null ? false : @getimagesizefromstring($contents);
 
         if ($info === false) {
             return;
         }
 
         [$width, $height] = $info;
-        $source = $this->load($absolute, $info[2]);
+        $source = @imagecreatefromstring($contents);
 
-        if ($source === null) {
+        if ($source === false) {
             return;
         }
 
@@ -76,7 +77,9 @@ class MediaUploader
             imagealphablending($canvas, false);
             imagesavealpha($canvas, true);
             imagecopyresampled($canvas, $source, 0, 0, $srcX, $srcY, $targetWidth, $targetHeight, $srcWidth, $srcHeight);
-            $this->save($canvas, $disk->path($variantPath), $info[2]);
+            if (! $disk->put($variantPath, $this->encode($canvas, $info[2]))) {
+                throw new RuntimeException("Afbeeldingsvariant opslaan mislukt: {$variantPath}");
+            }
             imagedestroy($canvas);
 
             $sizes[$name] = $variantPath;
@@ -105,27 +108,26 @@ class MediaUploader
         return [(int) round($width * $ratio), (int) round($height * $ratio), 0, 0, $width, $height];
     }
 
-    private function load(string $path, int $type): ?\GdImage
+    private function encode(\GdImage $image, int $type): string
     {
-        $image = match ($type) {
-            IMAGETYPE_JPEG => @imagecreatefromjpeg($path),
-            IMAGETYPE_PNG => @imagecreatefrompng($path),
-            IMAGETYPE_WEBP => @imagecreatefromwebp($path),
-            IMAGETYPE_GIF => @imagecreatefromgif($path),
-            default => false,
-        };
+        ob_start();
 
-        return $image ?: null;
-    }
+        try {
+            $saved = match ($type) {
+                IMAGETYPE_PNG => imagepng($image, null, 8),
+                IMAGETYPE_WEBP => imagewebp($image, null, 82),
+                IMAGETYPE_GIF => imagegif($image),
+                default => imagejpeg($image, null, 82),
+            };
 
-    private function save(\GdImage $image, string $path, int $type): void
-    {
-        match ($type) {
-            IMAGETYPE_PNG => imagepng($image, $path, 8),
-            IMAGETYPE_WEBP => imagewebp($image, $path, 82),
-            IMAGETYPE_GIF => imagegif($image, $path),
-            default => imagejpeg($image, $path, 82),
-        };
+            if (! $saved) {
+                throw new RuntimeException('Afbeeldingsvariant genereren mislukt.');
+            }
+
+            return (string) ob_get_contents();
+        } finally {
+            ob_end_clean();
+        }
     }
 
     private function uniqueName(string $directory, string $basename, string $extension): string

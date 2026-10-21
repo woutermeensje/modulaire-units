@@ -104,17 +104,17 @@
   color: #fff;
 }
 
+/* Hero-knop in het lichte groen van het logo-icoon. */
 .mh-offer .mh-offer-hero .mh-offer-btn--primary {
-  border-color: #fff;
-  background: #fff;
-  color: var(--color-primary-text, #2B6E8F);
+  border-color: var(--color-highlight, #6FAA7B);
+  background: var(--color-highlight, #6FAA7B);
+  color: #fff;
 }
 
-/* Op het gekleurde hero-vlak wordt de witte knop bij hover een tint donkerder. */
 .mh-offer .mh-offer-hero .mh-offer-btn--primary:hover,
 .mh-offer .mh-offer-hero .mh-offer-btn--primary:focus {
-  border-color: var(--color-primary-dark, #1F5670);
-  background: var(--color-primary-dark, #1F5670);
+  border-color: var(--color-highlight-dark, #5A9367);
+  background: var(--color-highlight-dark, #5A9367);
   color: #fff;
 }
 
@@ -131,8 +131,7 @@
 }
 
 .mh-offer-intro,
-.mh-offer-request,
-.mh-offer-related-card {
+.mh-offer-request {
   border: 1px solid var(--color-border, #dedede);
   border-radius: 5px;
   background: #fff;
@@ -313,43 +312,9 @@
   margin: 56px auto 0;
 }
 
-.mh-offer-related__grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.mh-offer .mh-offer-related-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: 92px;
-  padding: 1rem;
-  color: var(--color-text, #333);
-  text-decoration: none;
-  transition: transform .15s ease;
-}
-
-.mh-offer .mh-offer-related-card:hover {
-  color: var(--color-text, #333);
-  transform: translateY(-2px);
-}
-
-.mh-offer-related-card strong {
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.mh-offer-related-card svg {
-  flex-shrink: 0;
-  color: var(--color-primary-text, #2B6E8F);
-}
-
 .mh-offer-btn:focus-visible,
 .mh-offer-option:focus-visible,
-.mh-offer-related-card:focus-visible {
+.mh-offer .muo-card:focus-visible {
   outline: 2px solid var(--color-secondary, #2B6E8F);
   outline-offset: 2px;
 }
@@ -386,10 +351,6 @@
   .mh-offer-request {
     position: static;
   }
-
-  .mh-offer-related__grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 640px) {
@@ -416,8 +377,7 @@
   }
 
   .mh-offer-intro,
-  .mh-offer-request,
-  .mh-offer-related-card {
+  .mh-offer-request {
     padding: 1rem;
   }
 }

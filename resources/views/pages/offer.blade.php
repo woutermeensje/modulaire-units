@@ -8,7 +8,6 @@
     $phone = \App\Models\Setting::get('phone');
     $email = \App\Models\Setting::get('email');
     $isRental = $landing['section'] === 'huren';
-    $arrowIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
 @endphp
 
 @section('body_class', 'page page-id-'.$page->id.' page-'.$page->slug.' mh-offer-page')
@@ -107,14 +106,7 @@
     @if ($landing['related']->isNotEmpty())
         <section class="mh-offer-related" aria-labelledby="mh-offer-related-title">
             <h2 id="mh-offer-related-title">{{ $page->path === $landing['section'] ? 'Alle mogelijkheden:' : 'Bekijk ook:' }}</h2>
-            <div class="mh-offer-related__grid">
-                @foreach ($landing['related'] as $relatedPage)
-                    <a class="mh-offer-related-card" href="{{ $relatedPage->url() }}">
-                        <strong>{{ $relatedPage->title }}</strong>
-                        {!! $arrowIcon !!}
-                    </a>
-                @endforeach
-            </div>
+            @include('shortcodes.subpage-grid', ['pages' => $landing['related'], 'columns' => 3])
         </section>
     @endif
 </main>

@@ -1,0 +1,167 @@
+/* ==========================================================================
+   Dienstpagina's (template "service"), bijv. /transport-plaatsing/.
+   De hero en knoppen komen uit 45-offer-landing.css (.mh-offer).
+   ========================================================================== */
+
+.mh-service {
+  padding-bottom: 0;
+}
+
+.mh-service__intro p {
+  margin: 0 0 0.6rem;
+}
+
+.mh-service__intro p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Afwisselende tekst/foto-blokken ── */
+.mh-service__blocks {
+  display: grid;
+  gap: 32px;
+  width: min(1200px, calc(100% - 2rem));
+  margin: 64px auto;
+}
+
+.mh-service-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.mh-service-block--text-only {
+  grid-template-columns: 1fr;
+}
+
+.mh-service-block--reverse .mh-service-block__media {
+  order: 2;
+}
+
+.mh-service-block__media {
+  min-height: 320px;
+  margin: 0;
+}
+
+.mh-service-block__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.mh-service-block__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.mh-service-block__step {
+  color: var(--color-primary, #2B6E8F);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.mh-service .mh-service-block__title {
+  margin: 0;
+  color: var(--color-text, #333);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mh-service-block__body {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.mh-service-block__body p {
+  margin: 0 0 0.9rem;
+}
+
+.mh-service-block__body p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Contactbalk onderaan ── */
+.mh-service-cta {
+  padding: 56px 0;
+  border-top: 1px solid var(--color-border, #dedede);
+  background: var(--color-surface-alt, #EEF4F7);
+}
+
+.mh-service-cta__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 48px;
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.mh-service .mh-service-cta__title {
+  margin: 0 0 6px;
+  color: var(--color-text, #333);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mh-service-cta__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.mh-service .mh-service-cta__text a {
+  color: var(--color-primary-text, #2B6E8F);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mh-service .mh-service-cta .mh-offer-btn--primary {
+  flex-shrink: 0;
+  border-color: var(--color-highlight, #6FAA7B);
+  background: var(--color-highlight, #6FAA7B);
+  color: #fff;
+}
+
+.mh-service .mh-service-cta .mh-offer-btn--primary:hover,
+.mh-service .mh-service-cta .mh-offer-btn--primary:focus {
+  border-color: var(--color-highlight-dark, #5A9367);
+  background: var(--color-highlight-dark, #5A9367);
+  color: #fff;
+}
+
+@media (max-width: 860px) {
+  .mh-service__blocks {
+    margin: 40px auto;
+    gap: 24px;
+  }
+
+  .mh-service-block {
+    grid-template-columns: 1fr;
+  }
+
+  .mh-service-block--reverse .mh-service-block__media {
+    order: 0;
+  }
+
+  .mh-service-block__media {
+    min-height: 0;
+    aspect-ratio: 3 / 2;
+  }
+
+  .mh-service-cta__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

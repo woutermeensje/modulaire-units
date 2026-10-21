@@ -59,20 +59,17 @@ class PublicSiteTest extends TestCase
         $this->get('/blog/')->assertOk()->assertSee('Wat is modulaire huisvesting?');
     }
 
-    public function test_units_catalog_shortcode_filters_on_its_preset_type(): void
+    public function test_units_catalog_shortcode_renders_nothing(): void
     {
-        $office = UnitTerm::factory()->create(['name' => 'Kantoor unit', 'slug' => 'kantoorunit']);
-        $living = UnitTerm::factory()->create(['name' => 'Woon unit', 'slug' => 'woon-unit']);
-        Unit::factory()->create(['title' => 'Kantoorunit 20ft'])->terms()->attach($office);
-        Unit::factory()->create(['title' => 'Tuinstudio'])->terms()->attach($living);
-        Page::factory()->create(['slug' => 'kantoorunits', 'content' => '[units_catalog title="Kantoorunits huren" type="kantoorunit"]']);
+        Unit::factory()->create(['title' => 'Kantoorunit 20ft']);
+        Page::factory()->create(['slug' => 'gebruikt', 'content' => '[units_catalog title="Gebruikt"]<p>Gebruikte units tekst</p>']);
 
-        $this->get('/kantoorunits/')
+        $this->get('/gebruikt/')
             ->assertOk()
-            ->assertSee('Kantoorunits huren')
-            ->assertSee('Kantoorunit 20ft')
-            ->assertDontSee('Tuinstudio')
-            ->assertSee('1 resultaat');
+            ->assertSee('Gebruikte units tekst')
+            ->assertDontSee('units_catalog')
+            ->assertDontSee('Kantoorunit 20ft')
+            ->assertDontSee('mh-units-catalog', false);
     }
 
     public function test_rent_pages_use_the_offer_layout_without_units_catalog(): void
@@ -126,9 +123,43 @@ class PublicSiteTest extends TestCase
             ->assertOk()
             ->assertSee('<h2 class="mh-offer-intro__heading">Modulaire units kopen</h2>', false)
             ->assertSee('Alle mogelijkheden:')
-            ->assertSee('href="/kopen/bouwunits/"', false)
+            ->assertSee('href="/kopen/bouwunits/" class="muo-card', false)
+            ->assertSee("background-image: url('/marketing/units/bouwunits.jpg')", false)
             ->assertSee('href="/huren/"', false)
             ->assertDontSee('mh-units-catalog', false);
+    }
+
+    public function test_work_steps_shortcode_renders_numbered_steps(): void
+    {
+        Page::factory()->create(['slug' => 'over-ons', 'content' => '<p>Over ons tekst</p>[werkwijze]']);
+
+        $this->get('/over-ons/')
+            ->assertOk()
+            ->assertSee('Over ons tekst')
+            ->assertSee('Onze werkwijze')
+            ->assertSee('Wij halen de unit(s) op')
+            ->assertSee('mailto:informatie@modulairehuisvesting.nl', false);
+    }
+
+    public function test_service_template_renders_hero_and_alternating_blocks(): void
+    {
+        Page::factory()->create([
+            'slug' => 'transport-plaatsing',
+            'title' => 'Transport & Plaatsing',
+            'template' => 'service',
+            'content' => '<div class="elementor">'
+                .'<section class="elementor-section elementor-inner-section"><div class="elementor-widget elementor-widget-text-editor"><h1>Transport van units</h1><p>Wij regelen het transport.</p></div></section>'
+                .'<section class="elementor-section elementor-inner-section"><div class="elementor-widget elementor-widget-image"><img src="/storage/media/kraan.png" alt="Kraan"></div><div class="elementor-widget elementor-widget-text-editor"><h1>De Kosten</h1><p>Tarieven op aanvraag.</p></div></section>'
+                .'</div>',
+        ]);
+
+        $this->get('/transport-plaatsing/')
+            ->assertOk()
+            ->assertSee('<h1 id="mh-service-title">Transport van units</h1>', false)
+            ->assertSee('Wij regelen het transport.')
+            ->assertSee('<h2 class="mh-service-block__title">De Kosten</h2>', false)
+            ->assertSee('/storage/media/kraan.png', false)
+            ->assertSee('Vragen over transport &amp; plaatsing?', false);
     }
 
     public function test_unit_detail_and_taxonomy_archive(): void

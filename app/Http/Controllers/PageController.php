@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\Redirect;
 use App\Services\Content\OfferLanding;
+use App\Services\Content\ServiceLanding;
 use App\Services\Content\ShortcodeRenderer;
 use App\Support\Seo;
 use Illuminate\Http\RedirectResponse;
@@ -62,6 +63,14 @@ class PageController extends Controller
             return view('pages.offer', [
                 'page' => $page,
                 'landing' => app(OfferLanding::class)->build($page),
+                'seo' => Seo::for($page, $page->excerpt),
+            ]);
+        }
+
+        if ($page->template === 'service') {
+            return view('pages.service', [
+                'page' => $page,
+                'service' => app(ServiceLanding::class)->build($page),
                 'seo' => Seo::for($page, $page->excerpt),
             ]);
         }

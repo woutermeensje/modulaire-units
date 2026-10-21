@@ -23,6 +23,7 @@ class Page extends Model
     public const TEMPLATES = [
         'default' => 'Standaard',
         'landing' => 'Landingspagina (met hero)',
+        'service' => 'Dienstpagina (hero met foto, afwisselende blokken)',
     ];
 
     /**
@@ -57,6 +58,20 @@ class Page extends Model
     public function url(): string
     {
         return SiteUrl::path($this->path);
+    }
+
+    /**
+     * Tile image for unit overviews: a fixed photo in public/marketing/units/{slug}.jpg, else the featured image.
+     */
+    public function tileImage(): ?string
+    {
+        $marketingImage = 'marketing/units/'.$this->slug.'.jpg';
+
+        if ($this->slug !== '' && is_file(public_path($marketingImage))) {
+            return '/'.$marketingImage;
+        }
+
+        return SiteUrl::media(Media::variant($this->featured_image, 'large'));
     }
 
     public function isHome(): bool

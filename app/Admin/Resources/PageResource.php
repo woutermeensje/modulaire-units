@@ -62,7 +62,7 @@ class PageResource extends Resource
                 Field::make('template', 'Template', 'select')->options(Page::TEMPLATES)->half(),
                 Field::make('show_title', 'Toon de paginatitel boven de inhoud', 'checkbox'),
                 Field::make('hero', 'Hero (alleen bij template "Landingspagina")', 'hero'),
-                Field::make('content', 'Inhoud (HTML)', 'code')->rows(28)->help('HTML van de pagina. Dynamische blokken: [units_catalog title="…" type="slug"], [units_grid type="slug" limit="3"], [subpage_grid parent="kopen" columns="3"], [team columns="3"], [vacatures], [informatie_formulier].'),
+                Field::make('content', 'Inhoud (HTML)', 'code')->rows(28)->help('HTML van de pagina. Dynamische blokken: [units_grid type="slug" limit="3"], [subpage_grid parent="kopen" columns="3"], [team columns="3"], [vacatures], [informatie_formulier], [werkwijze].'),
                 Field::make('custom_css', 'Pagina-specifieke CSS', 'code')->rows(8)->help('Overgenomen Elementor-opmaak van deze pagina.'),
                 Field::make('excerpt', 'Samenvatting', 'textarea')->rows(3),
                 Field::make('featured_image', 'Uitgelichte afbeelding', 'image')->half()->help('Wordt o.a. gebruikt als tegel in [subpage_grid].'),

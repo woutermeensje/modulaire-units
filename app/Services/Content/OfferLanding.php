@@ -21,13 +21,6 @@ class OfferLanding
      */
     public const SECTIONS = ['huren', 'kopen'];
 
-    /**
-     * Shortcodes that are left out of these pages entirely.
-     *
-     * @var list<string>
-     */
-    public const HIDDEN_SHORTCODES = ['units_catalog'];
-
     public function __construct(private ShortcodeRenderer $shortcodes) {}
 
     public static function appliesTo(Page $page): bool
@@ -46,19 +39,11 @@ class OfferLanding
     }
 
     /**
-     * Remove the hidden shortcodes from a piece of content.
-     */
-    public static function withoutHiddenShortcodes(?string $content): string
-    {
-        return (string) preg_replace('/\[('.implode('|', self::HIDDEN_SHORTCODES).')[^\]]*\]/i', '', (string) $content);
-    }
-
-    /**
      * @return array{section: string, heading: string, body: string, blocks: list<string>, image: ?string, counterpart: ?Page, related: Collection<int, Page>}
      */
     public function build(Page $page): array
     {
-        [$body, $shortcodes] = $this->extract(self::withoutHiddenShortcodes($page->content));
+        [$body, $shortcodes] = $this->extract((string) $page->content);
 
         $heading = $page->title;
 

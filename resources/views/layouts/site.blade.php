@@ -16,7 +16,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @if ($customCss = trim($__env->yieldContent('custom_css')))
-        <style>{!! $customCss !!}</style>
+        <style>{!! \App\Support\SiteUrl::rewriteMediaUrls($customCss) !!}</style>
     @endif
 
     @if ($analyticsId = \App\Models\Setting::get('google_analytics_id'))
@@ -34,7 +34,7 @@
 
     @include('partials.header')
 
-    @yield('content')
+    {!! \App\Support\SiteUrl::rewriteMediaUrls($__env->yieldContent('content')) !!}
 
     @include('partials.footer')
 </body>
