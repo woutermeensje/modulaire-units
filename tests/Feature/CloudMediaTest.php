@@ -9,6 +9,7 @@ use App\Support\SiteUrl;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Tests\TestCase;
@@ -125,6 +126,33 @@ class CloudMediaTest extends TestCase
     public function test_upload_requires_an_s3_destination(): void
     {
         $this->artisan('site:upload-media', ['--disk' => 'local'])->assertFailed();
+    }
+
+    public function test_wordpress_media_import_can_write_to_object_storage(): void
+    {
+        $this->app->useStoragePath(Storage::fake('local')->path('wordpress-import'));
+        $target = $this->fakeBucket('public');
+        Http::preventStrayRequests();
+        Http::fake([
+            'https://wordpress.example.com/wp-json/wp/v2/media*' => Http::response([[
+                'id' => 123,
+                'source_url' => 'https://wordpress.example.com/wp-content/uploads/2026/foto.jpg',
+                'title' => ['rendered' => 'Lokale afbeelding'],
+                'alt_text' => 'Een unit',
+                'mime_type' => 'image/jpeg',
+            ]]),
+            'https://wordpress.example.com/wp-json/wp/v2/*' => Http::response([]),
+            'https://wordpress.example.com/wp-json/' => Http::response(['name' => 'Voorbeeld']),
+            'https://wordpress.example.com/wp-content/uploads/*' => Http::response('afbeeldingsbestand'),
+            'https://wordpress.example.com/*' => Http::response('<html><body><footer></footer></body></html>'),
+        ]);
+
+        $this->artisan('wp:import', ['--source' => 'https://wordpress.example.com', '--fresh' => true])
+            ->assertSuccessful();
+
+        $this->assertSame('afbeeldingsbestand', $target->get('media/2026/foto.jpg'));
+        $this->assertDatabaseHas('media', ['wp_id' => 123, 'path' => 'media/2026/foto.jpg']);
+        $this->assertFileDoesNotExist(storage_path('app/wp-import/downloads/media/2026/foto.jpg'));
     }
 
     private function fakeBucket(string $name): FilesystemAdapter

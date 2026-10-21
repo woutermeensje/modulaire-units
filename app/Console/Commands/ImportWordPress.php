@@ -27,8 +27,10 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Throwable;
 
 #[Signature('wp:import
@@ -613,15 +615,52 @@ class ImportWordPress extends Command
     private function downloadUploads(): void
     {
         $disk = Storage::disk('public');
-        $downloads = [];
+        $isLocal = config('filesystems.disks.public.driver') === 'local';
+        $uploads = $this->urls->uploads();
 
-        foreach ($this->urls->uploads() as $url => $path) {
-            $downloads[$url] = $disk->path($path);
+        $this->components->info('Afbeeldingen downloaden ('.count($uploads).' bestanden)');
+        $bar = $this->output->createProgressBar(count($uploads));
+        $result = ['downloaded' => 0, 'skipped' => 0, 'failed' => []];
+
+        foreach (array_chunk($uploads, 8, true) as $batch) {
+            $downloads = [];
+
+            foreach ($batch as $url => $path) {
+                $downloads[$url] = $isLocal ? $disk->path($path) : storage_path('app/wp-import/downloads/'.$path);
+            }
+
+            $downloaded = $this->client->download($downloads, fn () => $bar->advance());
+            $result['downloaded'] += $downloaded['downloaded'];
+            $result['skipped'] += $downloaded['skipped'];
+            array_push($result['failed'], ...$downloaded['failed']);
+
+            if ($isLocal) {
+                continue;
+            }
+
+            foreach ($batch as $url => $path) {
+                if (in_array($url, $downloaded['failed'], true)) {
+                    continue;
+                }
+
+                $stream = fopen($downloads[$url], 'rb');
+
+                if ($stream === false) {
+                    throw new RuntimeException("Gedownloade afbeelding openen mislukt: {$path}");
+                }
+
+                try {
+                    if (! $disk->put($path, $stream)) {
+                        throw new RuntimeException("Afbeelding opslaan in object storage mislukt: {$path}");
+                    }
+                } finally {
+                    fclose($stream);
+                }
+
+                File::delete($downloads[$url]);
+            }
         }
 
-        $this->components->info('Afbeeldingen downloaden ('.count($downloads).' bestanden)');
-        $bar = $this->output->createProgressBar(count($downloads));
-        $result = $this->client->download($downloads, fn () => $bar->advance());
         $bar->finish();
         $this->newLine(2);
 
