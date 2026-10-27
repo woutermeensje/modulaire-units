@@ -8,6 +8,7 @@ use App\Models\Redirect;
 use App\Services\Content\OfferLanding;
 use App\Services\Content\ServiceLanding;
 use App\Services\Content\ShortcodeRenderer;
+use App\Services\Content\UnitTypesOverview;
 use App\Support\Seo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -63,6 +64,14 @@ class PageController extends Controller
             return view('pages.offer', [
                 'page' => $page,
                 'landing' => app(OfferLanding::class)->build($page),
+                'seo' => Seo::for($page, $page->excerpt),
+            ]);
+        }
+
+        if (UnitTypesOverview::appliesTo($page)) {
+            return view('pages.unit-types', [
+                'page' => $page,
+                'overview' => app(UnitTypesOverview::class)->build($page),
                 'seo' => Seo::for($page, $page->excerpt),
             ]);
         }

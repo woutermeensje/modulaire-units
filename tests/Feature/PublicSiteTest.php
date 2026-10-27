@@ -162,6 +162,31 @@ class PublicSiteTest extends TestCase
             ->assertSee('Vragen over transport &amp; plaatsing?', false);
     }
 
+    public function test_modulaire_units_page_lists_every_unit_type_with_rent_and_buy_links(): void
+    {
+        $rent = Page::factory()->create(['slug' => 'huren', 'title' => 'Huren']);
+        $buy = Page::factory()->create(['slug' => 'kopen', 'title' => 'Kopen']);
+        Page::factory()->create(['slug' => 'bouwunits', 'title' => 'Bouwunits huren', 'parent_id' => $rent->id]);
+        Page::factory()->create(['slug' => 'bouwunits', 'title' => 'Bouwunits', 'parent_id' => $buy->id]);
+        Page::factory()->create(['slug' => 'kantines', 'title' => 'Kantines huren', 'parent_id' => $rent->id]);
+        Page::factory()->create(['slug' => 'kantine', 'title' => 'Kantine units kopen', 'parent_id' => $buy->id]);
+        Page::factory()->create(['slug' => 'slaapunits', 'title' => 'Slaapunits kopen', 'parent_id' => $buy->id]);
+        Page::factory()->create(['slug' => 'modulaire-units', 'title' => 'Modulaire units', 'excerpt' => 'Het complete aanbod.', 'content' => '']);
+
+        $this->get('/modulaire-units/')
+            ->assertOk()
+            ->assertSee('<h1 id="mh-unit-types-title">Modulaire units</h1>', false)
+            ->assertSee('mh-offer-hero__panel', false)
+            ->assertSee('Het complete aanbod.')
+            ->assertSeeInOrder(['Bouwunits', 'Kantines', 'Slaapunits'])
+            ->assertSee('href="/huren/bouwunits/"', false)
+            ->assertSee('href="/kopen/bouwunits/"', false)
+            ->assertSee('href="/kopen/kantine/"', false)
+            ->assertSee('aria-label="Slaapunits kopen"', false)
+            ->assertDontSee('aria-label="Slaapunits huren"', false)
+            ->assertSee("background-image: url('/marketing/units/bouwunits.jpg')", false);
+    }
+
     public function test_unit_detail_and_taxonomy_archive(): void
     {
         $term = UnitTerm::factory()->create(['taxonomy' => UnitTerm::CONDITION, 'name' => 'Nieuw', 'slug' => 'nieuw']);
