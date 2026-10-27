@@ -26,6 +26,7 @@ class Setting extends Model
         'email' => ['label' => 'E-mailadres', 'default' => 'informatie@modulairehuisvesting.nl'],
         'address' => ['label' => 'Adres', 'default' => 'Veenland 31, 2291 NS, Wateringen'],
         'notification_email' => ['label' => 'Ontvanger formulieren', 'default' => 'informatie@modulairehuisvesting.nl'],
+        'error_notification_email' => ['label' => 'Ontvanger foutmeldingen (leeg = ontvanger formulieren)', 'default' => ''],
         'footer_about' => ['label' => 'Footer: over ons', 'default' => 'Modulairehuisvesting.nl levert flexibele, tijdelijke en modulaire huisvesting voor organisaties in heel Nederland.', 'type' => 'textarea'],
         'cta_bar_text' => ['label' => 'CTA-balk tekst', 'default' => 'Laat één van onze adviseurs jou helpen in het uitzoeken van jouw modulaire huisvesting.', 'type' => 'textarea'],
         'google_analytics_id' => ['label' => 'Google Analytics ID (G-…)', 'default' => ''],

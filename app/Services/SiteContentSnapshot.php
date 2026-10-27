@@ -187,6 +187,6 @@ class SiteContentSnapshot
      */
     private function settingKeys(): array
     {
-        return array_values(array_diff(array_keys(Setting::FIELDS), ['notification_email']));
+        return array_values(array_diff(array_keys(Setting::FIELDS), ['notification_email', 'error_notification_email']));
     }
 }
