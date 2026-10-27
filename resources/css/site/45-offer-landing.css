@@ -57,7 +57,7 @@
   margin: 0;
   color: #fff;
   font-size: var(--text-2xl);
-  font-weight: 700;
+  font-weight: var(--weight-hero-title);
   line-height: 1.2;
 }
 

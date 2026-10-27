@@ -60,7 +60,7 @@
 
 .mh-home-hero__title {
     font-family:var(--font-text);
-    font-weight: 800;
+    font-weight: var(--weight-hero-title);
     font-size: var(--text-4xl);
     line-height: 1.22;
     color: #ffffff;
@@ -241,7 +241,7 @@
 
 .mh-home-hero__title {
     font-family:var(--font-text) !important;
-    font-weight: 800 !important;
+    font-weight: var(--weight-hero-title) !important;
     font-size: var(--text-4xl) !important;
     line-height: 1.22 !important;
     color: #ffffff !important;

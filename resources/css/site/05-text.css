@@ -18,7 +18,7 @@
 
   --text-xs: 0.75rem;                                        /* 12px  labels, badges */
   --text-sm: 0.8125rem;                                      /* 13px  meta, hulpteksten */
-  --text-base: 0.875rem;                                     /* 14px  lopende tekst, knoppen */
+  --text-base: 0.9375rem;                                    /* 15px  lopende tekst, knoppen */
   --text-lg: 1rem;                                           /* 16px  intro, h5 */
   --text-xl: 1.25rem;                                        /* 20px  h4, kaarttitels */
   --text-2xl: 1.5rem;                                        /* 24px  h3, sectietitels */
@@ -42,6 +42,7 @@
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
+  --weight-hero-title: var(--weight-semibold); /* titels in de hero van landingspagina's */
 
   --color-heading: var(--color-text, #333);
   --color-text-muted: #6B7280;

@@ -9,3 +9,20 @@ span.mh-header__site-name {
 h1.entry-title {
 	display: none; 
 }
+
+/* FAQ pagina: vraagblokken */
+body.page-faq .elementor-widget-toggle .elementor-toggle .elementor-toggle-item {
+	overflow: hidden;
+	border: 1px solid #dedede;
+	border-radius: 5px;
+	background: #fff;
+	box-shadow: none;
+	font-family: 'Work Sans', sans-serif;
+}
+
+body.page-faq .elementor-widget-toggle .elementor-toggle .elementor-tab-title .elementor-toggle-title {
+	font-family: 'Work Sans', sans-serif;
+	font-weight: 600;
+	text-transform: none;
+	color: #333;
+}
