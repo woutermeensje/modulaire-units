@@ -29,6 +29,9 @@ class Setting extends Model
         'error_notification_email' => ['label' => 'Ontvanger foutmeldingen (leeg = ontvanger formulieren)', 'default' => ''],
         'footer_about' => ['label' => 'Footer: over ons', 'default' => 'Modulairehuisvesting.nl levert flexibele, tijdelijke en modulaire huisvesting voor organisaties in heel Nederland.', 'type' => 'textarea'],
         'cta_bar_text' => ['label' => 'CTA-balk tekst', 'default' => 'Laat één van onze adviseurs jou helpen in het uitzoeken van jouw modulaire huisvesting.', 'type' => 'textarea'],
+        'discount_popup_code' => ['label' => 'Kortingspop-up: code (leeg = pop-up uit)', 'default' => ''],
+        'discount_popup_title' => ['label' => 'Kortingspop-up: titel', 'default' => 'Ontvang korting op je modulaire unit'],
+        'discount_popup_text' => ['label' => 'Kortingspop-up: tekst', 'default' => 'Noem deze kortingscode bij je offerteaanvraag of in contact met onze adviseurs.', 'type' => 'textarea'],
         'google_analytics_id' => ['label' => 'Google Analytics ID (G-…)', 'default' => ''],
     ];
 

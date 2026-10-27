@@ -37,5 +37,7 @@
     {!! \App\Support\SiteUrl::rewriteMediaUrls($__env->yieldContent('content')) !!}
 
     @include('partials.footer')
+
+    @include('partials.discount-popup')
 </body>
 </html>

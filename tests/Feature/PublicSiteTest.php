@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureTrailingSlash;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Redirect;
+use App\Models\Setting;
 use App\Models\Unit;
 use App\Models\UnitTerm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -224,5 +225,21 @@ class PublicSiteTest extends TestCase
     public function test_unknown_urls_return_404(): void
     {
         $this->get('/bestaat-niet/')->assertNotFound()->assertSee('Pagina niet gevonden');
+    }
+
+    public function test_discount_popup_is_shown_when_a_code_is_set(): void
+    {
+        Page::factory()->create(['slug' => '']);
+        Setting::put('discount_popup_code', 'ZOMER10');
+        Setting::put('discount_popup_title', 'Zomerkorting');
+
+        $this->get('/')->assertOk()->assertSee('id="mh-discount-popup"', false)->assertSee('ZOMER10')->assertSee('Zomerkorting');
+    }
+
+    public function test_discount_popup_is_hidden_without_a_code(): void
+    {
+        Page::factory()->create(['slug' => '']);
+
+        $this->get('/')->assertOk()->assertDontSee('mh-discount-popup', false);
     }
 }
