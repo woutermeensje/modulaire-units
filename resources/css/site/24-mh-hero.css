@@ -348,3 +348,10 @@
         justify-content: center !important;
     }
 }
+
+/* Homepage: hero title 6px smaller than the shared landing hero. */
+@media (min-width: 961px) {
+    .page-home .mh-home-hero__title {
+        font-size: calc(var(--text-4xl) - 6px) !important;
+    }
+}
