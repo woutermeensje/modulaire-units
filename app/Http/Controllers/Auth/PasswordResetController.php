@@ -35,22 +35,30 @@ class PasswordResetController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        return $this->resetPassword($request) === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('status', 'Je wachtwoord is gewijzigd. Je kunt nu inloggen.')
+            : back()->withInput($request->only('email'))->withErrors(['email' => 'Deze herstellink is ongeldig of verlopen.']);
+    }
+
+    /**
+     * Validates the posted token + new password and stores it. Returns the password broker status.
+     *
+     * @param  array<string, mixed>  $extraCredentials  Extra conditions the user must match, e.g. ['is_admin' => true].
+     */
+    protected function resetPassword(Request $request, array $extraCredentials = []): string
+    {
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', PasswordRule::defaults()],
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+        return Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token') + $extraCredentials,
             function (User $user, string $password): void {
                 $user->forceFill(['password' => $password, 'remember_token' => Str::random(60)])->save();
                 event(new PasswordReset($user));
             }
         );
-
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', 'Je wachtwoord is gewijzigd. Je kunt nu inloggen.')
-            : back()->withInput($request->only('email'))->withErrors(['email' => 'Deze herstellink is ongeldig of verlopen.']);
     }
 }

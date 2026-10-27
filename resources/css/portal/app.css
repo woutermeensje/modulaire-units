@@ -714,6 +714,30 @@ body {
   gap: 8px;
 }
 
+.portal-media-item__name {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-media-item__meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.portal-media-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.portal-media-item__actions .btn {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
 .portal-media-item__label {
   font-family: var(--font-ui);
   font-size: 12px;

@@ -20,14 +20,14 @@
 .mh-steps .mh-steps__title {
   margin: 0 0 8px;
   color: var(--color-text, #333);
-  font-size: 28px;
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.2;
 }
 
 .mh-steps__lead {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-base);
   line-height: 1.6;
 }
 
@@ -77,7 +77,7 @@
   border-radius: 50%;
   background: var(--color-primary, #2B6E8F);
   color: #fff;
-  font-size: 17px;
+  font-size: var(--text-lg);
   font-weight: 700;
   line-height: 1;
 }
@@ -85,7 +85,7 @@
 .mh-steps .mh-steps__item-title {
   margin: 4px 0 0;
   color: var(--color-text, #333);
-  font-size: 17px;
+  font-size: var(--text-lg);
   font-weight: 700;
   line-height: 1.3;
 }
@@ -93,7 +93,7 @@
 .mh-steps__text {
   margin: 0;
   color: #555;
-  font-size: 14px;
+  font-size: var(--text-sm);
   line-height: 1.6;
 }
 
@@ -121,7 +121,7 @@
   }
 
   .mh-steps .mh-steps__title {
-    font-size: 24px;
+    font-size: var(--text-2xl);
   }
 
   .mh-steps__list {

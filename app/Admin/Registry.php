@@ -2,6 +2,7 @@
 
 namespace App\Admin;
 
+use App\Admin\Resources\ClientResource;
 use App\Admin\Resources\MenuItemResource;
 use App\Admin\Resources\PageResource;
 use App\Admin\Resources\PostResource;
@@ -10,6 +11,7 @@ use App\Admin\Resources\RedirectResource;
 use App\Admin\Resources\TeamMemberResource;
 use App\Admin\Resources\UnitResource;
 use App\Admin\Resources\UnitTermResource;
+use App\Admin\Resources\UsedListingResource;
 use App\Admin\Resources\UserResource;
 use App\Admin\Resources\VacancyResource;
 
@@ -21,11 +23,13 @@ class Registry
         PostResource::class,
         UnitResource::class,
         UnitTermResource::class,
+        UsedListingResource::class,
         ProductResource::class,
         VacancyResource::class,
         TeamMemberResource::class,
         MenuItemResource::class,
         RedirectResource::class,
+        ClientResource::class,
         UserResource::class,
     ];
 

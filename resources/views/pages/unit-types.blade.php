@@ -29,7 +29,7 @@
     </header>
 
     @if ($overview['content'] !== '')
-        <div class="mh-unit-types__content">{!! $overview['content'] !!}</div>
+        <div class="mh-unit-types__content text-content">{!! $overview['content'] !!}</div>
     @endif
 
     <section class="mh-unit-types__list" aria-labelledby="mh-unit-types-list-title">

@@ -35,7 +35,7 @@
                 </figure>
             @endif
 
-            <div class="mh-post__content entry-content">
+            <div class="mh-post__content entry-content text-content">
                 {!! $content !!}
             </div>
         </article>

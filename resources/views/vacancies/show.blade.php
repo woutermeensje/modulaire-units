@@ -21,7 +21,7 @@
                     <header class="sj-header">
                         <h1 class="sj-title">{{ $vacancy->title }}</h1>
                     </header>
-                    <div class="job_description sj-content">
+                    <div class="job_description sj-content text-content">
                         {!! $content !!}
                     </div>
                 </div>

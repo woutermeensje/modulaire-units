@@ -97,8 +97,8 @@ Text Domain: modulairehuisvesting
   display: block;
   margin: 0;
   color: var(--color-text);
-  font-family:'Work Sans', sans-serif;
-  font-size: 24px;
+  font-family:var(--font-text);
+  font-size: var(--text-2xl);
   line-height: 1.2;
   font-weight: 700;
 }
@@ -131,8 +131,8 @@ Text Domain: modulairehuisvesting
   border-radius: 999px;
   background: rgba(191, 227, 150, 0.22);
   color: var(--color-primary-text, #2B6E8F);
-  font-family:'Work Sans', sans-serif;
-  font-size: 13px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.08em;
@@ -142,8 +142,8 @@ Text Domain: modulairehuisvesting
 .mh-process__title {
   margin: 0 0 12px;
   color: var(--color-text, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: clamp(34px, 4.6vw, 58px);
+  font-family:var(--font-text);
+  font-size: var(--text-display);
   line-height: 0.98;
   font-weight: 700;
 }
@@ -151,8 +151,8 @@ Text Domain: modulairehuisvesting
 .mh-process__lead {
   margin: 0;
   color: var(--color-text-soft, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: 17px;
+  font-family:var(--font-text);
+  font-size: var(--text-lg);
   line-height: 1.7;
 }
 
@@ -241,16 +241,16 @@ Text Domain: modulairehuisvesting
   border-radius: 999px;
   background: var(--color-surface-alt, #EEF4F7);
   color: var(--color-primary-text, #2B6E8F);
-  font-family:'Work Sans', sans-serif;
-  font-size: 14px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1;
 }
 
 .mh-process__label {
   color: var(--color-primary-text, #2B6E8F);
-  font-family:'Work Sans', sans-serif;
-  font-size: 13px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.08em;
@@ -260,8 +260,8 @@ Text Domain: modulairehuisvesting
 .mh-process__card-title {
   margin: 0 0 12px;
   color: var(--color-text, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: clamp(28px, 3vw, 38px);
+  font-family:var(--font-text);
+  font-size: var(--text-4xl);
   line-height: 1.02;
   font-weight: 700;
 }
@@ -270,8 +270,8 @@ Text Domain: modulairehuisvesting
 .mh-process__card-text p {
   margin: 0;
   color: var(--color-text-soft, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: 15px;
+  font-family:var(--font-text);
+  font-size: var(--text-base);
   line-height: 1.75;
 }
 
@@ -330,8 +330,8 @@ Text Domain: modulairehuisvesting
   white-space: nowrap;
   text-align: left;
   color: #333;
-  font-family:'Work Sans', sans-serif;
-  font-size: 14px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
 }
 
 .mh-select-label.is-placeholder {
@@ -393,8 +393,8 @@ Text Domain: modulairehuisvesting
   border-radius: 5px;
   background: #f9f9f9;
   color: #333;
-  font-family:'Work Sans', sans-serif;
-  font-size: 13px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   box-sizing: border-box;
   box-shadow: none;
   outline: none;
@@ -408,8 +408,8 @@ Text Domain: modulairehuisvesting
   border-radius: 6px;
   cursor: pointer;
   color: #333;
-  font-family:'Work Sans', sans-serif;
-  font-size: 14px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   background: transparent;
   border: none;
   box-shadow: none;
@@ -431,7 +431,7 @@ Text Domain: modulairehuisvesting
   margin-left: auto;
   padding-left: 8px;
   color: var(--color-primary-text, #2B6E8F);
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 700;
 }
 
@@ -463,8 +463,8 @@ Text Domain: modulairehuisvesting
   border-radius: 999px;
   background: #fff;
   color: #333;
-  font-family:'Work Sans', sans-serif;
-  font-size: 13px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1.3;
   text-align: left;
@@ -490,7 +490,7 @@ Text Domain: modulairehuisvesting
   border-radius: 50%;
   background: transparent;
   color: #999;
-  font-size: 17px;
+  font-size: var(--text-lg);
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -545,6 +545,6 @@ Text Domain: modulairehuisvesting
   }
 
   .mh-process__card-title {
-    font-size: 25px;
+    font-size: var(--text-2xl);
   }
 }

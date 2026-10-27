@@ -20,7 +20,7 @@
         </section>
 
         <section class="card dash-section">
-            <div class="portal-gallery-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+            <div class="portal-gallery-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
                 @forelse ($media as $item)
                     <div class="portal-media-item">
                         @if ($item->isImage())
@@ -28,17 +28,25 @@
                         @else
                             <a href="{{ $item->url() }}" target="_blank" rel="noopener" class="portal-media-empty"><i class="ph ph-file"></i></a>
                         @endif
+                        <div class="portal-media-item__name" title="{{ basename($item->path) }}">{{ basename($item->path) }}</div>
+                        <div class="portal-media-item__meta">
+                            {{ $item->width && $item->height ? $item->width.'×'.$item->height.' px · ' : '' }}{{ $item->size ? \Illuminate\Support\Number::fileSize($item->size, precision: 1) : '' }}
+                        </div>
+                        <div class="portal-media-item__actions">
+                            <a href="{{ $item->url() }}" target="_blank" rel="noopener" class="btn btn-ghost" title="Bekijken"><i class="ph ph-eye"></i> Bekijken</a>
+                            <a href="{{ route('admin.media.download', $item) }}" class="btn btn-ghost" title="Downloaden"><i class="ph ph-download-simple"></i> Downloaden</a>
+                            <form method="POST" action="{{ route('admin.media.destroy', $item) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-ghost" title="Verwijderen" data-confirm="Bestand definitief verwijderen? Controleer eerst of het nergens meer gebruikt wordt."><i class="ph ph-trash"></i> Verwijderen</button>
+                            </form>
+                        </div>
                         <input class="portal-input" type="text" value="{{ $item->url() }}" readonly onclick="this.select()" style="font-size: 12px;">
                         <form method="POST" action="{{ route('admin.media.update', $item) }}" class="portal-filters">
                             @csrf
                             @method('PUT')
                             <input class="portal-input" type="text" name="alt" value="{{ $item->alt }}" placeholder="Alt-tekst" style="font-size: 12px;">
                             <button class="btn btn-ghost" type="submit">Opslaan</button>
-                        </form>
-                        <form method="POST" action="{{ route('admin.media.destroy', $item) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-ghost" data-confirm="Bestand definitief verwijderen? Controleer eerst of het nergens meer gebruikt wordt.">Verwijderen</button>
                         </form>
                     </div>
                 @empty

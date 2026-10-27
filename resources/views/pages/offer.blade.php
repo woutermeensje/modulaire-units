@@ -36,7 +36,7 @@
 
             <h2 class="mh-offer-intro__heading">{{ $landing['heading'] }}</h2>
 
-            <div class="mh-offer-intro__body">
+            <div class="mh-offer-intro__body text-content">
                 {!! $landing['body'] !!}
             </div>
 

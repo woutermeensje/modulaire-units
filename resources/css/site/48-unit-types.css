@@ -12,7 +12,7 @@
 .mh-unit-types__list h2 {
   margin: 0 0 1.25rem;
   color: var(--color-text, #333);
-  font-size: 24px;
+  font-size: var(--text-2xl);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -63,7 +63,7 @@
 .mh-unit-type__title {
   margin: 0;
   color: var(--color-text, #333);
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 700;
   line-height: 1.25;
 }

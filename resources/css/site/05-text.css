@@ -1,0 +1,316 @@
+/* ==========================================================================
+   Typografie — de enige bron voor tekststyling op de website.
+
+   1. Tokens       lettertypen, één schaal met lettergroottes, regelafstanden en tekstkleuren.
+                   Componenten gebruiken altijd deze variabelen (var(--text-base)) en
+                   nooit eigen px-waarden, zodat één aanpassing hier overal doorwerkt.
+   2. Basis        h1–h6, alinea's, links en inline-elementen.
+   3. .text-content
+                   lopende tekst uit het CMS (pagina's, blogs, units, vacatures, Elementor-
+                   tekstblokken): witruimte, opsommingen, citaten, tabellen, afbeeldingen.
+   4. Hulpklassen  .text-title, .text-lead, .text-eyebrow, .text-muted, .text-small.
+   ========================================================================== */
+
+/* ── 1. Tokens ── */
+:root {
+  --font-text: 'Work Sans', sans-serif;
+  --font-heading: 'Work Sans', sans-serif;
+
+  --text-xs: 0.75rem;                                        /* 12px  labels, badges */
+  --text-sm: 0.8125rem;                                      /* 13px  meta, hulpteksten */
+  --text-base: 0.875rem;                                     /* 14px  lopende tekst, knoppen */
+  --text-lg: 1rem;                                           /* 16px  intro, h5 */
+  --text-xl: 1.25rem;                                        /* 20px  h4, kaarttitels */
+  --text-2xl: 1.5rem;                                        /* 24px  h3, sectietitels */
+  --text-3xl: clamp(1.625rem, 1.45rem + 0.75vw, 1.875rem);   /* 26–30px  h2 */
+  --text-4xl: clamp(1.75rem, 1.35rem + 1.75vw, 2.5rem);      /* 28–40px  h1, paginatitel */
+  --text-display: clamp(2.125rem, 1.4rem + 3.2vw, 3.625rem); /* 34–58px  hero */
+
+  --heading-1: var(--text-xl);
+  --heading-2: 1.125rem;                                     /* 18px */
+  --heading-3: 1.125rem;                                     /* 18px */
+  --heading-4: var(--text-lg);
+  --heading-5: var(--text-lg);
+  --heading-6: var(--text-base);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --color-heading: var(--color-text, #333);
+  --color-text-muted: #6B7280;
+  --color-link: var(--color-primary-text, #2B6E8F);
+  --color-link-hover: var(--color-primary-dark, #1F5670);
+
+  /* Maximale regellengte voor prettig leesbare tekst. */
+  --measure: 72ch;
+}
+
+/* ── 2. Basis ── */
+body {
+  color: var(--color-text, #333);
+  font-family: var(--font-text);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5em;
+  color: var(--color-heading);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--heading-1); line-height: var(--leading-tight); letter-spacing: -0.01em; }
+h2 { font-size: var(--heading-2); line-height: var(--leading-tight); }
+h3 { font-size: var(--heading-3); }
+h4 { font-size: var(--heading-4); }
+h5 { font-size: var(--heading-5); }
+h6 { font-size: var(--heading-6); }
+
+p {
+  margin: 0 0 1em;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--color-link);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover,
+a:focus {
+  color: var(--color-link-hover);
+}
+
+strong,
+b {
+  font-weight: var(--weight-bold);
+}
+
+small {
+  font-size: var(--text-sm);
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-style: normal;
+  line-height: var(--leading-snug);
+}
+
+/* ── 3. Lopende tekst uit het CMS ──
+   Lijsten, alinea's en tabellen krijgen alleen opmaak als ze géén eigen klasse hebben (of een
+   WordPress-blokklasse zoals .wp-block-list), zodat shortcodes en componenten binnen de tekst
+   (grids, formulieren) ongemoeid blijven. */
+.text-content,
+.elementor-widget-text-editor {
+  color: var(--color-text, #333);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  overflow-wrap: break-word;
+}
+
+.text-content > :first-child,
+.elementor-widget-text-editor > :first-child {
+  margin-top: 0;
+}
+
+.text-content > :last-child,
+.elementor-widget-text-editor > :last-child {
+  margin-bottom: 0;
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1.6em 0 0.5em;
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(p, ul, ol, dl, blockquote, table, figure, pre):is(:not([class]), [class*="wp-block-"]) {
+  margin: 0 0 1.25em;
+}
+
+/* Opsommingen */
+:is(.text-content, .elementor-widget-text-editor) :is(ul, ol):is(:not([class]), [class*="wp-block-"]) {
+  padding-left: 1.5em;
+}
+
+:is(.text-content, .elementor-widget-text-editor) ul:is(:not([class]), [class*="wp-block-"]) {
+  list-style: disc;
+}
+
+:is(.text-content, .elementor-widget-text-editor) ol:is(:not([class]), [class*="wp-block-"]) {
+  list-style: decimal;
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(ul, ol):is(:not([class]), [class*="wp-block-"]) li {
+  margin: 0.4em 0;
+  padding-left: 0.3em;
+  font-size: inherit;
+  line-height: var(--leading-normal);
+}
+
+/* Geïmporteerde content zet tekst vaak in een <p> binnen een <li>. */
+:is(.text-content, .elementor-widget-text-editor) li > p:is(:not([class]), [class*="wp-block-"]) {
+  margin: 0;
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(ul, ol):is(:not([class]), [class*="wp-block-"]) li::marker {
+  color: var(--color-primary, #2B6E8F);
+}
+
+:is(.text-content, .elementor-widget-text-editor) ol:is(:not([class]), [class*="wp-block-"]) li::marker {
+  font-weight: var(--weight-semibold);
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(ul, ol):is(:not([class]), [class*="wp-block-"]) :is(ul, ol) {
+  margin: 0.4em 0 0;
+}
+
+:is(.text-content, .elementor-widget-text-editor) ul:is(:not([class]), [class*="wp-block-"]) ul {
+  list-style: circle;
+}
+
+/* Definitielijsten */
+:is(.text-content, .elementor-widget-text-editor) dt {
+  font-weight: var(--weight-semibold);
+}
+
+:is(.text-content, .elementor-widget-text-editor) dd {
+  margin: 0 0 0.75em;
+}
+
+/* Links in lopende tekst zijn altijd herkenbaar onderstreept. */
+:is(.text-content, .elementor-widget-text-editor) a:is(:not([class]), [class*="wp-block-"]) {
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+}
+
+/* Citaten */
+:is(.text-content, .elementor-widget-text-editor) blockquote:is(:not([class]), [class*="wp-block-"]) {
+  padding: 0.25em 0 0.25em 1.25em;
+  border-left: 3px solid var(--color-primary, #2B6E8F);
+  color: var(--color-text, #333);
+  font-size: var(--text-lg);
+  font-style: italic;
+  line-height: var(--leading-normal);
+}
+
+:is(.text-content, .elementor-widget-text-editor) blockquote:is(:not([class]), [class*="wp-block-"]) > :last-child {
+  margin-bottom: 0;
+}
+
+/* Scheidingslijn */
+:is(.text-content, .elementor-widget-text-editor) hr {
+  margin: 2em 0;
+  border: 0;
+  border-top: 1px solid var(--color-border, #dedede);
+}
+
+/* Tabellen */
+:is(.text-content, .elementor-widget-text-editor) table:is(:not([class]), [class*="wp-block-"]) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+:is(.text-content, .elementor-widget-text-editor) table:is(:not([class]), [class*="wp-block-"]) :is(th, td) {
+  padding: 0.65em 0.85em;
+  border: 1px solid var(--color-border, #dedede);
+  text-align: left;
+  vertical-align: top;
+}
+
+:is(.text-content, .elementor-widget-text-editor) table:is(:not([class]), [class*="wp-block-"]) th {
+  background: var(--color-surface-alt, #EEF4F7);
+  font-weight: var(--weight-semibold);
+}
+
+:is(.text-content, .elementor-widget-text-editor) table:is(:not([class]), [class*="wp-block-"]) tbody tr:nth-child(odd) > * {
+  background: transparent;
+}
+
+/* Afbeeldingen en code */
+:is(.text-content, .elementor-widget-text-editor) img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+:is(.text-content, .elementor-widget-text-editor) figcaption {
+  margin-top: 0.5em;
+}
+
+:is(.text-content, .elementor-widget-text-editor) :is(code, kbd) {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--color-surface-alt, #EEF4F7);
+  font-size: 0.9em;
+}
+
+:is(.text-content, .elementor-widget-text-editor) mark {
+  padding: 0 0.2em;
+  background: rgba(111, 170, 123, 0.25);
+  color: inherit;
+}
+
+/* ── 4. Hulpklassen ── */
+.text-display {
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.015em;
+}
+
+.text-title {
+  margin: 0 0 0.35em;
+  color: var(--color-heading);
+  font-size: var(--heading-1);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.text-heading {
+  font-size: var(--heading-2);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.text-lead {
+  max-width: var(--measure);
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+}
+
+.text-eyebrow {
+  color: var(--color-primary-text, #2B6E8F);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-small {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}

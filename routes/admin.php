@@ -2,7 +2,9 @@
 
 use App\Admin\Registry;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\PasswordResetController as AdminPasswordResetController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubmissionController;
@@ -39,11 +41,25 @@ Route::middleware('auth')->group(function (): void {
 
 /*
 |--------------------------------------------------------------------------
-| Beheer (CMS) — alleen voor gebruikers met is_admin
+| Beheer (CMS) — eigen login op /admin/inloggen, alleen voor gebruikers met is_admin
 |--------------------------------------------------------------------------
 */
+Route::prefix('admin')->name('admin.')->group(function (): void {
+    Route::middleware('guest')->group(function (): void {
+        Route::get('inloggen', [AdminLoginController::class, 'create'])->name('login');
+        Route::post('inloggen', [AdminLoginController::class, 'store'])->name('login.store');
+        Route::get('wachtwoord-reset', [AdminPasswordResetController::class, 'request'])->name('password.request');
+        Route::post('wachtwoord-reset', [AdminPasswordResetController::class, 'email'])->middleware('throttle:forms')->name('password.email');
+        Route::get('wachtwoord-reset/{token}', [AdminPasswordResetController::class, 'reset'])->name('password.reset');
+        Route::post('wachtwoord-reset/nieuw', [AdminPasswordResetController::class, 'update'])->name('password.update');
+    });
+
+    Route::post('uitloggen', [AdminLoginController::class, 'destroy'])->middleware('auth')->name('logout');
+    Route::get('/', fn () => redirect()->route('admin.dashboard'))->name('home');
+});
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureUserIsAdmin::class])->group(function (): void {
-    Route::get('/', AdminDashboardController::class)->name('dashboard');
+    Route::get('dashboard', AdminDashboardController::class)->name('dashboard');
 
     Route::get('inzendingen', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('inzendingen/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
@@ -52,6 +68,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureUserIsAdmin::c
 
     Route::get('media', [MediaController::class, 'index'])->name('media.index');
     Route::post('media', [MediaController::class, 'store'])->name('media.store');
+    Route::get('media/{media}/download', [MediaController::class, 'download'])->name('media.download');
     Route::put('media/{media}', [MediaController::class, 'update'])->name('media.update');
     Route::delete('media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
 

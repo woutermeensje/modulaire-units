@@ -2,15 +2,10 @@
    ModulaireHuisvesting.nl — aanvullingen op de theme-styling (Laravel)
    ========================================================================== */
 
+/* Lettertypen, groottes en tekstkleuren komen uit 05-text.css. */
 body {
   margin: 0;
-  font-family: 'Work Sans', sans-serif;
   background: var(--color-bg, #FBFAF8);
-  color: var(--color-text, #333);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Work Sans', sans-serif;
 }
 
 /* ── Header: Inloggen + "Informatie aanvragen" (zelfde opbouw als de inlogomgeving) ── */
@@ -26,7 +21,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 44px;
   padding: 0 14px;
   color: #333;
-  font-size: 15px;
+  font-size: var(--text-base);
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
@@ -48,7 +43,7 @@ button.mh-btn--solid {
   border-color: #2B6E8F !important;
   background: #2B6E8F !important;
   color: #fff !important;
-  font-size: 17px !important;
+  font-size: var(--text-lg) !important;
   font-weight: 700 !important;
 }
 
@@ -64,7 +59,7 @@ a.mh-btn--solid.mh-btn--nav-contact:hover {
 .mh-header a.mh-btn--solid.mh-btn--nav-contact,
 .mh-mobile-nav a.mh-btn--solid.mh-btn--nav-contact {
   padding: 13px 18px !important;
-  font-size: 15px !important;
+  font-size: var(--text-base) !important;
   font-weight: 600 !important;
 }
 
@@ -128,7 +123,7 @@ a.mh-btn--accent:focus,
 .mh-footer__heading {
   margin: 0 0 12px;
   color: #fff;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: .02em;
 }
@@ -139,7 +134,7 @@ a.mh-btn--accent:focus,
 
 .mh-footer__text {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--text-base);
   line-height: 1.6;
 }
 
@@ -151,7 +146,7 @@ a.mh-btn--accent:focus,
 
 .mh-footer__links li {
   margin: 0 0 4px;
-  font-size: 15px;
+  font-size: var(--text-base);
   line-height: 1.5;
 }
 
@@ -161,7 +156,8 @@ a.mh-btn--accent:focus,
 }
 
 .mh-footer a:hover {
-  color: var(--e-global-color-5e977a0, #2B6E8F);
+  color: #fff;
+  text-decoration: underline;
 }
 
 .mh-footer__bottom {
@@ -173,7 +169,7 @@ a.mh-btn--accent:focus,
   margin: 28px auto 0;
   padding-top: 18px;
   border-top: 1px solid rgba(255, 255, 255, .2);
-  font-size: 13px;
+  font-size: var(--text-sm);
   opacity: .85;
 }
 
@@ -208,6 +204,6 @@ body:not(.elementor-page) .site-main.page .page-content {
 .site-main .page-header .entry-title {
   margin: 0;
   color: var(--color-text, #333);
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: var(--text-4xl);
   font-weight: 700;
 }

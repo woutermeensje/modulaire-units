@@ -20,6 +20,28 @@ class LoginController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->authenticate($request);
+
+        return redirect()->intended(route('dashboard'));
+    }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
+    /**
+     * Logs the user in with the posted credentials, throttled per e-mailadres + IP.
+     *
+     * @throws ValidationException
+     */
+    protected function authenticate(Request $request): void
+    {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
@@ -43,17 +65,5 @@ class LoginController extends Controller
 
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard'));
-    }
-
-    public function destroy(Request $request): RedirectResponse
-    {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
     }
 }

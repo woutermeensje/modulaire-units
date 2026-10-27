@@ -8,6 +8,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UsedListingController;
 use App\Http\Controllers\VacancyController;
 use App\Http\Middleware\EnsureTrailingSlash;
 use App\Support\SiteUrl;
@@ -44,6 +45,8 @@ Route::middleware('throttle:forms')->group(function (): void {
     Route::post('offerte/versturen', [QuoteController::class, 'submit'])->name('quote.submit');
     Route::post('formulier/informatie', [FormController::class, 'information'])->name('forms.information');
     Route::post('vacature/{slug}/solliciteren', [VacancyController::class, 'apply'])->name('vacancies.apply');
+    Route::post('units-aanbieden', [UsedListingController::class, 'store'])->name('used-listings.store');
+    Route::post('gebruikt/aanbod/{slug}/reageren', [UsedListingController::class, 'respond'])->name('used-listings.respond');
 });
 
 /*
@@ -73,6 +76,9 @@ Route::middleware(EnsureTrailingSlash::class)->group(function (): void {
     Route::get('product-categorie/{slug}', fn () => redirect('/winkel/', 301));
 
     Route::get('vacature/{slug}', [VacancyController::class, 'show'])->name('vacancies.show');
+
+    Route::get('units-aanbieden', [UsedListingController::class, 'create'])->name('used-listings.create');
+    Route::get('gebruikt/aanbod/{slug}', [UsedListingController::class, 'show'])->name('used-listings.show');
 
     Route::get('{path}', [PageController::class, 'show'])->where('path', '.*')->name('page');
 });

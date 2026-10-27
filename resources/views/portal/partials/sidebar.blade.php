@@ -6,6 +6,7 @@
         'admin.posts' => ['ph-newspaper-clipping', 'Blogs'],
         'admin.units' => ['ph-cube', 'Units'],
         'admin.unit-terms' => ['ph-tag', 'Unit-kenmerken'],
+        'admin.used-listings' => ['ph-recycle', 'Gebruikte units'],
         'admin.products' => ['ph-package', 'Producten'],
         'admin.vacancies' => ['ph-briefcase', 'Vacatures'],
         'admin.team-members' => ['ph-users-three', 'Team'],
@@ -33,6 +34,7 @@
         @if ($user->isAdmin())
             <a href="{{ route('admin.dashboard') }}" class="backend-link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}"><i class="ph ph-squares-four"></i><span>Beheer</span></a>
             <a href="{{ route('admin.submissions.index') }}" class="backend-link {{ request()->routeIs('admin.submissions.*') ? 'is-active' : '' }}"><i class="ph ph-tray"></i><span>Inzendingen{{ $unreadSubmissions ? ' ('.$unreadSubmissions.')' : '' }}</span></a>
+            <a href="{{ route('admin.opdrachtgevers.index') }}" class="backend-link {{ request()->routeIs('admin.opdrachtgevers.*') ? 'is-active' : '' }}"><i class="ph ph-address-book"></i><span>Opdrachtgevers</span></a>
 
             <div class="backend-nav-group">
                 <div class="backend-nav-group__title">Content</div>
@@ -51,7 +53,7 @@
     </nav>
 
     <div class="backend-sidebar__foot">
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ request()->routeIs('admin.*') ? route('admin.logout') : route('logout') }}">
             @csrf
             <button type="submit" class="backend-logout"><i class="ph ph-sign-out"></i><span>Uitloggen</span></button>
         </form>

@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Product;
 use App\Models\Unit;
 use App\Models\UnitTerm;
+use App\Models\UsedListing;
 use App\Models\Vacancy;
 use App\Support\SiteUrl;
 use Illuminate\Http\Response;
@@ -45,6 +46,10 @@ class SitemapController extends Controller
 
         Vacancy::query()->published()->where('noindex', false)->get()
             ->each(fn (Vacancy $vacancy) => $urls->push($this->entry($vacancy->url(), $vacancy->updated_at)));
+
+        $urls->push($this->entry(SiteUrl::path(route('used-listings.create', [], false)), null));
+        UsedListing::query()->published()->get()
+            ->each(fn (UsedListing $listing) => $urls->push($this->entry($listing->url(), $listing->updated_at)));
 
         $xml = view('sitemap', ['urls' => $urls->unique('loc')->values()])->render();
 

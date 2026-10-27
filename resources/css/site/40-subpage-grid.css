@@ -62,8 +62,8 @@
 
     .muo-card__title {
         margin: 0;
-        font-family:'Work Sans', sans-serif;
-        font-size: 18px;
+        font-family:var(--font-text);
+        font-size: var(--text-lg);
         font-weight: 700;
         line-height: 1.25;
         color: #ffffff;

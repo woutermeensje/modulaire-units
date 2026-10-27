@@ -64,7 +64,7 @@
 
 .mh-service-block__step {
   color: var(--color-primary, #2B6E8F);
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: 700;
   letter-spacing: .08em;
 }
@@ -72,23 +72,11 @@
 .mh-service .mh-service-block__title {
   margin: 0;
   color: var(--color-text, #333);
-  font-size: 26px;
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.25;
 }
 
-.mh-service-block__body {
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.mh-service-block__body p {
-  margin: 0 0 0.9rem;
-}
-
-.mh-service-block__body p:last-child {
-  margin-bottom: 0;
-}
 
 /* ── Contactbalk onderaan ── */
 .mh-service-cta {
@@ -109,14 +97,14 @@
 .mh-service .mh-service-cta__title {
   margin: 0 0 6px;
   color: var(--color-text, #333);
-  font-size: 26px;
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.25;
 }
 
 .mh-service-cta__text {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-base);
   line-height: 1.6;
 }
 

@@ -3,13 +3,17 @@
 namespace Tests\Feature;
 
 use App\Admin\Registry;
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Models\Unit;
 use App\Models\UnitTerm;
 use App\Models\User;
+use App\Notifications\AdminResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -36,6 +40,105 @@ class AdminCmsTest extends TestCase
         foreach (['admin.dashboard', 'admin.submissions.index', 'admin.media.index', 'admin.settings.index'] as $route) {
             $this->actingAs($this->admin)->get(route($route))->assertOk();
         }
+    }
+
+    public function test_guests_are_sent_to_the_admin_login(): void
+    {
+        $this->get('/admin')->assertRedirect(route('admin.dashboard'));
+        $this->get(route('admin.dashboard'))->assertRedirect(route('admin.login'));
+        $this->get(route('admin.pages.index'))->assertRedirect(route('admin.login'));
+        $this->get(route('admin.login'))->assertOk()->assertSee('Inloggen beheer');
+    }
+
+    public function test_admin_logs_in_and_out_via_the_admin_login(): void
+    {
+        $this->post(route('admin.login.store'), ['email' => $this->admin->email, 'password' => 'password'])
+            ->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticatedAs($this->admin);
+
+        $this->get(route('admin.login'))->assertRedirect(route('admin.dashboard'));
+
+        $this->post(route('admin.logout'))->assertRedirect(route('admin.login'));
+        $this->assertGuest();
+    }
+
+    public function test_customers_cannot_log_in_via_the_admin_login(): void
+    {
+        $customer = User::factory()->create();
+
+        $this->from(route('admin.login'))
+            ->post(route('admin.login.store'), ['email' => $customer->email, 'password' => 'password'])
+            ->assertRedirect(route('admin.login'))
+            ->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
+    public function test_admin_receives_a_reset_link_to_the_admin_and_can_set_a_new_password(): void
+    {
+        Notification::fake();
+        $customer = User::factory()->create();
+
+        $this->get(route('admin.password.request'))->assertOk();
+        $this->post(route('admin.password.email'), ['email' => $customer->email])->assertSessionHas('status');
+        $this->post(route('admin.password.email'), ['email' => $this->admin->email])->assertSessionHas('status');
+
+        Notification::assertNothingSentTo($customer);
+        Notification::assertSentTo($this->admin, AdminResetPassword::class, function (AdminResetPassword $notification): bool {
+            $url = $notification->toMail($this->admin)->actionUrl;
+            $this->assertStringContainsString('/admin/wachtwoord-reset/'.$notification->token, $url);
+
+            $this->get($url)->assertOk();
+            $this->post(route('admin.password.update'), [
+                'token' => $notification->token,
+                'email' => $this->admin->email,
+                'password' => 'nieuw-geheim-123',
+                'password_confirmation' => 'nieuw-geheim-123',
+            ])->assertRedirect(route('admin.login'));
+
+            return true;
+        });
+
+        $this->assertTrue(Hash::check('nieuw-geheim-123', $this->admin->fresh()->password));
+    }
+
+    public function test_clients_overview_lists_registered_customers_only(): void
+    {
+        $customer = User::factory()->create(['name' => 'Klant Jansen', 'company_name' => 'Jansen Bouw']);
+
+        $this->actingAs($this->admin)->get('/admin/opdrachtgevers')
+            ->assertOk()
+            ->assertSee('Klant Jansen')
+            ->assertSee('Jansen Bouw')
+            ->assertDontSee($this->admin->email);
+
+        $this->actingAs($customer)->get('/admin/opdrachtgevers')->assertForbidden();
+    }
+
+    public function test_admin_can_view_download_and_delete_media(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->admin)->post(route('admin.media.store'), [
+            'files' => [UploadedFile::fake()->image('Bouwplaats foto.jpg', 1200, 800)],
+        ])->assertSessionHasNoErrors();
+
+        $media = Media::query()->sole();
+        Storage::disk('public')->assertExists($media->path);
+
+        $this->actingAs($this->admin)->get(route('admin.media.index'))
+            ->assertOk()
+            ->assertSee('bouwplaats-foto.jpg')
+            ->assertSee(route('admin.media.download', $media), false);
+
+        $this->actingAs($this->admin)->get(route('admin.media.download', $media))
+            ->assertOk()
+            ->assertDownload('bouwplaats-foto.jpg');
+
+        $this->actingAs($this->admin)->delete(route('admin.media.destroy', $media))->assertRedirect();
+
+        $this->assertModelMissing($media);
+        Storage::disk('public')->assertMissing($media->path);
+        Storage::disk('public')->assertMissing($media->sizes['thumbnail']);
     }
 
     public function test_admin_can_create_a_child_page(): void

@@ -1,0 +1,26 @@
+@extends('layouts.site', ['seo' => new \App\Support\Seo(title: \App\Support\Seo::withSiteName('Beheer — Wachtwoord vergeten'), noindex: true)])
+
+@section('body_class', 'page mh-auth-page')
+
+@section('content')
+<main id="content" class="mh-auth">
+    <div class="form-container">
+        <h1>Wachtwoord vergeten</h1>
+        <p>Vul je e-mailadres in. We sturen je een link waarmee je een nieuw wachtwoord kunt instellen.</p>
+        @include('auth.partials.errors')
+
+        <form method="POST" action="{{ route('admin.password.email') }}">
+            @csrf
+            <div class="form-field">
+                <label class="label-basis" for="email">E-mailadres</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" class="basis-input" required autofocus>
+            </div>
+            <button class="btn btn-primary" type="submit">Herstellink versturen</button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{{ route('admin.login') }}">Terug naar inloggen</a>
+        </div>
+    </div>
+</main>
+@endsection

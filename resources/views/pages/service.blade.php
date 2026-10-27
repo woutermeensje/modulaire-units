@@ -42,7 +42,7 @@
                         @if ($block['heading'])
                             <h2 class="mh-service-block__title">{{ $block['heading'] }}</h2>
                         @endif
-                        <div class="mh-service-block__body">{!! $block['body'] !!}</div>
+                        <div class="mh-service-block__body text-content">{!! $block['body'] !!}</div>
                     </div>
                 </section>
             @endforeach

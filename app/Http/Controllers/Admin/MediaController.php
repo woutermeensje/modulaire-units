@@ -7,7 +7,9 @@ use App\Models\Media;
 use App\Services\MediaUploader;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaController extends Controller
 {
@@ -37,6 +39,11 @@ class MediaController extends Controller
         }
 
         return back()->with('status', count($request->file('files')).' bestand(en) geüpload.');
+    }
+
+    public function download(Media $media): StreamedResponse
+    {
+        return Storage::disk($media->disk)->download($media->path, basename($media->path));
     }
 
     public function update(Request $request, Media $media): RedirectResponse

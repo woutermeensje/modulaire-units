@@ -65,7 +65,7 @@
         @if (trim(strip_tags((string) $unit->content)) !== '')
             <div class="mh-col-description">
                 <h2>Unit beschrijving</h2>
-                {!! $content !!}
+                <div class="text-content">{!! $content !!}</div>
             </div>
         @endif
 

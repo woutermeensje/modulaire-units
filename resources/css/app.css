@@ -5,11 +5,14 @@
  * (Hello Elementor + child theme "modulairehuisvesting" + mh-units/team plugins),
  * cleaned up so every font is Work Sans and every upload points to /storage/media.
  * Site specific additions and overrides live in ./site/90-*.css.
+ * All typography (font sizes, headings, lists, rich text) is defined in ./site/05-text.css;
+ * other stylesheets only use its tokens, e.g. font-size: var(--text-base).
  */
 @import './site/01-reset.css';
 @import './site/02-theme.css';
 @import './site/03-block-library.css';
 @import './site/04-wp-global-styles.css';
+@import './site/05-text.css';
 @import './site/10-elementor-frontend.css';
 @import './site/11-elementor-widgets.css';
 @import './site/12-elementor-kit.css';
@@ -35,6 +38,7 @@
 @import './site/47-service-landing.css';
 @import './site/48-unit-types.css';
 @import './site/49-discount-popup.css';
+@import './site/50-used-listings.css';
 @import './site/90-layout.css';
 @import './site/91-components.css';
 @import './site/92-auth.css';

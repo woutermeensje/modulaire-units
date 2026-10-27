@@ -76,6 +76,10 @@ class PageController extends Controller
             ]);
         }
 
+        if ($page->path === UsedListingController::PAGE_PATH) {
+            return app(UsedListingController::class)->index($page);
+        }
+
         if ($page->template === 'service') {
             return view('pages.service', [
                 'page' => $page,

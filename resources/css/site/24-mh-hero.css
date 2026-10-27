@@ -45,8 +45,8 @@
     margin: 0 0 14px;
     padding-bottom: 6px;
     border-bottom: 3px solid var(--color-secondary, #2B6E8F);
-    font-family:'Work Sans', sans-serif;
-    font-size: 13px;
+    font-family:var(--font-text);
+    font-size: var(--text-sm);
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -59,9 +59,9 @@
 }
 
 .mh-home-hero__title {
-    font-family:'Work Sans', sans-serif;
+    font-family:var(--font-text);
     font-weight: 800;
-    font-size: 32px;
+    font-size: var(--text-4xl);
     line-height: 1.22;
     color: #ffffff;
     margin: 0;
@@ -73,8 +73,8 @@
 
 .mh-home-hero__subtitle {
     margin: 12px 0 0;
-    font-family:'Work Sans', sans-serif;
-    font-size: 16px;
+    font-family:var(--font-text);
+    font-size: var(--text-base);
     font-weight: 400;
     line-height: 1.65;
     color: rgba(255, 255, 255, 0.88);
@@ -96,8 +96,8 @@
     justify-content: center;
     min-height: 50px;
     padding: 12px 28px;
-    font-family:'Work Sans', sans-serif;
-    font-size: 15px;
+    font-family:var(--font-text);
+    font-size: var(--text-base);
     font-weight: 600;
     text-decoration: none;
     border-radius: 5px;
@@ -123,7 +123,7 @@
     background: var(--color-button, #2B6E8F);
     border-color: var(--color-button, #2B6E8F);
     color: #ffffff;
-    font-family:'Work Sans', sans-serif;
+    font-family:var(--font-text);
     font-weight: 600;
 }
 
@@ -151,12 +151,12 @@
     }
 
     .mh-home-hero__title {
-        font-size: 24px;
+        font-size: var(--text-2xl);
     }
 
     .mh-home-hero__subtitle {
         max-width: 100%;
-        font-size: 14px;
+        font-size: var(--text-sm);
         line-height: 1.5;
     }
 }
@@ -173,7 +173,7 @@
     }
 
     .mh-home-hero__title {
-        font-size: 22px;
+        font-size: var(--text-2xl);
     }
 
     .mh-lp__btn {
@@ -226,8 +226,8 @@
     margin: 0 0 14px !important;
     padding-bottom: 6px !important;
     border-bottom: 3px solid var(--color-secondary, #2B6E8F) !important;
-    font-family:'Work Sans', sans-serif !important;
-    font-size: 13px !important;
+    font-family:var(--font-text) !important;
+    font-size: var(--text-sm) !important;
     font-weight: 700 !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
@@ -240,9 +240,9 @@
 }
 
 .mh-home-hero__title {
-    font-family:'Work Sans', sans-serif !important;
+    font-family:var(--font-text) !important;
     font-weight: 800 !important;
-    font-size: 32px !important;
+    font-size: var(--text-4xl) !important;
     line-height: 1.22 !important;
     color: #ffffff !important;
     margin: 0 !important;
@@ -256,8 +256,8 @@
 
 .mh-home-hero__subtitle {
     margin: 12px 0 0 !important;
-    font-family:'Work Sans', sans-serif !important;
-    font-size: 16px !important;
+    font-family:var(--font-text) !important;
+    font-size: var(--text-base) !important;
     font-weight: 400 !important;
     line-height: 1.65 !important;
     color: rgba(255, 255, 255, 0.88) !important;
@@ -277,8 +277,8 @@
     justify-content: center !important;
     min-height: 50px !important;
     padding: 12px 28px !important;
-    font-family:'Work Sans', sans-serif !important;
-    font-size: 15px !important;
+    font-family:var(--font-text) !important;
+    font-size: var(--text-base) !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
     text-decoration: none !important;
@@ -291,7 +291,7 @@
     background: var(--color-highlight, #6FAA7B) !important;
     border-color: var(--color-highlight, #6FAA7B) !important;
     color: #ffffff !important;
-    font-family:'Work Sans', sans-serif !important;
+    font-family:var(--font-text) !important;
     font-weight: 600 !important;
 }
 
@@ -318,12 +318,12 @@
     }
 
     .mh-home-hero__title {
-        font-size: 24px !important;
+        font-size: var(--text-2xl) !important;
     }
 
     .mh-home-hero__subtitle {
         max-width: 100% !important;
-        font-size: 14px !important;
+        font-size: var(--text-sm) !important;
         line-height: 1.5 !important;
     }
 }
@@ -340,7 +340,7 @@
     }
 
     .mh-home-hero__title {
-        font-size: 22px !important;
+        font-size: var(--text-2xl) !important;
     }
 
     .mh-home-hero .mh-lp__btn {

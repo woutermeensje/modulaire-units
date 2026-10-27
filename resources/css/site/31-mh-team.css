@@ -61,8 +61,8 @@
   align-items: center;
   justify-content: center;
   color: var(--color-primary-text, #2B6E8F);
-  font-family:'Work Sans', sans-serif;
-  font-size: 44px;
+  font-family:var(--font-text);
+  font-size: var(--text-display);
   font-weight: 800;
   line-height: 1;
   background:
@@ -87,8 +87,8 @@
 .mh-team-card__name {
   margin: 0;
   color: var(--color-text, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: 26px;
+  font-family:var(--font-text);
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: 0;
@@ -97,8 +97,8 @@
 .mh-team-card__role {
   margin: 0;
   color: var(--color-primary-text, #2B6E8F);
-  font-family:'Work Sans', sans-serif;
-  font-size: 14px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1.35;
 }
@@ -106,8 +106,8 @@
 .mh-team-card__description {
   margin: 0;
   color: var(--color-text-soft, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: 15px;
+  font-family:var(--font-text);
+  font-size: var(--text-base);
   line-height: 1.65;
 }
 
@@ -122,8 +122,8 @@
 .mh-team-card__contact-link:visited {
   display: inline;
   color: var(--color-text, #333) !important;
-  font-family:'Work Sans', sans-serif;
-  font-size: 14px;
+  font-family:var(--font-text);
+  font-size: var(--text-sm);
   font-weight: 500;
   line-height: 1.45;
   text-decoration: none !important;
@@ -151,8 +151,8 @@
   border-radius: 5px;
   background: var(--color-surface-alt, #EEF4F7);
   color: var(--color-text-soft, #333);
-  font-family:'Work Sans', sans-serif;
-  font-size: 15px;
+  font-family:var(--font-text);
+  font-size: var(--text-base);
   line-height: 1.6;
 }
 
@@ -176,6 +176,6 @@
   }
 
   .mh-team-card__name {
-    font-size: 23px;
+    font-size: var(--text-2xl);
   }
 }

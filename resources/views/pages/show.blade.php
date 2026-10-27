@@ -20,7 +20,7 @@
                 <h1 class="entry-title">{{ $page->title }}</h1>
             </div>
         @endif
-        <div class="page-content">
+        <div class="page-content text-content">
             {!! $content !!}
         </div>
     </main>

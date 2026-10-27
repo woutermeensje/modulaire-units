@@ -1,0 +1,180 @@
+/* ==========================================================================
+   Gebruikte units van bezoekers: overzicht (/gebruikt/), aanbieden (/units-aanbieden/)
+   en de detailpagina. Knoppen komen uit 45-offer-landing.css, velden uit 23-mh-forms.css.
+   ========================================================================== */
+
+.mh-used__header,
+.mh-used__grid,
+.mh-used__empty,
+.mh-used__content,
+.mh-used__form-wrap,
+.mh-used .mhu-breadcrumb {
+  width: min(1200px, calc(100% - 2rem));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.mh-used__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 48px;
+  margin-bottom: 32px;
+}
+
+.mh-used__cta {
+  flex-shrink: 0;
+}
+
+.mh-used__empty {
+  padding: 32px;
+  border: 1px dashed var(--color-border, #dedede);
+  border-radius: 12px;
+  background: #fff;
+  text-align: center;
+}
+
+.mh-used__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.mh-used-card {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--color-border, #dedede);
+  border-radius: 12px;
+  background: #fff;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.mh-used-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(43, 110, 143, 0.18);
+}
+
+.mh-used-card__link,
+.mh-used-card__link:hover,
+.mh-used-card__link:visited {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.mh-used-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, rgba(57, 116, 155, 0.90), rgba(43, 110, 143, 0.98));
+}
+
+.mh-used-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mh-used-card__count {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: var(--text-sm);
+}
+
+.mh-used-card__body {
+  display: grid;
+  gap: 0.35rem;
+  padding: 16px 20px 20px;
+}
+
+.mh-used-card__title {
+  margin: 0;
+  color: var(--color-text, #333);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mh-used-card__location {
+  margin: 0;
+  color: #6B7280;
+  font-size: var(--text-sm);
+}
+
+.mh-used-card__price {
+  margin: 0.25rem 0 0;
+  color: var(--color-primary-text, #2B6E8F);
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.mh-used__content {
+  margin-top: 56px;
+}
+
+.mh-used .mhu-breadcrumb {
+  margin-top: 32px;
+}
+
+.mh-used__form-wrap {
+  max-width: 760px;
+  margin-top: 24px;
+}
+
+.mh-used__form-wrap .mh-form__grid + .mh-form__grid {
+  margin-top: 14px;
+}
+
+.mh-used__file {
+  padding: 10px 12px;
+  background: #fff;
+}
+
+/* ── Detailpagina ── */
+.mh-used-single .mh-product-cats span {
+  display: inline-block;
+}
+
+a.mh-used__respond-link,
+a.mh-used__respond-link:visited {
+  margin-top: 1.5rem;
+  background: #2B6E8F;
+  color: #fff;
+}
+
+.mh-used__description {
+  line-height: 1.7;
+}
+
+.mh-used__respond .mh-form {
+  max-width: none;
+  margin: 0;
+}
+
+.mh-used__respond .mh-form__grid + .mh-form__grid {
+  margin-top: 14px;
+}
+
+@media (max-width: 960px) {
+  .mh-used__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .mh-used__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mh-used__grid {
+    grid-template-columns: 1fr;
+  }
+}

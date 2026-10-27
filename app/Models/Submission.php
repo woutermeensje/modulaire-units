@@ -17,6 +17,8 @@ class Submission extends Model
         'offerte' => 'Offerteaanvraag',
         'informatie' => 'Informatieaanvraag',
         'sollicitatie' => 'Sollicitatie',
+        'gebruikt_aanbod' => 'Gebruikte unit aangeboden',
+        'gebruikt_reactie' => 'Reactie op gebruikte unit',
     ];
 
     /**

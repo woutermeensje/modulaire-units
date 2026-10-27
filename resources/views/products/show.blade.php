@@ -32,7 +32,7 @@
         @if (trim(strip_tags((string) $product->content)) !== '')
             <div class="mh-col-description">
                 <h2>Beschrijving</h2>
-                {!! $content !!}
+                <div class="text-content">{!! $content !!}</div>
             </div>
         @endif
 
