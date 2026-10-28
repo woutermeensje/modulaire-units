@@ -55,14 +55,26 @@ class CustomerPortalTest extends TestCase
             ->assertSee('noindex', false);
     }
 
-    public function test_header_shows_account_link_instead_of_login_when_authenticated(): void
+    public function test_header_shows_dashboard_link_instead_of_login_when_authenticated(): void
     {
         $this->actingAs(User::factory()->create())
             ->get(route('login'))
             ->assertRedirect();
 
         $this->get(route('register'))->assertRedirect();
-        $this->get(route('search'))->assertOk()->assertSee('Mijn account')->assertDontSee('>Aanmelden<', false);
+        $this->get(route('search'))->assertOk()
+            ->assertSee('href="'.route('dashboard').'" class="mh-header__login">Dashboard</a>', false)
+            ->assertDontSee('>Inloggen<', false)
+            ->assertDontSee('>Aanmelden<', false);
+    }
+
+    public function test_header_dashboard_link_points_admins_to_the_cms(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('search'))
+            ->assertOk()
+            ->assertSee('href="'.route('admin.dashboard').'" class="mh-header__login">Dashboard</a>', false)
+            ->assertDontSee('>Inloggen<', false);
     }
 
     public function test_dashboard_requires_login(): void

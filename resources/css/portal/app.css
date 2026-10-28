@@ -381,6 +381,13 @@ body {
   padding: 18px;
 }
 
+/* A table already has its own frame (.table-wrap): no extra white card with a border around it. */
+.card:has(> .table-wrap){
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
 /* Clickable card pattern */
 .card-action{
   display: block;

@@ -32,7 +32,7 @@
 
         <div class="mh-header__cta">
             @auth
-                <a href="{{ route('dashboard') }}" class="mh-header__login">Mijn account</a>
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="mh-header__login">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="mh-header__login">Inloggen</a>
             @endauth
@@ -87,7 +87,7 @@
                 @endif
             </a>
             @auth
-                <a href="{{ route('dashboard') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Mijn account</a>
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Inloggen</a>
             @endauth
