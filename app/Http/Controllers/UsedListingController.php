@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UsedListingRequest;
 use App\Http\Requests\UsedListingResponseRequest;
 use App\Models\Page;
 use App\Models\UsedListing;
 use App\Services\Content\ShortcodeRenderer;
-use App\Services\MediaUploader;
 use App\Services\SubmissionRecorder;
 use App\Support\Seo;
 use App\Support\SiteUrl;
@@ -16,8 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
- * Used units offered by visitors: the listing on /gebruikt/, a detail page per unit with a response form,
- * and the free "Units aanbieden" form. New listings are published after approval in the admin.
+ * Used units offered by organisations: the listing on /gebruikt/ and a detail page per unit with a response form.
+ * Offering a unit happens from the customer account, see Portal\UsedListingController.
  */
 class UsedListingController extends Controller
 {
@@ -53,44 +51,20 @@ class UsedListingController extends Controller
         ]);
     }
 
-    public function create(): View
+    /**
+     * Offering units requires an account: guests are sent to the login page (with a link to register)
+     * and return to the offer form in their account afterwards.
+     */
+    public function create(): RedirectResponse
     {
-        return view('used-listings.create', [
-            'seo' => Seo::make('Units aanbieden', 'Bied je gebruikte modulaire units gratis aan op ModulaireHuisvesting.nl.', route('used-listings.create', [], false)),
-        ]);
-    }
-
-    public function store(UsedListingRequest $request, MediaUploader $uploader, SubmissionRecorder $recorder): RedirectResponse
-    {
-        if (! $recorder->isSpam($request)) {
-            $listing = UsedListing::query()->create([
-                ...$request->safe()->only(['title', 'description', 'location', 'price', 'contact_name', 'contact_email', 'contact_phone']),
-                'slug' => UsedListing::uniqueSlug($request->input('title')),
-                'images' => array_map(
-                    fn ($file): array => ['path' => $uploader->store($file, $request->input('title')), 'alt' => null],
-                    $request->file('images', []),
-                ),
-                'ip_address' => $request->ip(),
-                'status' => 'pending',
-            ]);
-
-            $recorder->record('gebruikt_aanbod', [
-                'name' => $listing->contact_name,
-                'email' => $listing->contact_email,
-                'phone' => $listing->contact_phone,
-                'message' => $listing->description,
-                'data' => [
-                    'titel' => $listing->title,
-                    'locatie' => $listing->location,
-                    'prijs' => $listing->formattedPrice(),
-                    'beoordelen' => route('admin.used-listings.edit', $listing->id),
-                ],
-                'source_url' => SiteUrl::absolute(SiteUrl::path(route('used-listings.create', [], false))),
-            ], $request);
+        if (Auth::check()) {
+            return redirect()->route('my-used-listings.create');
         }
 
-        return redirect()->to(SiteUrl::path(route('used-listings.create', [], false)))
-            ->with('form_success', 'Bedankt! Je unit is ontvangen. Na een korte controle plaatsen we de advertentie gratis op onze website.');
+        redirect()->setIntendedUrl(route('my-used-listings.create'));
+
+        return redirect()->route('login')
+            ->with('status', 'Log in of maak gratis een account aan om je gebruikte units aan te bieden.');
     }
 
     public function respond(UsedListingResponseRequest $request, string $slug, SubmissionRecorder $recorder): RedirectResponse

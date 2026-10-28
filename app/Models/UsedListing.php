@@ -8,14 +8,15 @@ use Database\Factories\UsedListingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 /**
- * A used unit offered for sale by a visitor via /units-aanbieden/. New listings wait for approval
- * in the admin ("pending") before they appear on /gebruikt/.
+ * A used unit offered for sale by a registered organisation from its account (/account/units/).
+ * New listings wait for approval in the admin ("pending") before they appear on /gebruikt/.
  */
 #[Fillable([
-    'title', 'slug', 'description', 'location', 'price', 'images',
+    'user_id', 'title', 'slug', 'description', 'location', 'price', 'images',
     'contact_name', 'contact_email', 'contact_phone', 'ip_address', 'status', 'published_at',
 ])]
 class UsedListing extends Model
@@ -35,6 +36,14 @@ class UsedListing extends Model
             'price' => 'integer',
             'published_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function url(): string

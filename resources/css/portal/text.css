@@ -174,9 +174,8 @@ em {
 
 .text-content a {
   color: var(--color-primary);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  font-weight: 400;
+  text-decoration: none;
 }
 
 .text-content a:hover {

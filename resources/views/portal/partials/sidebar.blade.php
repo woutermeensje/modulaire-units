@@ -29,6 +29,7 @@
     <nav class="backend-sidebar__nav" aria-label="Backend menu">
         <a href="{{ route('dashboard') }}" class="backend-link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}"><i class="ph ph-house"></i><span>Dashboard</span></a>
         <a href="{{ route('quote.show') }}/" class="backend-link"><i class="ph ph-shopping-bag"></i><span>Mijn offerte</span></a>
+        <a href="{{ route('my-used-listings.index') }}" class="backend-link {{ request()->routeIs('my-used-listings.*') ? 'is-active' : '' }}"><i class="ph ph-recycle"></i><span>Mijn units</span></a>
         <a href="{{ route('account.edit') }}" class="backend-link {{ request()->routeIs('account.*') ? 'is-active' : '' }}"><i class="ph ph-user-circle"></i><span>Account</span></a>
 
         @if ($user->isAdmin())

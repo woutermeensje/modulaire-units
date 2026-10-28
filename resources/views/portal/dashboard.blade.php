@@ -8,7 +8,7 @@
         @include('portal.partials.header', ['title' => 'Dashboard', 'crumbs' => ['Dashboard' => null]])
 
         {{-- De definitieve inhoud van het klantdashboard volgt nog; dit zijn de vaste startkaarten. --}}
-        <section class="sales-card-grid">
+        <section class="sales-card-grid sales-card-grid--2">
             <article class="card sales-card">
                 <div class="sales-card__icon"><i class="ph ph-shopping-bag"></i></div>
                 <p class="sales-card__meta">Offerte</p>
@@ -33,6 +33,17 @@
                 <p class="sales-card__text">Bekijk alle modulaire units: kantoorunits, woonunits, sanitaire units, containers en meer.</p>
                 <a class="sales-card__link" href="{{ url('aanbod') }}/">
                     <span>Naar het aanbod</span>
+                    <i class="ph ph-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="card sales-card">
+                <div class="sales-card__icon"><i class="ph ph-recycle"></i></div>
+                <p class="sales-card__meta">Gebruikt</p>
+                <h2 class="sales-card__title">Units aanbieden</h2>
+                <p class="sales-card__text">Heb je gebruikte modulaire units over? Bied ze gratis aan op onze pagina Gebruikt.</p>
+                <a class="sales-card__link" href="{{ route('my-used-listings.create') }}">
+                    <span>Units aanbieden</span>
                     <i class="ph ph-arrow-right"></i>
                 </a>
             </article>

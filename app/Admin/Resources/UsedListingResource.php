@@ -25,11 +25,11 @@ class UsedListingResource extends Resource
 
     public string $icon = 'ph-recycle';
 
-    public ?string $description = 'Gebruikte units die bezoekers via "Units aanbieden" plaatsen. Nieuwe aanbiedingen staan op "Ter beoordeling" en verschijnen op /gebruikt/ zodra ze gepubliceerd zijn.';
+    public ?string $description = 'Gebruikte units die organisaties vanuit hun account aanbieden. Nieuwe aanbiedingen staan op "Ter beoordeling" en verschijnen op /gebruikt/ zodra ze gepubliceerd zijn.';
 
     public function query(Builder $query): Builder
     {
-        return $query->orderByRaw("status = 'pending' desc")->latest();
+        return $query->with('user')->orderByRaw("status = 'pending' desc")->latest();
     }
 
     public function columns(): array
@@ -41,7 +41,7 @@ class UsedListingResource extends Resource
             'Titel' => fn (UsedListing $listing) => new HtmlString('<strong>'.e($listing->title).'</strong>'),
             'Locatie' => fn (UsedListing $listing) => $listing->location,
             'Prijs' => fn (UsedListing $listing) => $listing->formattedPrice(),
-            'Aanbieder' => fn (UsedListing $listing) => $listing->contact_name,
+            'Aanbieder' => fn (UsedListing $listing) => $listing->user?->company_name ?: $listing->contact_name,
             'Status' => fn (UsedListing $listing) => $this->statusOptions()[$listing->status] ?? $listing->status,
             'Ontvangen' => fn (UsedListing $listing) => $listing->created_at?->format('d-m-Y'),
         ];

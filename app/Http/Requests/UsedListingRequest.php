@@ -28,7 +28,6 @@ class UsedListingRequest extends FormRequest
             'contact_name' => ['required', 'string', 'max:150'],
             'contact_email' => ['required', 'email', 'max:190'],
             'contact_phone' => ['nullable', 'string', 'max:40'],
-            'website' => ['nullable', 'string'],
         ];
     }
 

@@ -45,7 +45,6 @@ Route::middleware('throttle:forms')->group(function (): void {
     Route::post('offerte/versturen', [QuoteController::class, 'submit'])->name('quote.submit');
     Route::post('formulier/informatie', [FormController::class, 'information'])->name('forms.information');
     Route::post('vacature/{slug}/solliciteren', [VacancyController::class, 'apply'])->name('vacancies.apply');
-    Route::post('units-aanbieden', [UsedListingController::class, 'store'])->name('used-listings.store');
     Route::post('gebruikt/aanbod/{slug}/reageren', [UsedListingController::class, 'respond'])->name('used-listings.respond');
 });
 

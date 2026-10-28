@@ -35,21 +35,53 @@ class UsedListingTest extends TestCase
             ->assertSee('Ons netwerk koopt ook in.');
     }
 
-    public function test_offer_form_is_rendered(): void
+    public function test_guests_are_sent_to_login_before_offering_units(): void
     {
         $this->get('/units-aanbieden/')
+            ->assertRedirect(route('login'))
+            ->assertSessionHas('status');
+
+        $this->get(route('my-used-listings.create'))->assertRedirect(route('login'));
+        $this->post(route('my-used-listings.store'))->assertRedirect(route('login'));
+        $this->post('/units-aanbieden/')->assertStatus(405);
+    }
+
+    public function test_new_organisation_registers_and_returns_to_the_offer_form(): void
+    {
+        $this->get('/units-aanbieden/')->assertRedirect(route('login'));
+
+        $this->post(route('register.store'), [
+            'first_name' => 'Anna',
+            'last_name' => 'Jansen',
+            'company_name' => 'Jansen Verhuur',
+            'email' => 'anna@example.com',
+            'password' => 'geheim1234',
+            'password_confirmation' => 'geheim1234',
+            'terms' => '1',
+        ])->assertRedirect(route('my-used-listings.create'));
+    }
+
+    public function test_logged_in_users_are_sent_to_the_offer_form_in_their_account(): void
+    {
+        $user = User::factory()->create(['name' => 'Anna Jansen', 'email' => 'anna@example.com']);
+
+        $this->actingAs($user)->get('/units-aanbieden/')->assertRedirect(route('my-used-listings.create'));
+
+        $this->get(route('my-used-listings.create'))
             ->assertOk()
             ->assertSee('enctype="multipart/form-data"', false)
             ->assertSee('name="images[]"', false)
-            ->assertSee('gratis');
+            ->assertSee('value="anna@example.com"', false)
+            ->assertSee('value="Anna Jansen"', false);
     }
 
-    public function test_visitor_can_offer_a_used_unit_for_review(): void
+    public function test_organisation_can_offer_a_used_unit_for_review(): void
     {
         Mail::fake();
         Storage::fake('public');
+        $user = User::factory()->create(['company_name' => 'Jansen Verhuur']);
 
-        $this->post(route('used-listings.store'), [
+        $this->actingAs($user)->post(route('my-used-listings.store'), [
             'title' => 'Sanitairunit',
             'description' => "Goede staat.\nDirect beschikbaar.",
             'location' => 'Zwolle',
@@ -57,22 +89,28 @@ class UsedListingTest extends TestCase
             'images' => [UploadedFile::fake()->image('voorkant.jpg'), UploadedFile::fake()->image('binnen.jpg')],
             'contact_name' => 'Anna Jansen',
             'contact_email' => 'anna@example.com',
-        ])->assertRedirect('/units-aanbieden/')->assertSessionHas('form_success');
+        ])->assertRedirect(route('my-used-listings.index'))->assertSessionHas('status');
 
         $listing = UsedListing::query()->sole();
+        $this->assertTrue($listing->user->is($user));
         $this->assertSame('pending', $listing->status);
         $this->assertSame('sanitairunit', $listing->slug);
         $this->assertCount(2, $listing->gallery());
         Storage::disk('public')->assertExists($listing->coverImage());
-        $this->assertSame('gebruikt_aanbod', Submission::query()->sole()->type);
+        $submission = Submission::query()->sole();
+        $this->assertSame('gebruikt_aanbod', $submission->type);
+        $this->assertSame('Jansen Verhuur', $submission->data['organisatie']);
         Mail::assertSent(SubmissionReceived::class);
 
+        $this->get(route('my-used-listings.index'))->assertOk()->assertSee('Sanitairunit')->assertSee('Ter beoordeling');
+
+        auth()->logout();
         $this->get($listing->url())->assertNotFound();
     }
 
     public function test_offer_form_validates_input_and_limits_images_to_ten(): void
     {
-        $this->post(route('used-listings.store'), [
+        $this->actingAs(User::factory()->create())->post(route('my-used-listings.store'), [
             'price' => 'gratis',
             'images' => array_map(fn (int $i) => UploadedFile::fake()->image("foto-{$i}.jpg"), range(1, 11)),
         ])->assertSessionHasErrors(['title', 'description', 'location', 'price', 'images', 'contact_name', 'contact_email']);
@@ -80,17 +118,16 @@ class UsedListingTest extends TestCase
         $this->assertSame(0, UsedListing::query()->count());
     }
 
-    public function test_honeypot_offers_are_ignored(): void
+    public function test_users_only_see_their_own_listings(): void
     {
-        Storage::fake('public');
+        $user = User::factory()->create();
+        UsedListing::factory()->for($user)->create(['title' => 'Mijn kantoorunit']);
+        UsedListing::factory()->for(User::factory())->create(['title' => 'Unit van een ander']);
 
-        $this->post(route('used-listings.store'), [
-            'title' => 'Spam', 'description' => 'Spam', 'location' => 'Spam', 'price' => 1,
-            'images' => [UploadedFile::fake()->image('spam.jpg')],
-            'contact_name' => 'Bot', 'contact_email' => 'bot@example.com', 'website' => 'http://spam.example',
-        ])->assertRedirect();
-
-        $this->assertSame(0, UsedListing::query()->count());
+        $this->actingAs($user)->get(route('my-used-listings.index'))
+            ->assertOk()
+            ->assertSee('Mijn kantoorunit')
+            ->assertDontSee('Unit van een ander');
     }
 
     public function test_listing_detail_shows_unit_and_records_responses(): void

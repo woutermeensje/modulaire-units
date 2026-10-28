@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\AccountController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\UsedListingController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('account', DashboardController::class)->name('dashboard');
     Route::get('account/gegevens', [AccountController::class, 'edit'])->name('account.edit');
     Route::put('account/gegevens', [AccountController::class, 'update'])->name('account.update');
+    Route::get('account/units', [UsedListingController::class, 'index'])->name('my-used-listings.index');
+    Route::get('account/units/aanbieden', [UsedListingController::class, 'create'])->name('my-used-listings.create');
+    Route::post('account/units', [UsedListingController::class, 'store'])->middleware('throttle:forms')->name('my-used-listings.store');
 });
 
 /*

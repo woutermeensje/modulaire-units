@@ -51,6 +51,6 @@ class RegisterController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('status', 'Je account is aangemaakt. Welkom!');
+        return redirect()->intended(route('dashboard'))->with('status', 'Je account is aangemaakt. Welkom!');
     }
 }

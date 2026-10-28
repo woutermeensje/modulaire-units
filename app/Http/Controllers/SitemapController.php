@@ -47,7 +47,6 @@ class SitemapController extends Controller
         Vacancy::query()->published()->where('noindex', false)->get()
             ->each(fn (Vacancy $vacancy) => $urls->push($this->entry($vacancy->url(), $vacancy->updated_at)));
 
-        $urls->push($this->entry(SiteUrl::path(route('used-listings.create', [], false)), null));
         UsedListing::query()->published()->get()
             ->each(fn (UsedListing $listing) => $urls->push($this->entry($listing->url(), $listing->updated_at)));
 
