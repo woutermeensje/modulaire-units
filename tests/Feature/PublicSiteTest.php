@@ -113,6 +113,7 @@ class PublicSiteTest extends TestCase
 
         $this->get('/kopen/bouwunits/')
             ->assertOk()
+            ->assertSee('<h1 id="mh-offer-title">Bouwunits kopen</h1>', false)
             ->assertSee('mh-offer-hero', false)
             ->assertSee('Bouwunits kopen tekst')
             ->assertSee('href="/huren/bouwunits/"', false)
@@ -122,6 +123,9 @@ class PublicSiteTest extends TestCase
 
         $this->get('/kopen/')
             ->assertOk()
+            ->assertSee('<h1 id="mh-offer-title">Modulaire Units Kopen</h1>', false)
+            ->assertSee('href="'.route('register').'"', false)
+            ->assertSee('Informatie aanvragen')
             ->assertSee('<h2 class="mh-offer-intro__heading">Modulaire units kopen</h2>', false)
             ->assertSee('Alle mogelijkheden:')
             ->assertSee('href="/kopen/bouwunits/" class="muo-card', false)

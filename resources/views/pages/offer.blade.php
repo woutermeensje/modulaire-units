@@ -8,6 +8,7 @@
     $phone = \App\Models\Setting::get('phone');
     $email = \App\Models\Setting::get('email');
     $isRental = $landing['section'] === 'huren';
+    $heroTitle = $page->path === $landing['section'] ? 'Modulaire Units '.ucfirst($landing['section']) : $page->title;
 @endphp
 
 @section('body_class', 'page page-id-'.$page->id.' page-'.$page->slug.' mh-offer-page')
@@ -19,10 +20,12 @@
     <header class="mh-offer-hero" @if ($landing['image']) style="--mh-offer-hero-image: url('{{ url($landing['image']) }}');" @endif>
         <div class="mh-offer-hero__panel">
             <div class="mh-offer-hero__content">
-                <h1 id="mh-offer-title">{{ $page->title }}</h1>
+                <h1 id="mh-offer-title">{{ $heroTitle }}</h1>
                 <p class="mh-offer-hero__lead">{{ $page->hero['subtitle'] ?? 'Bekijk de mogelijkheden en vraag vrijblijvend informatie aan bij '.\App\Models\Setting::get('site_name').'.' }}</p>
                 <div class="mh-offer-hero__actions">
-                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">Informatie aanvragen</a>
+                    {{-- Via een account kunnen klanten straks zelf units uitzoeken. --}}
+                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ route('register') }}">Account aanmaken</a>
+                    <a class="mh-offer-btn mh-offer-btn--dark" href="{{ $requestUrl }}">Informatie aanvragen</a>
                 </div>
             </div>
         </div>

@@ -56,7 +56,7 @@
 .mh-offer-hero h1 {
   margin: 0;
   color: #fff;
-  font-size: var(--text-2xl);
+  font-size: 2rem;
   font-weight: var(--weight-hero-title);
   line-height: 1.2;
 }
@@ -116,6 +116,21 @@
 .mh-offer .mh-offer-hero .mh-offer-btn--primary:focus {
   border-color: var(--color-highlight-dark, #5A9367);
   background: var(--color-highlight-dark, #5A9367);
+  color: #fff;
+}
+
+/* Tweede hero-knop in donkerblauw, zodat hij naast de groene knop een eigen kleur heeft. */
+.mh-offer .mh-offer-hero .mh-offer-btn--dark,
+.mh-offer .mh-offer-hero .mh-offer-btn--dark:visited {
+  border-color: var(--color-primary-dark, #1F5670);
+  background: var(--color-primary-dark, #1F5670);
+  color: #fff;
+}
+
+.mh-offer .mh-offer-hero .mh-offer-btn--dark:hover,
+.mh-offer .mh-offer-hero .mh-offer-btn--dark:focus {
+  border-color: #17435A;
+  background: #17435A;
   color: #fff;
 }
 
