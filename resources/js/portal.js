@@ -1,9 +1,11 @@
 import { exposeQuillHelpers, initQuillEditors } from './portal/quill-editor';
+import { initUnitConfigurators } from './portal/unit-configurator';
 
 exposeQuillHelpers();
 
 document.addEventListener('DOMContentLoaded', () => {
     initQuillEditors();
+    initUnitConfigurators();
 
     const shell = document.querySelector('[data-backend-shell]');
     const toggle = document.querySelector('[data-backend-toggle]');

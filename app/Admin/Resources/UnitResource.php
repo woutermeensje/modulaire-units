@@ -7,6 +7,7 @@ use App\Admin\Resource;
 use App\Models\Media;
 use App\Models\Unit;
 use App\Support\SiteUrl;
+use App\Support\UnitConfiguration;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -55,6 +56,10 @@ class UnitResource extends Resource
                 Field::make('content', 'Unit beschrijving', 'richtext')->rows(16),
                 Field::make('terms', 'Kenmerken', 'terms'),
             ],
+            'Configuratie' => [
+                Field::make('configuration', 'Unit-configurator', 'configurator')
+                    ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Leeg laten voor units zonder configuratie.'),
+            ],
             'Prijzen' => [
                 Field::make('price_rent', 'Prijsindicatie huren')->half()->placeholder('Bijv. Vanaf € 250,- per maand'),
                 Field::make('price_buy', 'Prijsindicatie kopen')->half()->placeholder('Bijv. Prijs op aanvraag.'),
@@ -90,13 +95,16 @@ class UnitResource extends Resource
             'status' => ['required', Rule::in(array_keys($this->statusOptions()))],
             'sort' => ['nullable', 'integer'],
             'published_at' => ['nullable', 'date'],
-        ] + $this->seoRules();
+        ] + UnitConfiguration::rules('configuration') + $this->seoRules();
     }
 
     public function fill(Model $record, array $validated, Request $request): array
     {
         $attributes = parent::fill($record, $validated, $request);
         $attributes['sort'] = (int) ($attributes['sort'] ?? 0);
+        $attributes['configuration'] = filled($validated['configuration']['size'] ?? null)
+            ? UnitConfiguration::normalize($validated['configuration'])
+            : null;
         $attributes['published_at'] = ($attributes['published_at'] ?? null) ?: (($attributes['status'] ?? null) === 'published' ? now() : null);
 
         return $attributes;

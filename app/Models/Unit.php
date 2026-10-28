@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'wp_id', 'title', 'slug', 'excerpt', 'content', 'featured_image', 'featured_image_alt', 'gallery', 'price_rent', 'price_buy',
+    'wp_id', 'title', 'slug', 'excerpt', 'content', 'featured_image', 'featured_image_alt', 'gallery', 'configuration', 'price_rent', 'price_buy',
     'meta_title', 'meta_description', 'og_image', 'noindex', 'status', 'sort', 'published_at',
 ])]
 class Unit extends Model
@@ -28,6 +28,7 @@ class Unit extends Model
     {
         return [
             'gallery' => 'array',
+            'configuration' => 'array',
             'noindex' => 'boolean',
             'published_at' => 'datetime',
         ];
