@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PasswordResetController as AdminPasswordResetCont
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubmissionController;
+use App\Http\Controllers\Admin\UnitDesignController;
 use App\Http\Controllers\Admin\UnitPreviewController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -81,6 +82,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureUserIsAdmin::c
     Route::put('instellingen', [SettingsController::class, 'update'])->name('settings.update');
 
     Route::post('units/voorbeeld', UnitPreviewController::class)->name('units.preview');
+    Route::post('units/ontwerpen', UnitDesignController::class)->middleware('throttle:20,1')->name('units.design');
 
     foreach (Registry::keys() as $key) {
         Route::name("{$key}.")->prefix($key)->group(function () use ($key): void {

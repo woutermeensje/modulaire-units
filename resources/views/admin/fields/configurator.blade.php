@@ -1,5 +1,6 @@
 @use('App\Support\UnitConfiguration')
 @use('App\Support\UnitRenderer')
+@use('App\Services\UnitDesigner')
 @php
     $isConfigured = filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
@@ -13,9 +14,29 @@
     $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::DOOR => 'ph-door'];
 @endphp
 <span class="portal-label">{{ $field->label }}</span>
-<div class="unit-configurator" data-unit-configurator data-preview-url="{{ route('admin.units.preview') }}"
+<div class="unit-configurator" data-unit-configurator data-preview-url="{{ route('admin.units.preview') }}" data-design-url="{{ route('admin.units.design') }}"
      data-slot-labels='@json(UnitConfiguration::SLOTS)' data-slot-icons='@json($slotIcons)'
      data-slot-counts='@json($slotCounts)'>
+    <div class="unit-configurator__ai">
+        <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i> Beschrijf de unit en laat Claude de configuratie invullen</label>
+        <textarea class="portal-textarea" id="configuration_description" rows="3" data-quill="off" data-configurator-description
+                  placeholder="Bijv. 6x3 kantoorunit in lichtgrijs, deur in het midden van de voorkant met aan beide kanten twee ramen, één raam in elke kopgevel, op een bouwterrein"></textarea>
+        <div class="unit-configurator__ai-actions">
+            <label class="portal-checkbox">
+                <input type="checkbox" data-configurator-texts checked>
+                Ook titel, korte omschrijving en meta description invullen (alleen lege velden)
+            </label>
+            <button type="button" class="btn btn-primary" data-configurator-generate @disabled(! UnitDesigner::isConfigured())>
+                <i class="ph ph-sparkle"></i> Genereer met AI
+            </button>
+        </div>
+        <p class="portal-help" role="status" data-configurator-status>
+            @unless (UnitDesigner::isConfigured())
+                AI is uitgeschakeld: stel ANTHROPIC_API_KEY in op de server.
+            @endunless
+        </p>
+    </div>
+
     <div class="unit-configurator__controls">
         <div class="unit-configurator__options">
             <div>

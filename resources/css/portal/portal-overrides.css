@@ -147,6 +147,28 @@
   display: none;
 }
 
+.unit-configurator__ai {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--radius-default);
+  background: var(--color-primary-soft);
+}
+
+.unit-configurator__ai .portal-label,
+.unit-configurator__ai .portal-help {
+  margin: 0;
+}
+
+.unit-configurator__ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .unit-configurator__options {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
