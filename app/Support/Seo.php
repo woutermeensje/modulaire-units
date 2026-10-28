@@ -60,8 +60,15 @@ class Seo
         return SiteUrl::absolute(str_starts_with($this->canonical, 'http') ? $this->canonical : SiteUrl::path($this->canonical));
     }
 
+    /**
+     * Social networks don't render SVG, so a rendered unit configuration is never used as share image.
+     */
     public function imageUrl(): ?string
     {
+        if (str_ends_with(strtolower((string) $this->image), '.svg')) {
+            return null;
+        }
+
         $image = SiteUrl::media($this->image);
 
         return $image ? SiteUrl::absolute($image) : null;

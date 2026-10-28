@@ -6,6 +6,7 @@ use App\Admin\Field;
 use App\Admin\Resource;
 use App\Models\Media;
 use App\Models\Unit;
+use App\Services\UnitConfigurationImages;
 use App\Support\SiteUrl;
 use App\Support\UnitConfiguration;
 use Illuminate\Database\Eloquent\Builder;
@@ -58,7 +59,7 @@ class UnitResource extends Resource
             ],
             'Configuratie' => [
                 Field::make('configuration', 'Unit-configurator', 'configurator')
-                    ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Leeg laten voor units zonder configuratie.'),
+                    ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Bij opslaan komen de afbeeldingen op de website: als hoofdfoto als de unit nog geen foto heeft, anders achteraan in de galerij.'),
             ],
             'Prijzen' => [
                 Field::make('price_rent', 'Prijsindicatie huren')->half()->placeholder('Bijv. Vanaf € 250,- per maand'),
@@ -114,5 +115,6 @@ class UnitResource extends Resource
     {
         /** @var Unit $record */
         $record->terms()->sync(array_map('intval', (array) $request->input('terms', [])));
+        app(UnitConfigurationImages::class)->sync($record);
     }
 }

@@ -29,6 +29,7 @@ class Unit extends Model
         return [
             'gallery' => 'array',
             'configuration' => 'array',
+            'configuration_images' => 'array',
             'noindex' => 'boolean',
             'published_at' => 'datetime',
         ];
@@ -73,7 +74,7 @@ class Unit extends Model
     }
 
     /**
-     * All images for the gallery, featured image first.
+     * All images for the gallery: featured image first, renders of the configuration last.
      *
      * @return list<array{path: string, alt: string|null}>
      */
@@ -84,6 +85,12 @@ class Unit extends Model
 
         if ($this->featured_image && ! $images->contains('path', $this->featured_image)) {
             $images->prepend(['path' => $this->featured_image, 'alt' => $this->featured_image_alt]);
+        }
+
+        foreach ($this->configuration_images ?? [] as $path) {
+            if (! $images->contains('path', $path)) {
+                $images->push(['path' => $path, 'alt' => null]);
+            }
         }
 
         return $images->values()->all();

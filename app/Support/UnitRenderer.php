@@ -3,8 +3,8 @@
 namespace App\Support;
 
 /**
- * Draws a unit configuration as an isometric SVG: one view of the front and right walls,
- * one of the back and left walls, side by side on a simple backdrop.
+ * Draws a unit configuration as an isometric SVG on a simple backdrop: one view of the front and
+ * right walls, one of the back and left walls.
  *
  * @phpstan-import-type Configuration from UnitConfiguration
  */
@@ -29,10 +29,37 @@ class UnitRenderer
         'plain' => ['sky' => '#f3f3f1', 'horizon' => '#f3f3f1', 'ground' => '#e2e1dc', 'groundFar' => '#e9e8e4'],
     ];
 
+    /** @var array<string, array{front: string, side: string, label: string}> */
+    public const VIEWS = [
+        'front' => ['front' => 'front', 'side' => 'right', 'label' => 'Voorzijde en rechterzijde'],
+        'back' => ['front' => 'back', 'side' => 'left', 'label' => 'Achterzijde en linkerzijde'],
+    ];
+
     /**
+     * Both views side by side with a caption under each, as shown in the admin.
+     *
      * @param  array<string, mixed>  $configuration
      */
     public function render(array $configuration): string
+    {
+        return $this->compose($configuration, array_keys(self::VIEWS), true);
+    }
+
+    /**
+     * A single view in the 3:2 format the website uses for unit photos.
+     *
+     * @param  array<string, mixed>  $configuration
+     */
+    public function renderView(array $configuration, string $view): string
+    {
+        return $this->compose($configuration, [$view], false);
+    }
+
+    /**
+     * @param  array<string, mixed>  $configuration
+     * @param  list<string>  $views
+     */
+    private function compose(array $configuration, array $views, bool $captions): string
     {
         $configuration = UnitConfiguration::normalize($configuration);
         $size = UnitConfiguration::SIZES[$configuration['size']];
@@ -42,25 +69,28 @@ class UnitRenderer
         $largest = collect(UnitConfiguration::SIZES)->sortByDesc(fn (array $size): int => $size['length'] + $size['depth'])->first();
         $viewWidth = ($largest['length'] + $largest['depth']) * self::COS * self::SCALE + 2 * self::PADDING;
         $viewHeight = (($largest['length'] + $largest['depth']) / 2 + self::HEIGHT) * self::SCALE + 2 * self::PADDING;
-        $width = round(2 * $viewWidth);
-        $height = round($viewHeight + self::LABEL_HEIGHT);
+        $height = round($viewHeight + ($captions ? self::LABEL_HEIGHT : 0));
 
-        $views = [
-            ['front' => 'front', 'side' => 'right', 'label' => 'Voorzijde en rechterzijde'],
-            ['front' => 'back', 'side' => 'left', 'label' => 'Achterzijde en linkerzijde'],
-        ];
+        if (count($views) === 1) {
+            $viewWidth = max($viewWidth, $height * 1.5);
+        }
 
+        $width = round(count($views) * $viewWidth);
         $originY = $viewHeight / 2 + (self::HEIGHT / 2 + ($depth - $length) / 4) * self::SCALE;
         $horizonY = $originY - ($depth / 2) * self::SCALE - 14;
 
         $body = $this->backdrop($configuration['background'], $width, $height, $horizonY);
 
-        foreach ($views as $index => $view) {
+        foreach (array_values($views) as $index => $key) {
+            $view = self::VIEWS[$key];
             $originX = $index * $viewWidth + ($viewWidth - ($length + $depth) * self::COS * self::SCALE) / 2;
             $body .= '<g transform="translate('.$this->number($originX).' '.$this->number($originY).')">'
                 .$this->unit($length, $depth, $configuration['walls'][$view['front']], $configuration['walls'][$view['side']], $configuration['colors'])
-                .'</g>'
-                .'<text x="'.$this->number($index * $viewWidth + $viewWidth / 2).'" y="'.$this->number($height - 12).'" text-anchor="middle" font-family="Work Sans, Arial, sans-serif" font-size="13" fill="#4a4a4a">'.e($view['label']).'</text>';
+                .'</g>';
+
+            if ($captions) {
+                $body .= '<text x="'.$this->number($index * $viewWidth + $viewWidth / 2).'" y="'.$this->number($height - 12).'" text-anchor="middle" font-family="Work Sans, Arial, sans-serif" font-size="13" fill="#4a4a4a">'.e($view['label']).'</text>';
+            }
         }
 
         $label = 'Modulaire unit van '.$size['label'];
