@@ -231,6 +231,13 @@ class PublicSiteTest extends TestCase
         $this->get('/bestaat-niet/')->assertNotFound()->assertSee('Pagina niet gevonden');
     }
 
+    public function test_encoded_slash_url_resolves_to_the_home_page(): void
+    {
+        Page::factory()->create(['title' => 'Home', 'slug' => '', 'content' => '<p>Welkom bij de modulaire units</p>']);
+
+        $this->get('/%2f/')->assertOk()->assertSee('Welkom bij de modulaire units', false);
+    }
+
     public function test_discount_popup_is_shown_when_a_code_is_set(): void
     {
         Page::factory()->create(['slug' => '']);

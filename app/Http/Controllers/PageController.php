@@ -31,7 +31,7 @@ class PageController extends Controller
     /**
      * Resolve any other URL: configured redirects first, then pages by full path, then blog posts by slug.
      */
-    public function show(Request $request, string $path): View|RedirectResponse
+    public function show(Request $request, string $path = ''): View|RedirectResponse
     {
         $path = trim($path, '/');
 
