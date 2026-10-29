@@ -1,5 +1,4 @@
 import {
-  BackSide,
   BoxGeometry,
   CanvasTexture,
   CircleGeometry,
@@ -28,10 +27,12 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 // Dimensions in metres, matching App\Support\UnitRenderer.
 const HEIGHT = 2.6;
 const CLADDING_THICKNESS = 0.05;
+const LINING_THICKNESS = 0.05;
 const POST_SIZE = 0.14;
 const TOP_RAIL = 0.2;
 const BOTTOM_RAIL = 0.15;
 const RAISE = 0.1;
+const CORNER_CASTING = 0.18;
 
 const OPENINGS = {
   window: { left: 0.15, right: 0.85, bottom: 0.9, top: 2.1 },
@@ -94,11 +95,11 @@ function createMaterials(colors, ribs) {
   return {
     cladding: new MeshStandardMaterial({ color: colors.cladding, roughness: 0.55, metalness: 0.25, bumpMap: ribs, bumpScale: 1.5 }),
     frame: new MeshStandardMaterial({ color: colors.frame, roughness: 0.45, metalness: 0.35 }),
-    roof: new MeshStandardMaterial({ color: shade(colors.frame, 1.35), roughness: 0.7, metalness: 0.2 }),
     doorLeaf: new MeshStandardMaterial({ color: shade(colors.frame, 1.25), roughness: 0.5, metalness: 0.3 }),
     glass: new MeshStandardMaterial({ color: '#8fb3c9', roughness: 0.08, metalness: 0.9, transparent: true, opacity: 0.75 }),
     handle: new MeshStandardMaterial({ color: '#d9d9d9', roughness: 0.3, metalness: 0.8 }),
-    interior: new MeshStandardMaterial({ color: '#ece9e2', roughness: 0.9, side: BackSide }),
+    lining: new MeshStandardMaterial({ color: '#efeee9', roughness: 0.85 }),
+    floor: new MeshStandardMaterial({ color: '#d6d5d0', roughness: 0.9 }),
     concrete: new MeshStandardMaterial({ color: '#a3a19b', roughness: 0.95 }),
   };
 }
@@ -142,7 +143,8 @@ function buildDoor(index, materials) {
 }
 
 /**
- * One wall: a cladding panel with real openings, filled with windows and doors.
+ * One wall: a cladding panel and a white inner lining with real openings, filled with windows and doors.
+ * The unit has no roof, so the top of both layers shows the thickness of the wall.
  */
 function buildWall(width, slots, materials) {
   const shape = new Shape();
@@ -171,17 +173,21 @@ function buildWall(width, slots, materials) {
     group.add(slot === 'door' ? buildDoor(index, materials) : buildWindow(index, materials));
   });
 
-  const panel = new Mesh(new ExtrudeGeometry(shape, { depth: CLADDING_THICKNESS, bevelEnabled: false }), materials.cladding);
-  panel.position.z = -CLADDING_THICKNESS;
-  panel.castShadow = true;
-  panel.receiveShadow = true;
-  group.add(panel);
+  [[materials.cladding, CLADDING_THICKNESS, -CLADDING_THICKNESS], [materials.lining, LINING_THICKNESS, -CLADDING_THICKNESS - LINING_THICKNESS]]
+    .forEach(([material, thickness, z]) => {
+      const layer = new Mesh(new ExtrudeGeometry(shape, { depth: thickness, bevelEnabled: false }), material);
+      layer.position.z = z;
+      layer.castShadow = true;
+      layer.receiveShadow = true;
+      group.add(layer);
+    });
 
   return group;
 }
 
 /**
- * The steel frame around the walls: corner posts, top and bottom rails and the roof.
+ * The steel frame around the walls: corner posts, top and bottom rails and corner castings, without a roof
+ * so the empty inside of the unit can be seen.
  */
 function buildFrame(length, depth, materials) {
   const group = new Group();
@@ -192,16 +198,23 @@ function buildFrame(length, depth, materials) {
     group.add(box(POST_SIZE, HEIGHT, POST_SIZE, signX * postX, HEIGHT / 2, signZ * postZ, materials.frame));
   });
 
-  [[TOP_RAIL, HEIGHT - TOP_RAIL / 2], [BOTTOM_RAIL, BOTTOM_RAIL / 2]].forEach(([railHeight, y]) => {
+  // The top rail and castings stand 1 cm proud of the walls, so their top faces never overlap.
+  [[TOP_RAIL, HEIGHT - TOP_RAIL / 2 + 0.01], [BOTTOM_RAIL, BOTTOM_RAIL / 2]].forEach(([railHeight, y]) => {
     group.add(
-      box(length, railHeight, 0.1, 0, y, depth / 2 - 0.03, materials.frame),
-      box(length, railHeight, 0.1, 0, y, -depth / 2 + 0.03, materials.frame),
-      box(0.1, railHeight, depth, length / 2 - 0.03, y, 0, materials.frame),
-      box(0.1, railHeight, depth, -length / 2 + 0.03, y, 0, materials.frame),
+      box(length, railHeight, 0.08, 0, y, depth / 2 - 0.02, materials.frame),
+      box(length, railHeight, 0.08, 0, y, -depth / 2 + 0.02, materials.frame),
+      box(0.08, railHeight, depth, length / 2 - 0.02, y, 0, materials.frame),
+      box(0.08, railHeight, depth, -length / 2 + 0.02, y, 0, materials.frame),
     );
   });
 
-  group.add(box(length + 0.06, 0.06, depth + 0.06, 0, HEIGHT + 0.03, 0, materials.roof));
+  const castingX = length / 2 - CORNER_CASTING / 2 + 0.025;
+  const castingZ = depth / 2 - CORNER_CASTING / 2 + 0.025;
+  [0.06, HEIGHT - 0.05].forEach((y) => {
+    [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([signX, signZ]) => {
+      group.add(box(CORNER_CASTING, 0.12, CORNER_CASTING, signX * castingX, y, signZ * castingZ, materials.frame));
+    });
+  });
 
   return group;
 }
@@ -222,9 +235,8 @@ function buildUnit(configuration, dimensions, materials) {
 
   body.add(buildFrame(length, depth, materials));
 
-  const interior = new Mesh(new BoxGeometry(length - 0.12, HEIGHT - 0.02, depth - 0.12), materials.interior);
-  interior.position.y = HEIGHT / 2;
-  body.add(interior);
+  const wallThickness = CLADDING_THICKNESS + LINING_THICKNESS;
+  body.add(box(length - 2 * wallThickness, 0.03, depth - 2 * wallThickness, 0, BOTTOM_RAIL - 0.015, 0, materials.floor));
 
   [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([signX, signZ]) => {
     unit.add(box(0.3, RAISE, 0.3, signX * (length / 2 - 0.15), RAISE / 2, signZ * (depth / 2 - 0.15), materials.concrete));
@@ -247,12 +259,12 @@ function dispose(object) {
 }
 
 /**
- * Camera direction per view of App\Support\UnitRenderer::VIEWS: "front" looks at the front and right walls,
- * "back" at the back and left walls.
+ * Camera direction per view of App\Support\UnitRenderer::VIEWS: "front" looks mostly at the front wall with
+ * the right wall just in view, "back" likewise at the back and left walls. Both look down into the open unit.
  */
 const VIEW_DIRECTIONS = {
-  front: [0.55, 0.35, 0.76],
-  back: [-0.55, 0.35, -0.76],
+  front: [0.32, 0.95, 1],
+  back: [-0.32, 0.95, -1],
 };
 
 function createRenderer(options = {}) {
@@ -334,9 +346,9 @@ function createStage(renderer, backdrops) {
 
 function aim(camera, target, { length, depth }, view, zoom) {
   const distance = ((length + depth) * 1.3 + 3) * zoom;
-  const [x, y, z] = VIEW_DIRECTIONS[view];
-  camera.position.set(distance * x, distance * y, distance * z);
-  target.set(0, 1.2, 0);
+  const direction = new Vector3(...VIEW_DIRECTIONS[view]).normalize().multiplyScalar(distance);
+  camera.position.copy(direction);
+  target.set(0, 1, 0);
   camera.lookAt(target);
 }
 
