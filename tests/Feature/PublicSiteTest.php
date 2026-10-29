@@ -215,6 +215,9 @@ class PublicSiteTest extends TestCase
             ->assertSee('"dimensions":{"length":3,"depth":3}', false);
 
         $this->get('/units/zonder-configuratie/')->assertOk()->assertDontSee('Bekijk in 3D')->assertDontSee('data-unit-viewer', false);
+
+        Unit::factory()->create(['slug' => 'gekoppeld', 'configuration' => UnitConfiguration::normalize(['size' => '6x3', 'modules' => 3])]);
+        $this->get('/units/gekoppeld/')->assertOk()->assertSee('"dimensions":{"length":6,"depth":9}', false);
     }
 
     public function test_configured_redirects_are_followed(): void

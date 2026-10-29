@@ -24,6 +24,7 @@ class UnitRenderer
 
     /** @var array<string, array{sky: string, horizon: string, ground: string, groundFar: string}> */
     public const BACKDROPS = [
+        'industrial' => ['sky' => '#c3cfd8', 'horizon' => '#e4e9ec', 'ground' => '#56595c', 'groundFar' => '#6d7073'],
         'meadow' => ['sky' => '#bcdcf0', 'horizon' => '#eef6fb', 'ground' => '#7fb35c', 'groundFar' => '#9cc77b'],
         'site' => ['sky' => '#d3dbe2', 'horizon' => '#f1f3f5', 'ground' => '#a9a296', 'groundFar' => '#c2bcb1'],
         'plain' => ['sky' => '#f3f3f1', 'horizon' => '#f3f3f1', 'ground' => '#e2e1dc', 'groundFar' => '#e9e8e4'],
@@ -62,13 +63,13 @@ class UnitRenderer
     private function compose(array $configuration, array $views, bool $captions): string
     {
         $configuration = UnitConfiguration::normalize($configuration);
-        $size = UnitConfiguration::SIZES[$configuration['size']];
-        $length = $size['length'];
-        $depth = $size['depth'];
+        ['length' => $length, 'depth' => $depth] = UnitConfiguration::dimensions($configuration);
 
-        $largest = collect(UnitConfiguration::SIZES)->sortByDesc(fn (array $size): int => $size['length'] + $size['depth'])->first();
-        $viewWidth = ($largest['length'] + $largest['depth']) * self::COS * self::SCALE + 2 * self::PADDING;
-        $viewHeight = (($largest['length'] + $largest['depth']) / 2 + self::HEIGHT) * self::SCALE + 2 * self::PADDING;
+        // Single units share one canvas size, so they are drawn at the same scale; coupled units get more room.
+        $largest = collect(UnitConfiguration::SIZES)->max(fn (array $size): int => $size['length'] + $size['depth']);
+        $extent = max($largest, $length + $depth);
+        $viewWidth = $extent * self::COS * self::SCALE + 2 * self::PADDING;
+        $viewHeight = ($extent / 2 + self::HEIGHT) * self::SCALE + 2 * self::PADDING;
         $height = round($viewHeight + ($captions ? self::LABEL_HEIGHT : 0));
 
         if (count($views) === 1) {
@@ -85,7 +86,7 @@ class UnitRenderer
             $view = self::VIEWS[$key];
             $originX = $index * $viewWidth + ($viewWidth - ($length + $depth) * self::COS * self::SCALE) / 2;
             $body .= '<g transform="translate('.$this->number($originX).' '.$this->number($originY).')">'
-                .$this->unit($length, $depth, $configuration['walls'][$view['front']], $configuration['walls'][$view['side']], $configuration['colors'])
+                .$this->unit($length, $depth, $configuration['walls'][$view['front']], $configuration['walls'][$view['side']], $configuration['colors'], $this->seams($configuration))
                 .'</g>';
 
             if ($captions) {
@@ -93,7 +94,7 @@ class UnitRenderer
             }
         }
 
-        $label = 'Modulaire unit van '.$size['label'];
+        $label = UnitConfiguration::label($configuration);
 
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.$width.' '.$height.'" width="'.$width.'" height="'.$height.'" role="img" aria-label="'.e($label).'">'
             .'<title>'.e($label).'</title>'.$body.'</svg>';
@@ -118,8 +119,9 @@ class UnitRenderer
      * @param  list<string>  $frontSlots
      * @param  list<string>  $sideSlots
      * @param  array{cladding: string, frame: string}  $colors
+     * @param  list<int>  $seams  Positions along the side face where two coupled units meet.
      */
-    private function unit(int $length, int $depth, array $frontSlots, array $sideSlots, array $colors): string
+    private function unit(int $length, int $depth, array $frontSlots, array $sideSlots, array $colors, array $seams): string
     {
         $front = fn (float $s, float $z): array => $this->project($s, 0, $z);
         $side = fn (float $s, float $z): array => $this->project($length, $s, $z);
@@ -136,7 +138,7 @@ class UnitRenderer
         ], $this->shade($colors['frame'], 1.35));
 
         return $shadow
-            .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), '#9fbfd2')
+            .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), '#9fbfd2', $seams)
             .$this->face($front, $length, $frontSlots, $colors['cladding'], $colors['frame'], '#c4def0')
             .$roof;
     }
@@ -144,8 +146,9 @@ class UnitRenderer
     /**
      * @param  \Closure(float, float): array{float, float}  $point
      * @param  list<string>  $slots
+     * @param  list<int>  $seams
      */
-    private function face(\Closure $point, int $width, array $slots, string $cladding, string $frame, string $glass): string
+    private function face(\Closure $point, int $width, array $slots, string $cladding, string $frame, string $glass, array $seams = []): string
     {
         $height = self::HEIGHT;
         $rect = fn (float $s1, float $s2, float $z1, float $z2): array => [$point($s1, $z1), $point($s2, $z1), $point($s2, $z2), $point($s1, $z2)];
@@ -168,11 +171,32 @@ class UnitRenderer
             };
         }
 
+        foreach ($seams as $seam) {
+            $svg .= $this->polygon($rect($seam - 0.1, $seam + 0.1, 0, $height), $frame);
+        }
+
         return $svg
             .$this->polygon($rect(0, 0.12, 0, $height), $frame)
             .$this->polygon($rect($width - 0.12, $width, 0, $height), $frame)
             .$this->polygon($rect(0, $width, $height - 0.2, $height), $frame)
             .$this->polygon($rect(0, $width, 0, 0.15), $frame);
+    }
+
+    /**
+     * Where coupled units meet, in metres from either end of a side wall.
+     *
+     * @param  Configuration  $configuration
+     * @return list<int>
+     */
+    private function seams(array $configuration): array
+    {
+        $depth = UnitConfiguration::SIZES[$configuration['size']]['depth'];
+
+        if ($configuration['modules'] === 1) {
+            return [];
+        }
+
+        return array_map(fn (int $module): int => $module * $depth, range(1, $configuration['modules'] - 1));
     }
 
     /**

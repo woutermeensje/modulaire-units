@@ -1,10 +1,14 @@
 const SLOT_ORDER = ['empty', 'window', 'door'];
 
+// The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
+const SIDE_WALLS = ['left', 'right'];
+
 function initConfigurator(root) {
   const labels = JSON.parse(root.dataset.slotLabels);
   const icons = JSON.parse(root.dataset.slotIcons);
   const counts = JSON.parse(root.dataset.slotCounts);
   const sizeSelect = root.querySelector('[data-configurator-size]');
+  const modulesSelect = root.querySelector('[data-configurator-modules]');
   const preview = root.querySelector('[data-configurator-preview]');
   const token = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
   const viewerElement = root.querySelector('[data-configurator-viewer]');
@@ -12,6 +16,9 @@ function initConfigurator(root) {
   let timer = null;
   let controller = null;
   let viewer = null;
+
+  const modules = () => Number(modulesSelect.value) || 1;
+  const slotCount = (size, wall) => counts[size][wall] * (SIDE_WALLS.includes(wall) ? modules() : 1);
 
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
@@ -22,13 +29,14 @@ function initConfigurator(root) {
 
     return {
       size: sizeSelect.value,
+      modules: modules(),
       walls,
       colors: { cladding: field('colors][cladding'), frame: field('colors][frame') },
       background: field('background'),
     };
   };
 
-  const dimensions = () => ({ length: counts[sizeSelect.value].front, depth: counts[sizeSelect.value].left });
+  const dimensions = () => ({ length: counts[sizeSelect.value].front, depth: counts[sizeSelect.value].left * modules() });
   const backdrops = JSON.parse(root.dataset.backdrops);
   let viewerModule = null;
   const loadViewerModule = () => {
@@ -107,9 +115,20 @@ function initConfigurator(root) {
     }
 
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
-      const inUse = Number(slot.dataset.index) < counts[size][slot.dataset.wall];
+      const inUse = Number(slot.dataset.index) < slotCount(size, slot.dataset.wall);
       slot.hidden = !inUse;
       slot.querySelector('input').disabled = !inUse;
+    });
+
+    // Seen from outside, the right wall starts at the front unit and the left wall at the back one.
+    root.querySelectorAll('[data-configurator-group]').forEach((group) => {
+      const index = Number(group.dataset.group);
+      const label = group.querySelector('[data-configurator-group-label]');
+      group.hidden = SIDE_WALLS.includes(group.dataset.wall) && index >= modules();
+      if (label) {
+        label.hidden = modules() === 1;
+        label.textContent = `Unit ${group.dataset.wall === 'right' ? index + 1 : modules() - index}`;
+      }
     });
   };
 
@@ -130,6 +149,7 @@ function initConfigurator(root) {
 
   const applyConfiguration = (configuration) => {
     sizeSelect.value = configuration.size;
+    modulesSelect.value = configuration.modules ?? 1;
     applySize();
 
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
@@ -233,7 +253,12 @@ function initConfigurator(root) {
     refreshPreview();
   });
 
-  root.querySelectorAll('input[type="color"], select:not([data-configurator-size])').forEach((input) => {
+  modulesSelect.addEventListener('change', () => {
+    applySize();
+    refreshPreview();
+  });
+
+  root.querySelectorAll('input[type="color"], select:not([data-configurator-size]):not([data-configurator-modules])').forEach((input) => {
     input.addEventListener('input', refreshPreview);
   });
 }

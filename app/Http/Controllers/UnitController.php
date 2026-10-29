@@ -69,11 +69,10 @@ class UnitController extends Controller
         }
 
         $configuration = UnitConfiguration::normalize($unit->configuration);
-        $size = UnitConfiguration::SIZES[$configuration['size']];
 
         return [
             'configuration' => $configuration,
-            'dimensions' => ['length' => $size['length'], 'depth' => $size['depth']],
+            'dimensions' => UnitConfiguration::dimensions($configuration),
             'backdrops' => UnitRenderer::BACKDROPS,
         ];
     }

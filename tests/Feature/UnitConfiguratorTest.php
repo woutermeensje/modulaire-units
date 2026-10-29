@@ -314,6 +314,70 @@ class UnitConfiguratorTest extends TestCase
         ])->assertSessionHasErrors(['photos_3d', 'photos_3d.front']);
     }
 
+    public function test_coupled_units_share_front_and_back_and_extend_the_side_walls(): void
+    {
+        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'modules' => '3']);
+
+        $this->assertSame(3, $configuration['modules']);
+        $this->assertCount(6, $configuration['walls']['front']);
+        $this->assertCount(6, $configuration['walls']['back']);
+        $this->assertCount(9, $configuration['walls']['left']);
+        $this->assertCount(9, $configuration['walls']['right']);
+        $this->assertSame(['length' => 6, 'depth' => 9], UnitConfiguration::dimensions($configuration));
+        $this->assertSame('3 gekoppelde units van 6 x 3 meter (6 x 9 meter)', UnitConfiguration::label($configuration));
+        $this->assertSame(1, UnitConfiguration::normalize(['size' => '3x3'])['modules']);
+        $this->assertSame(UnitConfiguration::MAX_MODULES, UnitConfiguration::normalize(['size' => '3x3', 'modules' => 99])['modules']);
+    }
+
+    public function test_admin_can_save_coupled_units(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Kantoor 6x6',
+            'status' => 'published',
+            'configuration' => [
+                'size' => '6x3',
+                'modules' => '2',
+                'walls' => ['right' => ['empty', 'window', 'empty', 'empty', 'window', 'empty']],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $unit = Unit::query()->where('slug', 'kantoor-6x6')->sole();
+        $this->assertSame(2, $unit->configuration['modules']);
+        $this->assertSame(['empty', 'window', 'empty', 'empty', 'window', 'empty'], $unit->configuration['walls']['right']);
+
+        $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
+            ->assertOk()
+            ->assertSee('<option value="2" selected>2 units gekoppeld</option>', false)
+            ->assertSee('Unit 2');
+
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Te groot',
+            'status' => 'published',
+            'configuration' => ['size' => '6x3', 'modules' => UnitConfiguration::MAX_MODULES + 1],
+        ])->assertSessionHasErrors('configuration.modules');
+    }
+
+    public function test_renderer_draws_coupled_units_with_their_seams(): void
+    {
+        $configuration = UnitConfiguration::normalize([
+            'size' => '3x3',
+            'modules' => 2,
+            'walls' => ['right' => ['empty', 'window', 'empty', 'empty', 'window', 'empty']],
+        ]);
+
+        $svg = (new UnitRenderer)->renderView($configuration, 'front');
+
+        $this->assertStringContainsString('aria-label="2 gekoppelde units van 3 x 3 meter (3 x 6 meter)"', $svg);
+        $this->assertSame(2, substr_count($svg, 'fill="#9fbfd2"'));
+    }
+
+    public function test_new_configurations_stand_on_an_industrial_estate(): void
+    {
+        $this->assertSame('industrial', UnitConfiguration::defaults()['background']);
+        $this->assertArrayHasKey('industrial', UnitRenderer::BACKDROPS);
+        $this->assertSame('meadow', UnitConfiguration::normalize(['size' => '3x3', 'background' => 'meadow'])['background']);
+    }
+
     /**
      * @return array<string, UploadedFile>
      */

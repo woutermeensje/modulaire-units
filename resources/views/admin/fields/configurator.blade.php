@@ -5,7 +5,11 @@
 @php
     $isConfigured = filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
-    $maxSlots = fn (string $wall): int => max(array_map(fn (string $size): int => UnitConfiguration::slotCount($size, $wall), array_keys(UnitConfiguration::SIZES)));
+    $maxSlots = fn (string $wall): int => max(array_map(fn (string $size): int => UnitConfiguration::slotCount($size, $wall, UnitConfiguration::MAX_MODULES), array_keys(UnitConfiguration::SIZES)));
+    $sideWalls = ['left', 'right'];
+    $slotsPerUnit = UnitConfiguration::SIZES[$configuration['size']]['depth'];
+    // Seen from outside, the right wall starts at the front unit and the left wall at the back one.
+    $groupUnit = fn (string $wall, int $group): int => $wall === 'right' ? $group + 1 : $configuration['modules'] - $group;
     $slotCounts = [];
     foreach (array_keys(UnitConfiguration::SIZES) as $size) {
         foreach (array_keys(UnitConfiguration::WALLS) as $wall) {
@@ -51,6 +55,14 @@
                 </select>
             </div>
             <div data-configurator-body @unless ($isConfigured) hidden @endunless>
+                <label class="portal-label" for="configuration_modules">Aantal units</label>
+                <select class="portal-input" id="configuration_modules" name="configuration[modules]" data-configurator-modules>
+                    @for ($modules = 1; $modules <= UnitConfiguration::MAX_MODULES; $modules++)
+                        <option value="{{ $modules }}" @selected($configuration['modules'] === $modules)>{{ $modules === 1 ? '1 unit' : $modules.' units gekoppeld' }}</option>
+                    @endfor
+                </select>
+            </div>
+            <div data-configurator-body @unless ($isConfigured) hidden @endunless>
                 <label class="portal-label" for="configuration_background">Achtergrond</label>
                 <select class="portal-input" id="configuration_background" name="configuration[background]">
                     @foreach (UnitConfiguration::BACKGROUNDS as $background => $label)
@@ -74,21 +86,31 @@
             @foreach (UnitConfiguration::WALLS as $wall => $wallLabel)
                 <fieldset class="unit-configurator__wall">
                     <legend class="portal-label">{{ $wallLabel }}</legend>
-                    <div class="unit-configurator__slots">
-                        @for ($index = 0; $index < $maxSlots($wall); $index++)
-                            @php($slot = $configuration['walls'][$wall][$index] ?? UnitConfiguration::EMPTY)
-                            @php($inUse = $index < UnitConfiguration::slotCount($configuration['size'], $wall))
-                            <button type="button" class="unit-slot unit-slot--{{ $slot }}" data-configurator-slot data-wall="{{ $wall }}" data-index="{{ $index }}"
-                                    title="{{ $wallLabel }}, vak {{ $index + 1 }}" @unless ($inUse) hidden @endunless>
-                                <i class="ph {{ $slotIcons[$slot] }}"></i>
-                                <span>{{ UnitConfiguration::SLOTS[$slot] }}</span>
-                                <input type="hidden" name="configuration[walls][{{ $wall }}][]" value="{{ $slot }}" @disabled(! $inUse)>
-                            </button>
-                        @endfor
+                    <div @class(['unit-configurator__groups' => in_array($wall, $sideWalls, true)])>
+                        @foreach (array_chunk(range(0, $maxSlots($wall) - 1), in_array($wall, $sideWalls, true) ? $slotsPerUnit : $maxSlots($wall)) as $group => $indexes)
+                            <div class="unit-configurator__group" data-configurator-group data-wall="{{ $wall }}" data-group="{{ $group }}"
+                                 @if (in_array($wall, $sideWalls, true) && $group >= $configuration['modules']) hidden @endif>
+                                @if (in_array($wall, $sideWalls, true))
+                                    <span class="unit-configurator__group-label" data-configurator-group-label @if ($configuration['modules'] === 1) hidden @endif>Unit {{ $groupUnit($wall, $group) }}</span>
+                                @endif
+                                <div class="unit-configurator__slots">
+                                    @foreach ($indexes as $index)
+                                        @php($slot = $configuration['walls'][$wall][$index] ?? UnitConfiguration::EMPTY)
+                                        @php($inUse = $index < UnitConfiguration::slotCount($configuration['size'], $wall, $configuration['modules']))
+                                        <button type="button" class="unit-slot unit-slot--{{ $slot }}" data-configurator-slot data-wall="{{ $wall }}" data-index="{{ $index }}"
+                                                title="{{ $wallLabel }}, vak {{ $index + 1 }}" @unless ($inUse) hidden @endunless>
+                                            <i class="ph {{ $slotIcons[$slot] }}"></i>
+                                            <span>{{ UnitConfiguration::SLOTS[$slot] }}</span>
+                                            <input type="hidden" name="configuration[walls][{{ $wall }}][]" value="{{ $slot }}" @disabled(! $inUse)>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </fieldset>
             @endforeach
-            <p class="portal-help">Gevels gezien van buitenaf, van links naar rechts. Elk vak is 1 meter breed.</p>
+            <p class="portal-help">Gevels gezien van buitenaf, van links naar rechts. Elk vak is 1 meter breed. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte: de voorzijde hoort bij unit 1, de achterzijde bij de achterste unit.</p>
         </div>
     </div>
 

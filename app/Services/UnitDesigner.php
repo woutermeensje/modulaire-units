@@ -21,18 +21,23 @@ class UnitDesigner
         Je helpt een verkoper van modulaire units (kantoor-, sanitaire en opslagunits) om een unit te configureren en te beschrijven voor de website.
 
         Er zijn twee afmetingen: 3x3 (3 bij 3 meter) en 6x3 (6 meter lang, 3 meter diep).
+        Met modules koppel je 1 tot 4 units van dezelfde afmeting met de lange zijde tegen elkaar tot één open ruimte,
+        bijv. 3 modules van 6x3 geeft een ruimte van 6 bij 9 meter. Gebruik 1 module tenzij de beschrijving om meer ruimte
+        of gekoppelde units vraagt.
         Elke gevel is verdeeld in vakken van 1 meter. Een vak is "empty" (dichte wand), "window" (raam) of "door" (deur).
-        - front (voorzijde) en back (achterzijde) zijn de lange zijden: 3 vakken bij 3x3, 6 vakken bij 6x3.
-        - left (linkerzijde) en right (rechterzijde) zijn de korte kopgevels: altijd 3 vakken.
+        - front (voorzijde) is de lange zijde van de voorste unit, back (achterzijde) die van de achterste unit:
+          3 vakken bij 3x3, 6 vakken bij 6x3.
+        - left (linkerzijde) en right (rechterzijde) lopen langs alle units: 3 vakken per module.
         - Vakken lopen van links naar rechts, gezien van buitenaf terwijl je recht voor die gevel staat.
+          De rechterzijde begint dus bij de voorste unit, de linkerzijde bij de achterste unit.
         - Geef per gevel precies zoveel vakken als die gevel heeft.
 
         Kleuren zijn hexcodes (#rrggbb): cladding is de gevelbekleding, frame zijn de kozijnen, hoekprofielen en het dak.
         Vertaal kleurnamen naar een passende, ingetogen hexcode (bijv. antraciet #3d4a52, wit #f2f2ee, lichtgrijs #c9cdcf, zwart #1f2326).
-        Achtergrond: "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
+        Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 
         Volg de beschrijving zo letterlijk mogelijk. Wat niet genoemd wordt, kies je zelf op een logische manier:
-        een unit heeft minstens één deur; ramen verdeel je symmetrisch; zonder kleurwens gebruik je antraciet met zwarte kozijnen; zonder achtergrondwens "meadow".
+        een unit heeft minstens één deur; ramen verdeel je symmetrisch; zonder kleurwens gebruik je antraciet met zwarte kozijnen; zonder achtergrondwens "industrial".
         Als er een huidige configuratie is meegegeven en de beschrijving klinkt als een wijziging ("maak", "voeg toe", "verplaats"), pas dan alleen aan wat gevraagd wordt.
 
         Schrijf daarnaast in het Nederlands, zakelijk en zonder overdrijving:
@@ -121,13 +126,14 @@ class UnitDesigner
             'type' => 'object',
             'properties' => [
                 'size' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::SIZES)],
+                'modules' => ['type' => 'integer', 'enum' => range(1, UnitConfiguration::MAX_MODULES), 'description' => 'Aantal gekoppelde units'],
                 'walls' => [
                     'type' => 'object',
                     'properties' => [
                         'front' => $slots + ['description' => '3 vakken bij 3x3, 6 vakken bij 6x3'],
                         'back' => $slots + ['description' => '3 vakken bij 3x3, 6 vakken bij 6x3'],
-                        'left' => $slots + ['description' => 'Altijd 3 vakken'],
-                        'right' => $slots + ['description' => 'Altijd 3 vakken'],
+                        'left' => $slots + ['description' => '3 vakken per module'],
+                        'right' => $slots + ['description' => '3 vakken per module'],
                     ],
                     'required' => ['front', 'back', 'left', 'right'],
                     'additionalProperties' => false,
@@ -143,7 +149,7 @@ class UnitDesigner
                 'excerpt' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'walls', 'colors', 'background', 'title', 'excerpt', 'meta_description'],
+            'required' => ['size', 'modules', 'walls', 'colors', 'background', 'title', 'excerpt', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

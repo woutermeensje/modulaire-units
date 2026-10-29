@@ -3,6 +3,7 @@ import {
   CanvasTexture,
   CircleGeometry,
   Color,
+  CylinderGeometry,
   DirectionalLight,
   ExtrudeGeometry,
   Fog,
@@ -18,6 +19,8 @@ import {
   RepeatWrapping,
   Scene,
   Shape,
+  SphereGeometry,
+  SRGBColorSpace,
   Vector3,
   WebGLRenderer,
 } from 'three';
@@ -80,6 +83,94 @@ function createRibTexture() {
   texture.wrapT = RepeatWrapping;
 
   return texture;
+}
+
+/**
+ * Asphalt: light grey speckles that darken the ground colour, from a fixed seed so photos come out the same every time.
+ */
+function createAsphaltTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const context = canvas.getContext('2d');
+  context.fillStyle = '#c4c4c4';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  let seed = 7;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+
+    return seed / 2147483647;
+  };
+  for (let i = 0; i < 2600; i++) {
+    const value = Math.round(150 + random() * 100);
+    context.fillStyle = `rgb(${value}, ${value}, ${value})`;
+    context.fillRect(Math.floor(random() * canvas.width), Math.floor(random() * canvas.height), 1, 1);
+  }
+
+  const texture = new CanvasTexture(canvas);
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
+  texture.repeat.set(90, 90);
+  texture.colorSpace = SRGBColorSpace;
+
+  return texture;
+}
+
+/** Business halls around the site: [angle in degrees, distance, width, depth, height, colour]. */
+const HALLS = [
+  [180, 55, 40, 25, 10, '#8f989e'], [150, 62, 30, 20, 8, '#5d7b93'], [212, 50, 28, 18, 7, '#b5babd'],
+  [250, 66, 45, 25, 11, '#7d868c'], [112, 58, 26, 20, 8, '#a9b0b4'], [0, 60, 40, 25, 10, '#8f989e'],
+  [38, 56, 30, 20, 8, '#5d7b93'], [322, 52, 28, 18, 7, '#b5babd'], [72, 66, 35, 25, 9, '#7d868c'],
+  [290, 60, 30, 20, 8, '#a9b0b4'],
+];
+
+/** Trees along the edges of the site: [x, z]. */
+const TREES = [[-16, -20], [-10, -24], [14, -22], [22, -14], [-24, 6], [24, 10], [-20, 18]];
+
+/**
+ * A Dutch business park around the unit: halls in the distance, a few trees and parking bays beside the unit.
+ */
+function buildIndustrialScenery({ length }) {
+  const group = new Group();
+  const markings = new MeshStandardMaterial({ color: '#e6e6e1', roughness: 0.8 });
+  const trim = new MeshStandardMaterial({ color: '#4a5056', roughness: 0.7 });
+  const trunk = new MeshStandardMaterial({ color: '#5b4a3b', roughness: 1 });
+  const crown = new MeshStandardMaterial({ color: '#4d6a3c', roughness: 1 });
+  const flat = (geometry, material, x, y, z) => {
+    const mesh = new Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+
+    return mesh;
+  };
+
+  HALLS.forEach(([degrees, distance, width, depth, height, color]) => {
+    const angle = (degrees * Math.PI) / 180;
+    const hall = new Group();
+    hall.position.set(Math.sin(angle) * distance, 0, Math.cos(angle) * distance);
+    hall.rotation.y = angle;
+    hall.add(
+      flat(new BoxGeometry(width, height, depth), new MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.2 }), 0, height / 2, 0),
+      flat(new BoxGeometry(width + 0.3, 0.6, depth + 0.3), trim, 0, height - 0.3, 0),
+    );
+    group.add(hall);
+  });
+
+  TREES.forEach(([x, z]) => {
+    group.add(
+      flat(new CylinderGeometry(0.18, 0.25, 3, 8), trunk, x, 1.5, z),
+      flat(new SphereGeometry(2.2, 16, 12), crown, x, 4.2, z),
+    );
+  });
+
+  const bayWidth = 2.6;
+  const firstLine = length / 2 + 3;
+  for (let bay = 0; bay <= 5; bay++) {
+    group.add(flat(new BoxGeometry(0.12, 0.01, 5), markings, firstLine + bay * bayWidth, 0.005, 0));
+  }
+  group.add(flat(new BoxGeometry(5 * bayWidth + 0.12, 0.01, 0.12), markings, firstLine + 2.5 * bayWidth, 0.005, -2.5));
+
+  return group;
 }
 
 function box(width, height, depth, x, y, z, material) {
@@ -189,7 +280,7 @@ function buildWall(width, slots, materials) {
  * The steel frame around the walls: corner posts, top and bottom rails and corner castings, without a roof
  * so the empty inside of the unit can be seen.
  */
-function buildFrame(length, depth, materials) {
+function buildFrame(length, depth, seams, materials) {
   const group = new Group();
   const postX = length / 2 - POST_SIZE / 2 + 0.02;
   const postZ = depth / 2 - POST_SIZE / 2 + 0.02;
@@ -216,6 +307,17 @@ function buildFrame(length, depth, materials) {
     });
   });
 
+  // Where two units meet, their frames show as a wide post in each side wall and a beam across the open space.
+  seams.forEach((z) => {
+    [-1, 1].forEach((signX) => {
+      group.add(
+        box(POST_SIZE, HEIGHT, 0.2, signX * postX, HEIGHT / 2, z, materials.frame),
+        box(CORNER_CASTING, 0.12, 0.24, signX * castingX, HEIGHT - 0.05, z, materials.frame),
+      );
+    });
+    group.add(box(length, TOP_RAIL, 0.16, 0, HEIGHT - TOP_RAIL / 2 + 0.01, z, materials.frame));
+  });
+
   return group;
 }
 
@@ -233,13 +335,17 @@ function buildUnit(configuration, dimensions, materials) {
     body.add(group);
   });
 
-  body.add(buildFrame(length, depth, materials));
+  const modules = configuration.modules ?? 1;
+  const seams = Array.from({ length: modules - 1 }, (_, index) => depth / 2 - ((index + 1) * depth) / modules);
+  body.add(buildFrame(length, depth, seams, materials));
 
   const wallThickness = CLADDING_THICKNESS + LINING_THICKNESS;
   body.add(box(length - 2 * wallThickness, 0.03, depth - 2 * wallThickness, 0, BOTTOM_RAIL - 0.015, 0, materials.floor));
 
-  [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([signX, signZ]) => {
-    unit.add(box(0.3, RAISE, 0.3, signX * (length / 2 - 0.15), RAISE / 2, signZ * (depth / 2 - 0.15), materials.concrete));
+  [-depth / 2 + 0.15, ...seams, depth / 2 - 0.15].forEach((z) => {
+    [-1, 1].forEach((signX) => {
+      unit.add(box(0.3, RAISE, 0.3, signX * (length / 2 - 0.15), RAISE / 2, z, materials.concrete));
+    });
   });
 
   unit.add(body);
@@ -290,21 +396,23 @@ function createStage(renderer, backdrops) {
   const sun = new DirectionalLight('#fff6e8', 2.4);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
-  sun.shadow.camera.left = -7;
-  sun.shadow.camera.right = 7;
-  sun.shadow.camera.top = 7;
-  sun.shadow.camera.bottom = -7;
+  sun.shadow.camera.left = -11;
+  sun.shadow.camera.right = 11;
+  sun.shadow.camera.top = 11;
+  sun.shadow.camera.bottom = -11;
   sun.shadow.normalBias = 0.02;
   scene.add(hemisphere, sun);
 
   const groundMaterial = new MeshStandardMaterial({ roughness: 1 });
-  const ground = new Mesh(new CircleGeometry(80, 64), groundMaterial);
+  const ground = new Mesh(new CircleGeometry(150, 64), groundMaterial);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
 
   const ribs = createRibTexture();
+  const asphalt = createAsphaltTexture();
   let unit = null;
+  let scenery = null;
 
   return {
     scene,
@@ -312,8 +420,23 @@ function createStage(renderer, backdrops) {
     show(configuration, dimensions) {
       const backdrop = backdrops[configuration.background] ?? Object.values(backdrops)[0];
       scene.background = new Color(backdrop.sky);
-      scene.fog = new Fog(backdrop.horizon, 20, 70);
+      scene.fog = new Fog(backdrop.horizon, 45, 140);
       groundMaterial.color.set(backdrop.ground);
+      const isIndustrial = configuration.background === 'industrial';
+      if ((groundMaterial.map !== null) !== isIndustrial) {
+        groundMaterial.map = isIndustrial ? asphalt : null;
+        groundMaterial.needsUpdate = true;
+      }
+
+      if (scenery) {
+        scene.remove(scenery);
+        dispose(scenery);
+        scenery = null;
+      }
+      if (isIndustrial) {
+        scenery = buildIndustrialScenery(dimensions);
+        scene.add(scenery);
+      }
       hemisphere.color.set(backdrop.sky);
       hemisphere.groundColor.set(backdrop.ground);
 
@@ -337,8 +460,12 @@ function createStage(renderer, backdrops) {
       if (unit) {
         dispose(unit);
       }
+      if (scenery) {
+        dispose(scenery);
+      }
       dispose(ground);
       ribs.dispose();
+      asphalt.dispose();
       scene.environment.dispose();
     },
   };
