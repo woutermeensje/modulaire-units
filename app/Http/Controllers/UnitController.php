@@ -6,6 +6,8 @@ use App\Models\Unit;
 use App\Models\UnitTerm;
 use App\Services\Content\ShortcodeRenderer;
 use App\Support\Seo;
+use App\Support\UnitConfiguration;
+use App\Support\UnitRenderer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -50,7 +52,29 @@ class UnitController extends Controller
             'unit' => $unit,
             'content' => app(ShortcodeRenderer::class)->render($unit->content),
             'relatedUnits' => $relatedUnits,
+            'viewer' => $this->viewer($unit),
             'seo' => Seo::for($unit, $unit->summary(30)),
         ]);
+    }
+
+    /**
+     * Everything the "Bekijk in 3D" viewer needs, or null for a unit without configuration.
+     *
+     * @return array{configuration: array<string, mixed>, dimensions: array{length: int, depth: int}, backdrops: array<string, array<string, string>>}|null
+     */
+    private function viewer(Unit $unit): ?array
+    {
+        if ($unit->configuration === null) {
+            return null;
+        }
+
+        $configuration = UnitConfiguration::normalize($unit->configuration);
+        $size = UnitConfiguration::SIZES[$configuration['size']];
+
+        return [
+            'configuration' => $configuration,
+            'dimensions' => ['length' => $size['length'], 'depth' => $size['depth']],
+            'backdrops' => UnitRenderer::BACKDROPS,
+        ];
     }
 }

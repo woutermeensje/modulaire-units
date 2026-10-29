@@ -13,7 +13,7 @@
         </nav>
 
         <div class="mh-product-wrapper">
-            @include('partials.item-gallery', ['images' => $unit->images(), 'title' => $unit->title])
+            @include('partials.item-gallery', ['images' => $unit->images(), 'title' => $unit->title, 'viewer' => $viewer])
 
             <div class="mh-col-right">
                 <h1 class="product_title entry-title">{{ $unit->title }}</h1>

@@ -345,8 +345,10 @@ function aim(camera, target, { length, depth }, view, zoom) {
  *
  * @param {HTMLElement} container
  * @param {Record<string, {sky: string, horizon: string, ground: string, groundFar: string}>} backdrops
+ * @param {{zoom?: boolean, distance?: number}} options  Turn zooming off where the mouse wheel should keep scrolling
+ *   the page; a distance below 1 frames the unit more tightly.
  */
-export function createUnitViewer(container, backdrops) {
+export function createUnitViewer(container, backdrops, { zoom = true, distance = 1 } = {}) {
   const renderer = createRenderer();
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   container.appendChild(renderer.domElement);
@@ -357,6 +359,7 @@ export function createUnitViewer(container, backdrops) {
   const camera = new PerspectiveCamera(35, 16 / 9, 0.1, 200);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enablePan = false;
+  controls.enableZoom = zoom;
   controls.minDistance = 4;
   controls.maxDistance = 30;
   controls.maxPolarAngle = Math.PI / 2 - 0.05;
@@ -389,7 +392,7 @@ export function createUnitViewer(container, backdrops) {
 
       if (configuration.size !== currentSize) {
         currentSize = configuration.size;
-        aim(camera, controls.target, dimensions, 'front', 1);
+        aim(camera, controls.target, dimensions, 'front', distance);
         controls.update();
       }
 

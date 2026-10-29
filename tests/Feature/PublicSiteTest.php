@@ -9,6 +9,7 @@ use App\Models\Redirect;
 use App\Models\Setting;
 use App\Models\Unit;
 use App\Models\UnitTerm;
+use App\Support\UnitConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -200,6 +201,20 @@ class PublicSiteTest extends TestCase
 
         $this->get('/units/20ft-modulaire-unit/')->assertOk()->assertSee('20ft Modulaire Unit')->assertSee('Prijs op aanvraag.');
         $this->get('/conditie/nieuw/')->assertOk()->assertSee('20ft Modulaire Unit');
+    }
+
+    public function test_configured_units_offer_a_3d_view(): void
+    {
+        Unit::factory()->create(['slug' => 'met-configuratie', 'configuration' => UnitConfiguration::defaults('3x3')]);
+        Unit::factory()->create(['slug' => 'zonder-configuratie', 'configuration' => null]);
+
+        $this->get('/units/met-configuratie/')
+            ->assertOk()
+            ->assertSee('Bekijk in 3D')
+            ->assertSee('data-unit-viewer=\'{"configuration":{"size":"3x3"', false)
+            ->assertSee('"dimensions":{"length":3,"depth":3}', false);
+
+        $this->get('/units/zonder-configuratie/')->assertOk()->assertDontSee('Bekijk in 3D')->assertDontSee('data-unit-viewer', false);
     }
 
     public function test_configured_redirects_are_followed(): void

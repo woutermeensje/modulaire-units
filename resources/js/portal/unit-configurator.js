@@ -32,7 +32,7 @@ function initConfigurator(root) {
   const backdrops = JSON.parse(root.dataset.backdrops);
   let viewerModule = null;
   const loadViewerModule = () => {
-    viewerModule ??= import('./unit-viewer');
+    viewerModule ??= import('../unit-viewer');
 
     return viewerModule;
   };
