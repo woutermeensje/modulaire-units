@@ -23,7 +23,7 @@ class UnitRenderer
     private const LABEL_HEIGHT = 28;
 
     /** @var array<string, array{sky: string, horizon: string, ground: string, groundFar: string}> */
-    private const BACKDROPS = [
+    public const BACKDROPS = [
         'meadow' => ['sky' => '#bcdcf0', 'horizon' => '#eef6fb', 'ground' => '#7fb35c', 'groundFar' => '#9cc77b'],
         'site' => ['sky' => '#d3dbe2', 'horizon' => '#f1f3f5', 'ground' => '#a9a296', 'groundFar' => '#c2bcb1'],
         'plain' => ['sky' => '#f3f3f1', 'horizon' => '#f3f3f1', 'ground' => '#e2e1dc', 'groundFar' => '#e9e8e4'],

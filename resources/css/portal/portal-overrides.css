@@ -271,6 +271,55 @@
   height: auto;
 }
 
+.unit-configurator__preview-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.unit-configurator__preview-panel > .portal-help {
+  margin: 0;
+}
+
+.unit-configurator__views {
+  display: inline-flex;
+  justify-self: start;
+  padding: 3px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg-white);
+}
+
+.unit-configurator__view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: var(--radius-default);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.unit-configurator__view.is-active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+.unit-configurator__viewer {
+  aspect-ratio: 16 / 9;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  overflow: hidden;
+  cursor: grab;
+}
+
+.unit-configurator__viewer canvas {
+  display: block;
+}
+
 /* Loginpagina's: formulier direct onder het logo i.p.v. verticaal gecentreerd. */
 .auth-shell .auth-page {
   min-height: 0;

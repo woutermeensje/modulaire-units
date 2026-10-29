@@ -211,4 +211,116 @@ class UnitConfiguratorTest extends TestCase
         $this->assertCount(2, $unit->configuration_images);
         Storage::disk('public')->assertExists($unit->configuration_images);
     }
+
+    public function test_3d_photos_replace_the_drawings_when_enabled(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => '3D unit',
+            'status' => 'published',
+            'configuration' => ['size' => '6x3', 'walls' => ['front' => ['door']]],
+            'photos_3d_enabled' => '1',
+            'photos_3d' => $this->photos(),
+        ])->assertSessionHasNoErrors();
+
+        $unit = Unit::query()->where('slug', '3d-unit')->sole();
+
+        $this->assertCount(2, $unit->configuration_images);
+        $this->assertSame($unit->configuration_images[0], $unit->featured_image);
+        $this->assertStringContainsString('3d-unit-front-3d-', $unit->configuration_images[0]);
+        $this->assertStringContainsString('3d-unit-back-3d-', $unit->configuration_images[1]);
+        foreach ($unit->configuration_images as $path) {
+            Storage::disk('public')->assertExists($path);
+            $media = Media::query()->where('path', $path)->sole();
+            $this->assertSame('image/jpeg', $media->mime_type);
+            $this->assertSame(1500, $media->width);
+            Storage::disk('public')->assertExists($media->sizes['thumbnail']);
+        }
+
+        $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
+            ->assertOk()
+            ->assertSee('name="photos_3d_enabled" value="1" data-configurator-photos checked', false);
+    }
+
+    public function test_3d_photos_are_kept_until_the_configuration_changes(): void
+    {
+        $configuration = ['size' => '3x3', 'walls' => ['front' => ['door', 'empty', 'empty']]];
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Blijvende unit',
+            'status' => 'published',
+            'configuration' => $configuration,
+            'photos_3d_enabled' => '1',
+            'photos_3d' => $this->photos(),
+        ]);
+        $unit = Unit::query()->where('slug', 'blijvende-unit')->sole();
+        $photos = $unit->configuration_images;
+
+        $this->actingAs($this->admin)->put(route('admin.units.update', $unit), [
+            'title' => 'Blijvende unit',
+            'status' => 'published',
+            'configuration' => $configuration,
+            'photos_3d_enabled' => '1',
+        ])->assertSessionHasNoErrors();
+        $this->artisan('units:render-configurations')->assertSuccessful();
+
+        $this->assertSame($photos, $unit->refresh()->configuration_images);
+
+        $this->actingAs($this->admin)->put(route('admin.units.update', $unit), [
+            'title' => 'Blijvende unit',
+            'status' => 'published',
+            'configuration' => ['size' => '3x3', 'walls' => ['front' => ['window', 'door', 'window']]],
+            'photos_3d_enabled' => '1',
+        ])->assertSessionHasNoErrors();
+        $unit->refresh();
+
+        $this->assertStringEndsWith('.svg', $unit->configuration_images[0]);
+        $this->assertSame($unit->configuration_images[0], $unit->featured_image);
+        Storage::disk('public')->assertMissing($photos);
+        $this->assertDatabaseMissing('media', ['path' => $photos[0]]);
+    }
+
+    public function test_switching_3d_photos_off_brings_back_the_drawings(): void
+    {
+        $configuration = ['size' => '3x3'];
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Terug naar 2D',
+            'status' => 'published',
+            'configuration' => $configuration,
+            'photos_3d_enabled' => '1',
+            'photos_3d' => $this->photos(),
+        ]);
+        $unit = Unit::query()->where('slug', 'terug-naar-2d')->sole();
+
+        $this->actingAs($this->admin)->put(route('admin.units.update', $unit), [
+            'title' => 'Terug naar 2D',
+            'status' => 'published',
+            'configuration' => $configuration,
+            'photos_3d' => $this->photos(),
+        ])->assertSessionHasNoErrors();
+        $unit->refresh();
+
+        foreach ($unit->configuration_images as $path) {
+            $this->assertStringEndsWith('.svg', $path);
+        }
+    }
+
+    public function test_3d_photos_must_be_jpeg_images_of_known_views(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Ongeldige foto',
+            'status' => 'published',
+            'configuration' => ['size' => '3x3'],
+            'photos_3d_enabled' => '1',
+            'photos_3d' => ['front' => UploadedFile::fake()->create('front.pdf', 10, 'application/pdf'), 'top' => UploadedFile::fake()->image('top.jpg')],
+        ])->assertSessionHasErrors(['photos_3d', 'photos_3d.front']);
+    }
+
+    /**
+     * @return array<string, UploadedFile>
+     */
+    private function photos(): array
+    {
+        return collect(UnitRenderer::VIEWS)->keys()
+            ->mapWithKeys(fn (string $view): array => [$view => UploadedFile::fake()->image($view.'.jpg', 1500, 1000)])
+            ->all();
+    }
 }

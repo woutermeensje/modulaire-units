@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Services\UnitConfigurationImages;
 use App\Support\SiteUrl;
 use App\Support\UnitConfiguration;
+use App\Support\UnitRenderer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -59,7 +60,7 @@ class UnitResource extends Resource
             ],
             'Configuratie' => [
                 Field::make('configuration', 'Unit-configurator', 'configurator')
-                    ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Bij opslaan komen de afbeeldingen op de website: als hoofdfoto als de unit nog geen foto heeft, anders achteraan in de galerij.'),
+                    ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Bij opslaan komen de afbeeldingen op de website: als hoofdfoto als de unit nog geen foto heeft, anders achteraan in de galerij. Kies of dat de 2D-tekeningen of de 3D-beelden zijn.'),
             ],
             'Prijzen' => [
                 Field::make('price_rent', 'Prijsindicatie huren')->half()->placeholder('Bijv. Vanaf € 250,- per maand'),
@@ -96,6 +97,9 @@ class UnitResource extends Resource
             'status' => ['required', Rule::in(array_keys($this->statusOptions()))],
             'sort' => ['nullable', 'integer'],
             'published_at' => ['nullable', 'date'],
+            'photos_3d_enabled' => ['nullable', 'boolean'],
+            'photos_3d' => ['nullable', 'array:'.implode(',', array_keys(UnitRenderer::VIEWS))],
+            'photos_3d.*' => ['image', 'mimes:jpg,jpeg', 'max:10240'],
         ] + UnitConfiguration::rules('configuration') + $this->seoRules();
     }
 
@@ -115,6 +119,7 @@ class UnitResource extends Resource
     {
         /** @var Unit $record */
         $record->terms()->sync(array_map('intval', (array) $request->input('terms', [])));
-        app(UnitConfigurationImages::class)->sync($record);
+        $usesPhotos = $request->boolean('photos_3d_enabled');
+        app(UnitConfigurationImages::class)->sync($record, $usesPhotos ? $request->file('photos_3d', []) : [], keepPhotos: $usesPhotos);
     }
 }

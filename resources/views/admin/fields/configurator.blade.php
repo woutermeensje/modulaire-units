@@ -1,6 +1,7 @@
 @use('App\Support\UnitConfiguration')
 @use('App\Support\UnitRenderer')
 @use('App\Services\UnitDesigner')
+@use('App\Services\UnitConfigurationImages')
 @php
     $isConfigured = filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
@@ -12,11 +13,12 @@
         }
     }
     $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::DOOR => 'ph-door'];
+    $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
 @endphp
 <span class="portal-label">{{ $field->label }}</span>
 <div class="unit-configurator" data-unit-configurator data-preview-url="{{ route('admin.units.preview') }}" data-design-url="{{ route('admin.units.design') }}"
      data-slot-labels='@json(UnitConfiguration::SLOTS)' data-slot-icons='@json($slotIcons)'
-     data-slot-counts='@json($slotCounts)'>
+     data-slot-counts='@json($slotCounts)' data-backdrops='@json(UnitRenderer::BACKDROPS)'>
     <div class="unit-configurator__ai">
         <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i> Beschrijf de unit en laat Claude de configuratie invullen</label>
         <textarea class="portal-textarea" id="configuration_description" rows="3" data-quill="off" data-configurator-description
@@ -90,7 +92,27 @@
         </div>
     </div>
 
-    <div class="unit-configurator__preview" data-configurator-preview data-configurator-body @unless ($isConfigured) hidden @endunless>
-        {!! app(UnitRenderer::class)->render($configuration) !!}
+    <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
+        <div class="unit-configurator__views">
+            <button type="button" class="unit-configurator__view is-active" data-configurator-view="2d" aria-pressed="true">
+                <i class="ph ph-image"></i> 2D-tekening
+            </button>
+            <button type="button" class="unit-configurator__view" data-configurator-view="3d" aria-pressed="false">
+                <i class="ph ph-cube"></i> 3D (prototype)
+            </button>
+        </div>
+        <div class="unit-configurator__preview" data-configurator-preview>
+            {!! app(UnitRenderer::class)->render($configuration) !!}
+        </div>
+        <div class="unit-configurator__viewer" data-configurator-viewer hidden></div>
+        <p class="portal-help" data-configurator-viewer-help hidden>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>
+        <label class="portal-checkbox">
+            <input type="checkbox" name="photos_3d_enabled" value="1" data-configurator-photos @checked($usesPhotos)>
+            Gebruik 3D-beelden als foto's op de website in plaats van de 2D-tekeningen
+        </label>
+        <p class="portal-help" role="status" data-configurator-photos-status></p>
+        @foreach (array_keys(UnitRenderer::VIEWS) as $view)
+            <input type="file" name="photos_3d[{{ $view }}]" accept="image/jpeg" hidden data-configurator-photo="{{ $view }}">
+        @endforeach
     </div>
 </div>
