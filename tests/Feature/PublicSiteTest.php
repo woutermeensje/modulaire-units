@@ -102,7 +102,12 @@ class PublicSiteTest extends TestCase
             ->assertDontSee('Oude banner')
             ->assertDontSee('Bouwunit 20ft')
             ->assertSee('href="/kopen/bouwunits/"', false)
-            ->assertSee('Kantines huren');
+            ->assertDontSee('Bekijk ook:')
+            ->assertDontSee('href="/huren/kantines/"', false)
+            ->assertSee('Stel je eigen unit samen')
+            ->assertSee('<a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">Units samenstellen</a>', false)
+            ->assertSee('id="unit-samensteller"', false)
+            ->assertSee('data-composer', false);
     }
 
     public function test_buy_pages_and_overviews_use_the_offer_layout(): void
@@ -129,10 +134,11 @@ class PublicSiteTest extends TestCase
             ->assertSee('href="'.route('register').'"', false)
             ->assertSee('Informatie aanvragen')
             ->assertSee('<h2 class="mh-offer-intro__heading">Modulaire units kopen</h2>', false)
-            ->assertSee('Alle mogelijkheden:')
-            ->assertSee('href="/kopen/bouwunits/" class="muo-card', false)
-            ->assertSee("background-image: url('/marketing/units/bouwunits.jpg')", false)
+            ->assertDontSee('Alle mogelijkheden:')
+            ->assertDontSee('href="/kopen/bouwunits/" class="muo-card', false)
             ->assertSee('href="/huren/"', false)
+            ->assertSee('<a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">Units samenstellen</a>', false)
+            ->assertSee('data-composer', false)
             ->assertDontSee('mh-units-catalog', false);
     }
 
@@ -169,15 +175,10 @@ class PublicSiteTest extends TestCase
             ->assertSee('Vragen over transport &amp; plaatsing?', false);
     }
 
-    public function test_modulaire_units_page_lists_every_unit_type_with_rent_and_buy_links(): void
+    public function test_modulaire_units_page_offers_the_unit_composer_instead_of_the_unit_types(): void
     {
         $rent = Page::factory()->create(['slug' => 'huren', 'title' => 'Huren']);
-        $buy = Page::factory()->create(['slug' => 'kopen', 'title' => 'Kopen']);
         Page::factory()->create(['slug' => 'bouwunits', 'title' => 'Bouwunits huren', 'parent_id' => $rent->id]);
-        Page::factory()->create(['slug' => 'bouwunits', 'title' => 'Bouwunits', 'parent_id' => $buy->id]);
-        Page::factory()->create(['slug' => 'kantines', 'title' => 'Kantines huren', 'parent_id' => $rent->id]);
-        Page::factory()->create(['slug' => 'kantine', 'title' => 'Kantine units kopen', 'parent_id' => $buy->id]);
-        Page::factory()->create(['slug' => 'slaapunits', 'title' => 'Slaapunits kopen', 'parent_id' => $buy->id]);
         Page::factory()->create(['slug' => 'modulaire-units', 'title' => 'Modulaire units', 'excerpt' => 'Het complete aanbod.', 'content' => '']);
 
         $this->get('/modulaire-units/')
@@ -185,13 +186,12 @@ class PublicSiteTest extends TestCase
             ->assertSee('<h1 id="mh-unit-types-title">Modulaire units</h1>', false)
             ->assertSee('mh-offer-hero__panel', false)
             ->assertSee('Het complete aanbod.')
-            ->assertSeeInOrder(['Bouwunits', 'Kantines', 'Slaapunits'])
-            ->assertSee('href="/huren/bouwunits/"', false)
-            ->assertSee('href="/kopen/bouwunits/"', false)
-            ->assertSee('href="/kopen/kantine/"', false)
-            ->assertSee('aria-label="Slaapunits kopen"', false)
-            ->assertDontSee('aria-label="Slaapunits huren"', false)
-            ->assertSee("background-image: url('/marketing/units/bouwunits.jpg')", false);
+            ->assertSee('<a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">Units samenstellen</a>', false)
+            ->assertSee('Stel je eigen unit samen')
+            ->assertSee('id="unit-samensteller"', false)
+            ->assertSee('data-composer', false)
+            ->assertDontSee('Alle typen modulaire units')
+            ->assertDontSee('href="/huren/bouwunits/"', false);
     }
 
     public function test_unit_detail_and_taxonomy_archive(): void
@@ -264,6 +264,26 @@ class PublicSiteTest extends TestCase
 
         $this->assertSame('Aanbod', $offer->refresh()->label);
         $this->assertSame(3, $offer->children()->count());
+    }
+
+    public function test_content_migration_removes_the_unit_overview_grids_and_redirects_aanbod(): void
+    {
+        $grid = fn (string $section): string => '<section class="elementor-section elementor-top-section a"><div><h2>Bekijk het overzicht - '.$section.'</h2>[subpage_grid parent="'.$section.'" columns="3"]</div></section>';
+        $about = '<section class="elementor-section elementor-top-section b"><section class="elementor-section elementor-inner-section"><h1>Over ons</h1></section></section>';
+        $home = Page::factory()->create(['slug' => '', 'content' => '<div class="elementor">'.$grid('kopen').$about.'</div>']);
+        $offer = Page::factory()->create(['slug' => 'aanbod', 'content' => '<div class="elementor">'.$grid('kopen').$grid('huren').'</div>']);
+        $migration = require database_path('migrations/2026_10_30_095410_remove_unit_overview_grids_from_page_content.php');
+
+        $migration->up();
+        $migration->up();
+
+        $this->assertSame('<div class="elementor">'.$about.'</div>', $home->refresh()->content);
+        $this->assertSame('<div class="elementor"></div>', $offer->refresh()->content);
+        $this->get('/aanbod/')->assertRedirect('/modulaire-units/');
+
+        $migration->down();
+
+        $this->assertDatabaseEmpty('redirects');
     }
 
     public function test_unknown_urls_return_404(): void

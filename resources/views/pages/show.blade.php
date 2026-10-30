@@ -15,12 +15,7 @@
     @endif
 
     @isset($composer)
-        <section class="unit-composer unit-composer--home" id="unit-samensteller">
-            <h2 class="mh-page-title">Stel je eigen unit samen</h2>
-            <p class="unit-composer__intro">Kies de afmeting, het aantal units en lagen, de kleuren en waar ramen en deuren komen. Bewaar of deel je samenstelling met de link.</p>
-
-            @include('partials.unit-composer', $composer)
-        </section>
+        @include('partials.unit-composer-section', ['composer' => $composer])
     @endisset
 
     <main id="content" class="site-main page type-page">

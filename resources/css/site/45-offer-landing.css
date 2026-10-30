@@ -175,8 +175,7 @@
 
 .mh-offer-intro__heading,
 .mh-offer-intro__body h2,
-.mh-offer-request h2,
-.mh-offer-related h2 {
+.mh-offer-request h2 {
   margin: 0 0 0.85rem;
   color: var(--color-text, #333);
   font-size: var(--text-2xl);
@@ -294,9 +293,8 @@
   width: 100%;
 }
 
-/* ── Overige blokken (bijv. formulier) en "Bekijk ook" ── */
-.mh-offer-block,
-.mh-offer-related {
+/* ── Overige blokken (bijv. formulier) ── */
+.mh-offer-block {
   width: min(1200px, calc(100% - 2rem));
   margin: 56px auto 0;
 }
@@ -357,8 +355,7 @@
   }
 
   .mh-offer-overlap,
-  .mh-offer-block,
-  .mh-offer-related {
+  .mh-offer-block {
     width: min(100% - 1.5rem, 1200px);
   }
 

@@ -177,8 +177,8 @@
 
     <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
         @if ($quoteUrl ?? null)
-            {{-- Shown once the visitor has made the unit their own (or opened a shared composition). --}}
-            <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}" @if (! ($quoteReady ?? false)) hidden @endif>
+            {{-- Shown right away, so the starting unit can be asked for as it is. --}}
+            <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}">
                 <a href="{{ route('quote.show') }}/" class="unit-configurator__quote-link" data-configurator-quote-link hidden>Bekijk offerte</a>
                 <button type="button" class="unit-configurator__quote-button" data-configurator-quote-add>
                     <i class="ph ph-shopping-bag"></i> <span>Toevoegen aan offerte</span>

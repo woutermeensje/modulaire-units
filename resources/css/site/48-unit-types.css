@@ -1,108 +1,19 @@
 /* ==========================================================================
-   Overzicht van alle typen modulaire units (/modulaire-units/).
-   De hero en knoppen komen uit 45-offer-landing.css (.mh-offer).
+   Overzichtspagina van de modulaire units (/modulaire-units/).
+   De hero en knoppen komen uit 45-offer-landing.css (.mh-offer), de samensteller uit unit-composer.css.
    ========================================================================== */
 
-.mh-unit-types__content,
-.mh-unit-types__list {
+.mh-unit-types__content {
   width: min(1200px, calc(100% - 2rem));
   margin: 56px auto 0;
 }
 
-.mh-unit-types__list h2 {
-  margin: 0 0 1.25rem;
-  color: var(--color-text, #333);
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.mh-unit-types__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mh-unit-type {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  margin: 0;
-  border: 1px solid var(--color-border, #dedede);
-  border-radius: 12px;
-  background: #fff;
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-
-.mh-unit-type:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(43, 110, 143, 0.18);
-}
-
-.mh-unit-type__media {
-  display: block;
-  aspect-ratio: 4 / 3;
-  background-color: #2B6E8F;
-  background-size: cover;
-  background-position: center;
-}
-
-.mh-unit-type__media--no-image {
-  background: linear-gradient(135deg, rgba(57, 116, 155, 0.90), rgba(43, 110, 143, 0.98));
-}
-
-.mh-unit-type__body {
-  display: grid;
-  gap: 0.875rem;
-  padding: 18px 20px 20px;
-}
-
-.mh-unit-type__title {
-  margin: 0;
-  color: var(--color-text, #333);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.mh-unit-type__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.mh-unit-type__actions .mh-offer-btn {
-  flex: 1 1 0;
-}
-
-.mh-offer .mh-offer-btn--outline,
-.mh-offer .mh-offer-btn--outline:visited {
-  background: #fff;
-  color: #2B6E8F;
-}
-
-.mh-offer .mh-offer-btn--outline:hover,
-.mh-offer .mh-offer-btn--outline:focus {
-  background: #eef3f7;
-  color: #2B6E8F;
-}
-
-@media (max-width: 960px) {
-  .mh-unit-types__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.mh-unit-types .unit-composer--section {
+  margin-top: 56px;
 }
 
 @media (max-width: 540px) {
-  .mh-unit-types__content,
-  .mh-unit-types__list {
+  .mh-unit-types__content {
     width: min(100% - 1.5rem, 1200px);
-  }
-
-  .mh-unit-types__grid {
-    grid-template-columns: 1fr;
   }
 }

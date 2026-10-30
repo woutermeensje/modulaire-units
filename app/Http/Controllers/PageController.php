@@ -66,6 +66,7 @@ class PageController extends Controller
                 'page' => $page,
                 'landing' => app(OfferLanding::class)->build($page),
                 'seo' => Seo::for($page, $page->excerpt),
+                'composer' => $this->composer($request),
             ]);
         }
 
@@ -74,6 +75,7 @@ class PageController extends Controller
                 'page' => $page,
                 'overview' => app(UnitTypesOverview::class)->build($page),
                 'seo' => Seo::for($page, $page->excerpt),
+                'composer' => $this->composer($request),
             ]);
         }
 
@@ -98,15 +100,14 @@ class PageController extends Controller
     }
 
     /**
-     * The public unit composer below the home page hero; a shared composition is read from the link, as on /unit-samensteller/.
+     * The public unit composer on the home page, /modulaire-units/ and the huur- en koopagina's; a shared composition is read from the link, as on /unit-samensteller/.
      *
-     * @return array{configuration: array<string, mixed>, quoteReady: bool}
+     * @return array{configuration: array<string, mixed>}
      */
     private function composer(Request $request): array
     {
         return [
             'configuration' => UnitConfiguration::fromShareCode((string) $request->query(UnitConfiguration::SHARE_KEY, '')),
-            'quoteReady' => $request->filled(UnitConfiguration::SHARE_KEY),
         ];
     }
 

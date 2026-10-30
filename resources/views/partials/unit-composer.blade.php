@@ -3,7 +3,6 @@
      * The public unit composer (no AI), shared by /unit-samensteller/ and the home page.
      *
      * @var array<string, mixed> $configuration
-     * @var bool $quoteReady
      */
 @endphp
 @push('head')
@@ -19,5 +18,4 @@
     'ai' => false,
     'previewUrl' => route('unit-composer.public.preview'),
     'quoteUrl' => route('unit-composer.quote'),
-    'quoteReady' => $quoteReady,
 ])

@@ -6,7 +6,6 @@ use App\Models\Page;
 use App\Support\SiteUrl;
 use Dom\Element;
 use Dom\HTMLDocument;
-use Illuminate\Support\Collection;
 
 /**
  * Turns the (imported Elementor) content of a /huren/ or /kopen/ page into the parts of the offer landing layout:
@@ -39,7 +38,7 @@ class OfferLanding
     }
 
     /**
-     * @return array{section: string, heading: string, body: string, blocks: list<string>, image: ?string, counterpart: ?Page, related: Collection<int, Page>}
+     * @return array{section: string, heading: string, body: string, blocks: list<string>, image: ?string, counterpart: ?Page}
      */
     public function build(Page $page): array
     {
@@ -68,9 +67,6 @@ class OfferLanding
             'counterpart' => Page::query()->published()
                 ->where('path', $isOverview ? $otherSection : $otherSection.'/'.$page->slug)
                 ->first(),
-            'related' => $isOverview
-                ? $page->children()->published()->get()
-                : ($page->parent?->children()->published()->whereKeyNot($page->id)->get() ?? collect()),
         ];
     }
 

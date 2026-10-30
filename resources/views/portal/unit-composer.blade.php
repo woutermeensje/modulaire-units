@@ -16,7 +16,6 @@
                 'previewUrl' => $previewUrl,
                 'designUrl' => $designUrl,
                 'quoteUrl' => $quoteUrl ?? null,
-                'quoteReady' => $quoteReady ?? false,
             ])
         </section>
     </div>

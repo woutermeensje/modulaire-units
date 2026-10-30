@@ -80,7 +80,7 @@ class UnitComposerTest extends TestCase
             ->assertSee('Raam (180 cm)')
             ->assertSee('Deur (87,5 cm)');
 
-        $this->assertMatchesRegularExpression('/data-configurator-quote data-quote-url="[^"]+"\s+hidden\s*>/', $this->get('/unit-samensteller/')->getContent());
+        $this->get('/unit-samensteller/')->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'">', false);
 
         $this->post(route('unit-composer.public.preview'), ['configuration' => ['size' => '3x3']])
             ->assertOk()
@@ -97,8 +97,7 @@ class UnitComposerTest extends TestCase
         $this->get('/unit-samensteller/?'.UnitConfiguration::SHARE_KEY.'='.$encoded)
             ->assertOk()
             ->assertSee('<option value="2" selected>2 lagen (gestapeld)</option>', false)
-            ->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'"', false)
-            ->assertDontSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'"  hidden', false);
+            ->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'">', false);
     }
 
     public function test_guests_are_sent_to_the_login_page(): void

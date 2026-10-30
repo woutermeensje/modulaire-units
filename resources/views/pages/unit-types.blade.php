@@ -1,9 +1,10 @@
-{{-- Overzicht van alle typen modulaire units (/modulaire-units/): hero met schuin paneel en per type een tegel met de huur- en koopopties. --}}
+{{-- Overzichtspagina van de modulaire units (/modulaire-units/): hero met schuin paneel, de pagina-inhoud en de unit samensteller. --}}
 @extends('layouts.site')
 
 @php
     /** @var \App\Models\Page $page */
-    /** @var array{intro: string, content: string, image: ?string, types: list<array{name: string, image: ?string, rent: ?\App\Models\Page, buy: ?\App\Models\Page}>} $overview */
+    /** @var array{intro: string, content: string, image: ?string} $overview */
+    /** @var array{configuration: array<string, mixed>} $composer */
     $requestUrl = url('offerte-aanvragen').'/';
 @endphp
 
@@ -22,6 +23,7 @@
                 @endif
                 <div class="mh-offer-hero__actions">
                     <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">Informatie aanvragen</a>
+                    <a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">Units samenstellen</a>
                 </div>
             </div>
         </div>
@@ -32,27 +34,6 @@
         <div class="mh-unit-types__content text-content">{!! $overview['content'] !!}</div>
     @endif
 
-    <section class="mh-unit-types__list" aria-labelledby="mh-unit-types-list-title">
-        <h2 id="mh-unit-types-list-title">Alle typen modulaire units</h2>
-
-        <ul class="mh-unit-types__grid">
-            @foreach ($overview['types'] as $type)
-                <li class="mh-unit-type">
-                    <a href="{{ ($type['rent'] ?? $type['buy'])->url() }}" @class(['mh-unit-type__media', 'mh-unit-type__media--no-image' => ! $type['image']]) @if ($type['image']) style="background-image: url('{{ $type['image'] }}')" @endif tabindex="-1" aria-hidden="true"></a>
-                    <div class="mh-unit-type__body">
-                        <h3 class="mh-unit-type__title">{{ $type['name'] }}</h3>
-                        <div class="mh-unit-type__actions">
-                            @if ($type['rent'])
-                                <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $type['rent']->url() }}" aria-label="{{ $type['name'] }} huren">Huren</a>
-                            @endif
-                            @if ($type['buy'])
-                                <a class="mh-offer-btn mh-offer-btn--outline" href="{{ $type['buy']->url() }}" aria-label="{{ $type['name'] }} kopen">Kopen</a>
-                            @endif
-                        </div>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
-    </section>
+    @include('partials.unit-composer-section', ['composer' => $composer])
 </main>
 @endsection

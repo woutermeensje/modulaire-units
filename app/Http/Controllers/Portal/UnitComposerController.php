@@ -22,7 +22,6 @@ class UnitComposerController extends Controller
             'previewUrl' => route('unit-composer.preview'),
             'designUrl' => route('unit-composer.design'),
             'quoteUrl' => route('unit-composer.quote'),
-            'quoteReady' => $request->filled(UnitConfiguration::SHARE_KEY),
         ]);
     }
 }

@@ -122,7 +122,7 @@ function initConfigurator(root) {
     setTimeout(() => { shareCopy.lastChild.textContent = ' Kopieer link'; }, 2000);
   });
 
-  // "Toevoegen aan offerte" appears once the visitor changes the unit, and is offered again after every change.
+  // "Toevoegen aan offerte" is there from the start, and is offered again after every change.
   const quote = root.querySelector('[data-configurator-quote]');
   const quoteButton = quote?.querySelector('[data-configurator-quote-add]');
   const quoteLabel = quoteButton?.querySelector('span');

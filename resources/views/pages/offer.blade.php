@@ -3,7 +3,8 @@
 
 @php
     /** @var \App\Models\Page $page */
-    /** @var array{section: string, heading: string, body: string, blocks: list<string>, image: ?string, counterpart: ?\App\Models\Page, related: \Illuminate\Support\Collection<int, \App\Models\Page>} $landing */
+    /** @var array{section: string, heading: string, body: string, blocks: list<string>, image: ?string, counterpart: ?\App\Models\Page} $landing */
+    /** @var array{configuration: array<string, mixed>} $composer */
     $requestUrl = url('offerte-aanvragen').'/';
     $phone = \App\Models\Setting::get('phone');
     $email = \App\Models\Setting::get('email');
@@ -25,7 +26,7 @@
                 <div class="mh-offer-hero__actions">
                     {{-- Via een account kunnen klanten straks zelf units uitzoeken. --}}
                     <a class="mh-offer-btn mh-offer-btn--primary" href="{{ route('register') }}">Account aanmaken</a>
-                    <a class="mh-offer-btn mh-offer-btn--dark" href="{{ $requestUrl }}">Informatie aanvragen</a>
+                    <a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">Units samenstellen</a>
                 </div>
             </div>
         </div>
@@ -106,11 +107,6 @@
         <section class="mh-offer-block">{!! $block !!}</section>
     @endforeach
 
-    @if ($landing['related']->isNotEmpty())
-        <section class="mh-offer-related" aria-labelledby="mh-offer-related-title">
-            <h2 id="mh-offer-related-title">{{ $page->path === $landing['section'] ? 'Alle mogelijkheden:' : 'Bekijk ook:' }}</h2>
-            @include('shortcodes.subpage-grid', ['pages' => $landing['related'], 'columns' => 3])
-        </section>
-    @endif
+    @include('partials.unit-composer-section', ['composer' => $composer])
 </main>
 @endsection
