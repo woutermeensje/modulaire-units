@@ -138,6 +138,7 @@ class UnitConfiguration
         'noodgebouw' => 'Noodgebouw',
         'portiersloge' => 'Portiersloge',
         'concierge' => 'Conciërge',
+        'overige' => 'Overige',
     ];
 
     /** Query parameter that holds a composition in a share link. */

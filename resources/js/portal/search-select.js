@@ -6,7 +6,7 @@ const SEARCH_THRESHOLD = 8;
 
 /**
  * Turns every <select data-search-select> into a styled select (Tom Select); a multiple select always gets a search
- * box and a remove button per choice. The original select keeps its name and value and still fires "change", so forms
+ * box at the top of its list and a remove button per choice. The original select keeps its name and value and still fires "change", so forms
  * and scripts listening to it keep working.
  */
 export function initSearchSelects(root = document) {
@@ -15,15 +15,21 @@ export function initSearchSelects(root = document) {
       return;
     }
 
-    new TomSelect(select, {
+    const settings = {
       allowEmptyOption: true,
       maxOptions: null,
-      controlInput: select.multiple || select.options.length > SEARCH_THRESHOLD ? undefined : null,
-      plugins: select.multiple ? ['remove_button'] : [],
+      plugins: select.multiple ? ['remove_button', 'dropdown_input'] : [],
       render: {
         no_results: () => '<div class="no-results">Geen resultaten</div>',
       },
-    });
+    };
+
+    // Leaving controlInput out keeps Tom Select's search box; passing undefined would remove it.
+    if (!select.multiple && select.options.length <= SEARCH_THRESHOLD) {
+      settings.controlInput = null;
+    }
+
+    new TomSelect(select, settings);
   });
 }
 

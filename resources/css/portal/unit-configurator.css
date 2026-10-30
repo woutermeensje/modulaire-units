@@ -43,6 +43,10 @@
   align-items: end;
 }
 
+.unit-configurator__usage {
+  grid-column: 1 / -1;
+}
+
 .unit-configurator__colors {
   display: flex;
   flex-wrap: wrap;
@@ -428,7 +432,7 @@
   display: block;
 }
 
-/* Single selects (Tom Select, see resources/js/portal/search-select.js) in the style of .portal-input. */
+/* Selects (Tom Select, see resources/js/portal/search-select.js) in the style of .portal-input. */
 .ts-wrapper.portal-input {
   padding: 0;
   border: 0;
@@ -484,6 +488,69 @@
   transform: rotate(-135deg);
 }
 
+.ts-wrapper.portal-input .ts-control > input::placeholder {
+  color: #8a95a1;
+  opacity: 1;
+}
+
+.ts-wrapper.portal-input .ts-control:focus-visible,
+.ts-wrapper.portal-input .ts-control > input:focus-visible {
+  outline: none;
+}
+
+.ts-wrapper.portal-input .ts-control > .items-placeholder {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Multiple selects: the choices as removable chips, the field as tall as a single select. */
+.ts-wrapper.portal-input.multi .ts-control {
+  align-items: center;
+  gap: 6px;
+  min-height: 41px;
+  padding: 6px 12px;
+  cursor: text;
+}
+
+.ts-wrapper.portal-input.multi.has-items .ts-control {
+  padding: 6px 8px;
+}
+
+.ts-wrapper.portal-input.multi .ts-control > input {
+  min-width: 10rem;
+  margin: 0 4px !important;
+}
+
+.ts-wrapper.portal-input.multi .ts-control > .item {
+  margin: 0;
+  padding: 3px 0 3px 10px;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ts-wrapper.portal-input.multi .ts-control > .item.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.ts-wrapper.portal-input.plugin-remove_button .item .remove {
+  margin-left: 4px;
+  padding: 0 8px 0 6px;
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.ts-wrapper.portal-input.plugin-remove_button .item .remove:hover {
+  background: rgba(7, 87, 116, 0.12);
+}
+
 .ts-wrapper.portal-input .ts-dropdown {
   margin-top: 6px;
   padding: 4px;
@@ -511,7 +578,32 @@
 }
 
 .ts-wrapper.portal-input .ts-dropdown .dropdown-input-wrap {
-  padding: 4px;
+  padding: 4px 4px 6px;
+}
+
+.ts-wrapper.portal-input .ts-dropdown .dropdown-input {
+  padding: 8px 10px;
+  border: 1px solid #d8dee6;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: #fff;
+  font: 300 14px/1.4 'Work Sans', sans-serif;
+  color: #333;
+}
+
+.ts-wrapper.portal-input .ts-dropdown .dropdown-input::placeholder {
+  color: #8a95a1;
+}
+
+.ts-wrapper.portal-input .ts-dropdown .dropdown-input:focus,
+.ts-wrapper.portal-input .ts-dropdown .dropdown-input:focus-visible {
+  border-color: rgba(10, 107, 141, 0.45);
+  outline: none;
+  box-shadow: none;
+}
+
+.ts-wrapper.portal-input.plugin-dropdown_input.focus.dropdown-active .ts-control {
+  border-color: rgba(10, 107, 141, 0.45);
+  box-shadow: 0 0 0 3px rgba(10, 107, 141, 0.08);
 }
 
 .unit-configurator__share {
