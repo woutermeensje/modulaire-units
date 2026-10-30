@@ -34,6 +34,8 @@ class UnitDesigner
         Met floors kies je 1 of 2 lagen: bij 2 staat er op elke unit een tweede unit. walls zijn de gevels van de begane grond,
         upper_walls die van de verdieping, met hetzelfde aantal vakken. Gebruik 1 laag tenzij om stapelen of een verdieping
         gevraagd wordt; geef upper_walls dan dezelfde vakken als walls, ze worden genegeerd.
+        stairs zet bij elke deur op de verdieping een buitentrap met bordes; zet het aan bij 2 lagen, tenzij er geen trap gewenst is.
+        Een verdieping heeft voor de trap minstens één deur nodig.
 
         Kleuren zijn hexcodes: cladding is de kleur van de wanden, frame die van de kozijnen en het stalen frame.
         Er zijn drie kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet) en "#0e4c92" (blauw).
@@ -143,6 +145,7 @@ class UnitDesigner
                 'floors' => ['type' => 'integer', 'enum' => range(1, UnitConfiguration::MAX_FLOORS), 'description' => 'Aantal lagen'],
                 'walls' => $walls,
                 'upper_walls' => $walls,
+                'stairs' => ['type' => 'boolean', 'description' => 'Buitentrap naar de deuren op de verdieping'],
                 'colors' => [
                     'type' => 'object',
                     'properties' => ['cladding' => $color, 'frame' => $color],
@@ -153,7 +156,7 @@ class UnitDesigner
                 'title' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'colors', 'background', 'title', 'meta_description'],
+            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'title', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

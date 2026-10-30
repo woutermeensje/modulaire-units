@@ -398,6 +398,27 @@ class UnitConfiguratorTest extends TestCase
         $this->assertStringContainsString('aria-label="8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)"', $svg);
     }
 
+    public function test_stacked_units_get_outside_stairs_unless_turned_off(): void
+    {
+        $this->assertFalse(UnitConfiguration::normalize(['size' => '3x3', 'stairs' => true])['stairs']);
+        $this->assertTrue(UnitConfiguration::normalize(['size' => '3x3', 'floors' => 2])['stairs']);
+        $this->assertFalse(UnitConfiguration::normalize(['size' => '3x3', 'floors' => 2, 'stairs' => '0'])['stairs']);
+
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Zonder trap',
+            'status' => 'published',
+            'configuration' => ['size' => '3x3', 'floors' => '2', 'stairs' => '0'],
+        ])->assertSessionHasNoErrors();
+
+        $unit = Unit::query()->where('slug', 'zonder-trap')->sole();
+        $this->assertFalse($unit->configuration['stairs']);
+
+        $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
+            ->assertOk()
+            ->assertSee('Buitentrap naar de deuren op de verdieping')
+            ->assertDontSee('data-configurator-stairs checked', false);
+    }
+
     public function test_admin_can_save_stacked_units(): void
     {
         $this->actingAs($this->admin)->post(route('admin.units.store'), [

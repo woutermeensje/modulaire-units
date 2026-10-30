@@ -249,6 +249,16 @@
   margin: 0;
 }
 
+.unit-configurator__stairs {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.unit-configurator__stairs .portal-help {
+  margin: 0;
+}
+
 .unit-configurator__level-title {
   margin: 0 0 12px;
   padding-bottom: 6px;

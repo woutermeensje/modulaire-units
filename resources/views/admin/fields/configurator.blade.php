@@ -110,6 +110,16 @@
                 @php($levelInUse = $loop->index < $configuration['floors'])
                 <section class="unit-configurator__level" data-configurator-level="{{ $level }}" data-floor="{{ $loop->index }}" @unless ($levelInUse) hidden @endunless>
                     <h3 class="unit-configurator__level-title" data-configurator-level-title @if ($configuration['floors'] === 1) hidden @endif>{{ $levelLabel }}</h3>
+                    @unless ($loop->first)
+                        <div class="unit-configurator__stairs">
+                            <input type="hidden" name="configuration[stairs]" value="0">
+                            <label class="portal-checkbox">
+                                <input type="checkbox" name="configuration[stairs]" value="1" data-configurator-stairs @checked($configuration['stairs'] || $configuration['floors'] === 1)>
+                                Buitentrap naar de deuren op de verdieping
+                            </label>
+                            <p class="portal-help">Bij elke deur op de verdieping komt een bordes met een trap naar beneden. Zet dus minstens één deur op de verdieping.</p>
+                        </div>
+                    @endunless
                     <div class="unit-configurator__walls">
                         @foreach (UnitConfiguration::WALLS as $wall => $wallLabel)
                             <fieldset class="unit-configurator__wall">

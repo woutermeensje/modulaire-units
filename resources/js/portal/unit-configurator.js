@@ -3,7 +3,7 @@ import { setSelectValue } from './search-select';
 const SLOT_ORDER = ['empty', 'window', 'door'];
 
 // Every configuration field that is part of the request; unchosen colour swatches are left out.
-const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:checked))';
+const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:checked)):not([type="checkbox"]:not(:checked))';
 
 // The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
 const SIDE_WALLS = ['left', 'right'];
@@ -18,6 +18,7 @@ function initConfigurator(root) {
   const sizeSelect = root.querySelector('[data-configurator-size]');
   const modulesSelect = root.querySelector('[data-configurator-modules]');
   const floorsSelect = root.querySelector('[data-configurator-floors]');
+  const stairsToggle = root.querySelector('[data-configurator-stairs]');
   const preview = root.querySelector('[data-configurator-preview]');
   const token = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
   const viewerElement = root.querySelector('[data-configurator-viewer]');
@@ -46,6 +47,7 @@ function initConfigurator(root) {
       modules: modules(),
       floors: floors(),
       ...levels,
+      stairs: floors() > 1 && stairsToggle.checked,
       colors: { cladding: color('cladding'), frame: color('frame') },
       background: field('background'),
     };
@@ -197,6 +199,7 @@ function initConfigurator(root) {
     setSelectValue(sizeSelect, configuration.size);
     setSelectValue(modulesSelect, configuration.modules ?? 1);
     setSelectValue(floorsSelect, configuration.floors ?? 1);
+    stairsToggle.checked = configuration.stairs ?? true;
     applySize();
 
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
@@ -313,6 +316,7 @@ function initConfigurator(root) {
     input.addEventListener('change', refreshPreview);
   });
   root.querySelector('[name="configuration[background]"]').addEventListener('change', refreshPreview);
+  stairsToggle.addEventListener('change', refreshPreview);
 
   if (root.dataset.composer !== undefined) {
     showView('3d');

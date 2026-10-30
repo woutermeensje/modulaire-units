@@ -1,4 +1,5 @@
 import {
+  Box3,
   BoxGeometry,
   CanvasTexture,
   CircleGeometry,
@@ -192,6 +193,7 @@ function createMaterials(colors, ribs) {
     lining: new MeshStandardMaterial({ color: '#efeee9', roughness: 0.85 }),
     floor: new MeshStandardMaterial({ color: '#d6d5d0', roughness: 0.9 }),
     concrete: new MeshStandardMaterial({ color: '#a3a19b', roughness: 0.95 }),
+    steel: new MeshStandardMaterial({ color: '#a7adb1', roughness: 0.45, metalness: 0.6 }),
   };
 }
 
@@ -321,6 +323,77 @@ function buildFrame(length, depth, seams, materials) {
   return group;
 }
 
+const STAIR_WIDTH = 0.9;
+const LANDING_WIDTH = 1.2;
+const LANDING_DEPTH = 1.0;
+const STEP_RISE = 0.18;
+const STEP_GOING = 0.25;
+const RAIL_HEIGHT = 1.0;
+
+/**
+ * An outside staircase to a door on the upper floor, in the wall's own coordinates (x along the wall, z outwards):
+ * a landing in front of the door and a flight down to the ground. The flight runs along the wall towards the side
+ * with the most room, or straight out from the wall when it does not fit alongside.
+ */
+function buildStairs(doorIndex, wallWidth, sill, ground, materials) {
+  const group = new Group();
+  const rise = sill - ground;
+  const steps = Math.ceil(rise / STEP_RISE);
+  const stepRise = rise / steps;
+  const run = (steps - 1) * STEP_GOING;
+  const doorCenter = doorIndex + 0.5;
+  const landingZ = LANDING_DEPTH / 2 + 0.02;
+
+  group.add(box(LANDING_WIDTH, 0.06, LANDING_DEPTH, doorCenter, sill - 0.03, landingZ, materials.steel));
+  [-1, 1].forEach((side) => {
+    const x = doorCenter + side * (LANDING_WIDTH / 2 - 0.04);
+    group.add(box(0.08, rise, 0.08, x, ground + rise / 2, LANDING_DEPTH - 0.02, materials.steel));
+  });
+
+  const roomLeft = doorCenter - LANDING_WIDTH / 2;
+  const roomRight = wallWidth - (doorCenter + LANDING_WIDTH / 2);
+  const alongWall = Math.max(roomLeft, roomRight) + 0.3 >= run;
+  const direction = roomRight >= roomLeft ? 1 : -1;
+  const slope = Math.atan2(rise, run);
+  const stringer = Math.hypot(rise, run);
+
+  if (alongWall) {
+    const start = doorCenter + direction * (LANDING_WIDTH / 2);
+    for (let step = 0; step < steps - 1; step++) {
+      const x = start + direction * (run - step * STEP_GOING - STEP_GOING / 2);
+      group.add(box(STEP_GOING, 0.04, STAIR_WIDTH, x, ground + (step + 1) * stepRise - 0.02, landingZ, materials.steel));
+    }
+    [0.04, STAIR_WIDTH - 0.04].forEach((offset) => {
+      const beam = box(stringer, 0.2, 0.04, start + direction * (run / 2), ground + rise / 2, landingZ - STAIR_WIDTH / 2 + offset, materials.steel);
+      beam.rotation.z = -direction * slope;
+      group.add(beam);
+    });
+    const rail = box(stringer, 0.04, 0.04, start + direction * (run / 2), ground + rise / 2 + RAIL_HEIGHT, landingZ + STAIR_WIDTH / 2, materials.steel);
+    rail.rotation.z = -direction * slope;
+    group.add(rail, box(0.04, RAIL_HEIGHT, 0.04, start + direction * run, ground + RAIL_HEIGHT / 2, landingZ + STAIR_WIDTH / 2, materials.steel));
+    group.add(box(LANDING_WIDTH, 0.04, 0.04, doorCenter, sill + RAIL_HEIGHT, LANDING_DEPTH, materials.steel));
+    group.add(box(0.04, RAIL_HEIGHT, 0.04, doorCenter - direction * (LANDING_WIDTH / 2 - 0.02), sill + RAIL_HEIGHT / 2, LANDING_DEPTH, materials.steel));
+    group.add(box(0.04, 0.04, LANDING_DEPTH, doorCenter - direction * (LANDING_WIDTH / 2 - 0.02), sill + RAIL_HEIGHT, LANDING_DEPTH / 2, materials.steel));
+  } else {
+    const start = LANDING_DEPTH + 0.02;
+    for (let step = 0; step < steps - 1; step++) {
+      const z = start + run - step * STEP_GOING - STEP_GOING / 2;
+      group.add(box(STAIR_WIDTH, 0.04, STEP_GOING, doorCenter, ground + (step + 1) * stepRise - 0.02, z, materials.steel));
+    }
+    [-1, 1].forEach((side) => {
+      const x = doorCenter + side * (STAIR_WIDTH / 2 - 0.02);
+      const beam = box(0.04, 0.2, stringer, x, ground + rise / 2, start + run / 2, materials.steel);
+      beam.rotation.x = slope;
+      const rail = box(0.04, 0.04, stringer, x, ground + rise / 2 + RAIL_HEIGHT, start + run / 2, materials.steel);
+      rail.rotation.x = slope;
+      group.add(beam, rail, box(0.04, RAIL_HEIGHT, 0.04, x, ground + RAIL_HEIGHT / 2, start + run, materials.steel));
+      group.add(box(0.04, 0.04, LANDING_DEPTH, doorCenter + side * (LANDING_WIDTH / 2 - 0.02), sill + RAIL_HEIGHT, LANDING_DEPTH / 2, materials.steel));
+    });
+  }
+
+  return group;
+}
+
 /** The sets of walls per layer, from the ground up, as in App\Support\UnitConfiguration::LEVELS. */
 const LEVELS = ['walls', 'upper_walls'];
 
@@ -340,10 +413,19 @@ function buildUnit(configuration, dimensions, materials) {
 
     Object.entries(WALLS).forEach(([name, wall]) => {
       const [x, z] = wall.start(length, depth);
-      const group = buildWall(dimensions[wall.width], configuration[level]?.[name] ?? [], materials);
+      const slots = configuration[level]?.[name] ?? [];
+      const group = buildWall(dimensions[wall.width], slots, materials);
       group.position.set(x, 0, z);
       group.rotation.y = wall.angle;
       body.add(group);
+
+      if (floor > 0 && configuration.stairs) {
+        slots.forEach((slot, index) => {
+          if (slot === 'door') {
+            group.add(buildStairs(index, dimensions[wall.width], OPENINGS.door.bottom, -body.position.y, materials));
+          }
+        });
+      }
     });
 
     body.add(buildFrame(length, depth, seams, materials));
@@ -458,6 +540,10 @@ function createStage(renderer, backdrops) {
       scene.add(unit);
     },
 
+    bounds() {
+      return new Box3().setFromObject(unit);
+    },
+
     /**
      * Put the sun over the shoulder of the camera of the given view, so the walls in view are lit.
      */
@@ -481,11 +567,18 @@ function createStage(renderer, backdrops) {
   };
 }
 
-function aim(camera, target, { length, depth, floors = 1 }, view, zoom) {
-  const distance = ((length + depth) * 1.3 + 3 + (floors - 1) * HEIGHT * 1.5) * zoom;
+/**
+ * Point the camera at everything that stands on the ground, outside stairs included, from the direction of the view.
+ *
+ * @param {Box3} bounds
+ */
+function aim(camera, target, bounds, view, zoom) {
+  const size = bounds.getSize(new Vector3());
+  const center = bounds.getCenter(new Vector3());
+  const distance = ((size.x + size.z) * 1.3 + 3 + Math.max(0, size.y - 3) * 1.5) * zoom;
   const direction = new Vector3(...(view === 'corner' ? CORNER_DIRECTION : VIEW_DIRECTIONS[view])).normalize().multiplyScalar(distance);
-  camera.position.copy(direction);
-  target.set(0, 1 + (floors - 1) * HEIGHT * 0.6, 0);
+  target.set(center.x, Math.min(1, size.y / 2) + Math.max(0, size.y - 3) * 0.6, center.z);
+  camera.position.copy(target).add(direction);
   camera.lookAt(target);
 }
 
@@ -540,10 +633,10 @@ export function createUnitViewer(container, backdrops, { zoom = true, distance =
       stage.show(configuration, dimensions);
 
       // Reframe the camera when the building changes size; otherwise keep the angle the user turned to.
-      const footprint = `${configuration.size}-${configuration.modules ?? 1}-${configuration.floors ?? 1}`;
+      const footprint = `${configuration.size}-${configuration.modules ?? 1}-${configuration.floors ?? 1}-${configuration.stairs ?? false}`;
       if (footprint !== currentFootprint) {
         currentFootprint = footprint;
-        aim(camera, controls.target, dimensions, view, distance);
+        aim(camera, controls.target, stage.bounds(), view, distance);
         controls.update();
       }
 
@@ -576,7 +669,7 @@ export async function renderUnitPhotos(configuration, dimensions, backdrops, wid
   try {
     for (const view of Object.keys(VIEW_DIRECTIONS)) {
       stage.light(view);
-      aim(camera, target, dimensions, view, 0.95);
+      aim(camera, target, stage.bounds(), view, 0.95);
       renderer.render(stage.scene, camera);
       photos[view] = await new Promise((resolve, reject) => {
         renderer.domElement.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('3D-foto maken mislukt.'))), 'image/jpeg', 0.88);

@@ -15,7 +15,8 @@ use Illuminate\Validation\Rule;
  * first unit, the back wall to the last one, and the left and right walls run along all of them.
  *
  * A second layer of the same units can be stacked on top. It has walls of its own (upper_walls), so it can have
- * other windows and doors than the ground floor; without a second layer upper_walls is left out.
+ * other windows and doors than the ground floor; without a second layer upper_walls is left out. With stairs,
+ * every door on the second layer gets an outside staircase with a landing.
  *
  * @phpstan-type Configuration array{
  *     size: string,
@@ -23,6 +24,7 @@ use Illuminate\Validation\Rule;
  *     floors: int,
  *     walls: array{front: list<string>, back: list<string>, left: list<string>, right: list<string>},
  *     upper_walls?: array{front: list<string>, back: list<string>, left: list<string>, right: list<string>},
+ *     stairs: bool,
  *     colors: array{cladding: string, frame: string},
  *     background: string,
  * }
@@ -131,6 +133,7 @@ class UnitConfiguration
             "{$key}.upper_walls" => ['array'],
             "{$key}.upper_walls.*" => ['array'],
             "{$key}.upper_walls.*.*" => [Rule::in(array_keys(self::SLOTS))],
+            "{$key}.stairs" => ['nullable', 'boolean'],
             "{$key}.colors" => ['array'],
             "{$key}.colors.*" => ['nullable', 'string', Rule::in(array_keys(self::COLORS))],
             "{$key}.background" => ['nullable', Rule::in(array_keys(self::BACKGROUNDS))],
@@ -242,8 +245,9 @@ class UnitConfiguration
         }
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
+        $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);
 
-        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'colors' => $colors, 'background' => $background];
+        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background];
     }
 
     /**
