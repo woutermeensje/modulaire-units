@@ -9,18 +9,16 @@
 
 @section('content')
     <main id="content" class="site-main page type-page unit-composer">
-        <h1 class="unit-composer__title">Unit samenstellen</h1>
+        <h1 class="mh-page-title">Unit samenstellen</h1>
         <p class="unit-composer__intro">Stel je eigen modulaire unit samen: kies de afmeting, het aantal units en lagen, de kleuren en waar ramen en deuren komen. Bewaar of deel je samenstelling met de link.</p>
 
-        <div class="unit-composer__card">
-            @include('admin.fields.configurator', [
-                'field' => \App\Admin\Field::make('configuration', 'Jouw samenstelling', 'configurator'),
-                'record' => null,
-                'value' => $configuration,
-                'composer' => true,
-                'ai' => false,
-                'previewUrl' => route('unit-composer.public.preview'),
-            ])
-        </div>
+        @include('admin.fields.configurator', [
+            'field' => \App\Admin\Field::make('configuration', 'Jouw samenstelling', 'configurator'),
+            'record' => null,
+            'value' => $configuration,
+            'composer' => true,
+            'ai' => false,
+            'previewUrl' => route('unit-composer.public.preview'),
+        ])
     </main>
 @endsection

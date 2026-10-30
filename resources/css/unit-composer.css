@@ -18,9 +18,17 @@
   --radius-default: 5px;
   --radius-md: 5px;
 
-  max-width: 1200px;
+  max-width: 1224px;
   margin: 0 auto 60px;
   font-family: 'Work Sans', sans-serif;
+}
+
+/*
+ * The theme limits the main column (body:not([class*=elementor-page-]) .site-main) to 1140px; this page needs 900px
+ * for the view plus 24px gap and 300px for the settings.
+ */
+body main.site-main.unit-composer {
+  max-width: 1224px;
 }
 
 .unit-composer *,
@@ -29,24 +37,66 @@
   box-sizing: border-box;
 }
 
-.unit-composer__title {
-  margin: 40px 0 12px;
-  color: #111;
-  font-size: var(--text-4xl, 2.25rem);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
 .unit-composer__intro {
   max-width: 760px;
   margin: 0 0 24px;
 }
 
-.unit-composer__card {
-  padding: 24px;
-  border: var(--border-default);
-  border-radius: var(--radius-default);
-  background: #fff;
+/* The 3D view (900px) with the settings next to it (300px); the view stays in sight while scrolling the settings. */
+.unit-composer .unit-configurator--composer {
+  grid-template-columns: minmax(0, 900px) 300px;
+  align-items: start;
+  column-gap: 24px;
+}
+
+.unit-composer .unit-configurator__preview-panel {
+  position: sticky;
+  top: 100px;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.unit-composer .unit-configurator__controls {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.unit-composer .unit-configurator__viewer,
+.unit-composer .unit-configurator__preview {
+  border: 0;
+}
+
+/* The top view has to fit the 300px column: smaller slots with icons only. */
+.unit-composer .unit-plan {
+  --slot: 34px;
+  --slot-gap: 4px;
+}
+
+.unit-composer .unit-slot span {
+  display: none;
+}
+
+.unit-composer .unit-slot i {
+  font-size: 16px;
+}
+
+.unit-composer .unit-plan__name {
+  font-size: 9px;
+}
+
+@media (max-width: 1000px) {
+  .unit-composer .unit-configurator--composer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .unit-composer .unit-configurator__preview-panel {
+    position: static;
+  }
+
+  .unit-composer .unit-configurator__controls {
+    grid-column: 1;
+    grid-row: 2;
+  }
 }
 
 .unit-composer .portal-label {
@@ -160,15 +210,4 @@
   box-shadow: none;
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-}
-
-@media (max-width: 640px) {
-  .unit-composer__title {
-    margin-top: 24px;
-    font-size: var(--text-2xl, 1.5rem);
-  }
-
-  .unit-composer__card {
-    padding: 16px;
-  }
 }

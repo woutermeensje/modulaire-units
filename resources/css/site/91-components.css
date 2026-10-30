@@ -2,6 +2,23 @@
    Componenten die in Laravel nieuw zijn of anders werken dan in WordPress
    ========================================================================== */
 
+/* ── Paginatitel: voor pagina's met een eigen titel boven de inhoud, bijv. de unit-samensteller ── */
+.mh-page-title {
+  margin: 40px 0 12px;
+  color: #111;
+  font-family: var(--font-text);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+@media (max-width: 640px) {
+  .mh-page-title {
+    margin-top: 24px;
+    font-size: var(--text-2xl);
+  }
+}
+
 /* ── Units-catalogus: select en chips ── */
 .mh-units-catalog__select.is-open .mh-units-catalog__select-chevron {
   transform: rotate(180deg);

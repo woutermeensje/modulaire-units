@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\FloorPlanRenderer;
 use App\Support\UnitConfiguration;
-use App\Support\UnitRenderer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
- * Renders the live 2D preview of the unit configurator, in the admin and in the customer's unit composer.
+ * Renders the live floor plan of the unit configurator, in the admin, the customer's and the public unit composer.
  */
 class UnitPreviewController extends Controller
 {
-    public function __invoke(Request $request, UnitRenderer $renderer): Response
+    public function __invoke(Request $request, FloorPlanRenderer $renderer): Response
     {
         $validated = $request->validate(UnitConfiguration::rules('configuration'));
 

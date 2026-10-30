@@ -1,5 +1,6 @@
 @use('App\Support\UnitConfiguration')
 @use('App\Support\UnitRenderer')
+@use('App\Support\FloorPlanRenderer')
 @use('App\Services\UnitDesigner')
 @use('App\Services\UnitConfigurationImages')
 @php
@@ -158,14 +159,14 @@
     <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
         <div class="unit-configurator__views">
             <button type="button" @class(['unit-configurator__view', 'is-active' => ! $composer]) data-configurator-view="2d" aria-pressed="{{ $composer ? 'false' : 'true' }}">
-                <i class="ph ph-image"></i> 2D-tekening
+                <i class="ph ph-ruler"></i> Plattegrond
             </button>
             <button type="button" @class(['unit-configurator__view', 'is-active' => $composer]) data-configurator-view="3d" aria-pressed="{{ $composer ? 'true' : 'false' }}">
                 <i class="ph ph-cube"></i> 3D (prototype)
             </button>
         </div>
         <div class="unit-configurator__preview" data-configurator-preview @if ($composer) hidden @endif>
-            {!! app(UnitRenderer::class)->render($configuration) !!}
+            {!! app(FloorPlanRenderer::class)->render($configuration) !!}
         </div>
         <div class="unit-configurator__viewer" data-configurator-viewer @unless ($composer) hidden @endunless></div>
         <p class="portal-help" data-configurator-viewer-help @unless ($composer) hidden @endunless>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>

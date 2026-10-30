@@ -31,10 +31,14 @@ use Illuminate\Validation\Rule;
  */
 class UnitConfiguration
 {
-    /** @var array<string, array{label: string, length: int, depth: int}> */
+    /**
+     * Nominal sizes in metres (one slot per metre) and the real outside size in millimetres of one unit.
+     *
+     * @var array<string, array{label: string, length: int, depth: int, outer: array{length: int, depth: int}}>
+     */
     public const SIZES = [
-        '3x3' => ['label' => '3 x 3 meter', 'length' => 3, 'depth' => 3],
-        '6x3' => ['label' => '6 x 3 meter', 'length' => 6, 'depth' => 3],
+        '3x3' => ['label' => '3 x 3 meter', 'length' => 3, 'depth' => 3, 'outer' => ['length' => 2990, 'depth' => 2990]],
+        '6x3' => ['label' => '6 x 3 meter', 'length' => 6, 'depth' => 3, 'outer' => ['length' => 6058, 'depth' => 2990]],
     ];
 
     /** @var array<string, string> */
@@ -180,6 +184,19 @@ class UnitConfiguration
         $size = self::SIZES[$configuration['size']];
 
         return ['length' => $size['length'], 'depth' => $size['depth'] * $configuration['modules'], 'floors' => $configuration['floors']];
+    }
+
+    /**
+     * Real outside size in millimetres of all coupled units together, as used on the floor plan.
+     *
+     * @param  Configuration  $configuration
+     * @return array{length: int, depth: int}
+     */
+    public static function outerSize(array $configuration): array
+    {
+        $outer = self::SIZES[$configuration['size']]['outer'];
+
+        return ['length' => $outer['length'], 'depth' => $outer['depth'] * $configuration['modules']];
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\EnsureTrailingSlash;
+use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Redirect;
@@ -242,6 +243,27 @@ class PublicSiteTest extends TestCase
             ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
             ->assertSee('/over-ons/')
             ->assertDontSee('/geheim/');
+    }
+
+    public function test_menu_migration_turns_aanbod_into_units_with_the_unit_composer(): void
+    {
+        $offer = MenuItem::query()->create(['menu' => 'main', 'label' => 'Aanbod', 'url' => '/modulaire-units/', 'sort' => 0]);
+        foreach (['Kopen' => '/kopen/', 'Huren' => '/huren/', 'Gebruikt' => '/gebruikt/'] as $label => $url) {
+            MenuItem::query()->create(['menu' => 'main', 'parent_id' => $offer->id, 'label' => $label, 'url' => $url, 'sort' => $offer->children()->count()]);
+        }
+        $migration = require database_path('migrations/2026_10_30_082253_rename_aanbod_menu_to_units_with_unit_composer.php');
+
+        $migration->up();
+        $migration->up();
+
+        $this->assertSame('Units', $offer->refresh()->label);
+        $this->assertSame(['Kopen', 'Huren', 'Gebruikt', 'Units samenstellen'], $offer->children()->orderBy('sort')->pluck('label')->all());
+        $this->assertSame('/unit-samensteller/', $offer->children()->where('label', 'Units samenstellen')->value('url'));
+
+        $migration->down();
+
+        $this->assertSame('Aanbod', $offer->refresh()->label);
+        $this->assertSame(3, $offer->children()->count());
     }
 
     public function test_unknown_urls_return_404(): void

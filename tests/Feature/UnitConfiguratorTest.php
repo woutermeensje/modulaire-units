@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Media;
 use App\Models\Unit;
 use App\Models\User;
+use App\Support\FloorPlanRenderer;
 use App\Support\UnitConfiguration;
 use App\Support\UnitRenderer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -472,6 +473,24 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame(['window', 'window', 'window'], $configuration['walls']['left']);
         $svg = (new UnitRenderer)->renderView($configuration, 'back');
         $this->assertSame(1, substr_count($svg, 'fill="#9fbfd2"'));
+    }
+
+    public function test_the_preview_is_a_floor_plan_with_dimensions_in_millimetres(): void
+    {
+        $plan = (new FloorPlanRenderer)->render(UnitConfiguration::STARTER);
+
+        $this->assertStringContainsString('>6058<', $plan);
+        $this->assertStringContainsString('>2990<', $plan);
+        $this->assertSame(2, substr_count($plan, '>1800 / 1200<'));
+        $this->assertStringContainsString('>875 × 2125<', $plan);
+        $this->assertStringContainsString('>vrij 811 × 2093<', $plan);
+        $this->assertStringContainsString('>Maten in mm<', $plan);
+
+        $stacked = (new FloorPlanRenderer)->render(['size' => '6x3', 'modules' => 2, 'floors' => 2]);
+        $this->assertStringContainsString('>Begane grond<', $stacked);
+        $this->assertStringContainsString('>Verdieping<', $stacked);
+        $this->assertStringContainsString('>5980<', $stacked);
+        $this->assertSame(2, substr_count($stacked, '>Unit 2<'));
     }
 
     public function test_windows_and_doors_have_their_real_sizes(): void

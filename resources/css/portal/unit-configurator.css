@@ -281,6 +281,7 @@
 .unit-configurator__preview {
   border: var(--border-default);
   border-radius: var(--radius-default);
+  background: #ffffff;
   overflow: hidden;
 }
 
@@ -288,6 +289,7 @@
   display: block;
   width: 100%;
   height: auto;
+  max-height: 680px;
 }
 
 /* In the composer the 3D view comes first; the controls to change it follow below. */
