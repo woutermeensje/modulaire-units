@@ -8,12 +8,16 @@ const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:c
 // The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
 const SIDE_WALLS = ['left', 'right'];
 
+// The sets of walls per layer, from the ground up, as in App\Support\UnitConfiguration::LEVELS.
+const LEVELS = ['walls', 'upper_walls'];
+
 function initConfigurator(root) {
   const labels = JSON.parse(root.dataset.slotLabels);
   const icons = JSON.parse(root.dataset.slotIcons);
   const counts = JSON.parse(root.dataset.slotCounts);
   const sizeSelect = root.querySelector('[data-configurator-size]');
   const modulesSelect = root.querySelector('[data-configurator-modules]');
+  const floorsSelect = root.querySelector('[data-configurator-floors]');
   const preview = root.querySelector('[data-configurator-preview]');
   const token = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
   const viewerElement = root.querySelector('[data-configurator-viewer]');
@@ -23,26 +27,31 @@ function initConfigurator(root) {
   let viewer = null;
 
   const modules = () => Number(modulesSelect.value) || 1;
+  const floors = () => Number(floorsSelect.value) || 1;
   const slotCount = (size, wall) => counts[size][wall] * (SIDE_WALLS.includes(wall) ? modules() : 1);
 
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
     const color = (part) => root.querySelector(`[name="configuration[colors][${part}]"]:checked`)?.value;
-    const walls = {};
-    Object.keys(counts[sizeSelect.value]).forEach((wall) => {
-      walls[wall] = [...root.querySelectorAll(`[name="configuration[walls][${wall}][]"]:not(:disabled)`)].map((input) => input.value);
+    const levels = {};
+    LEVELS.slice(0, floors()).forEach((level) => {
+      levels[level] = {};
+      Object.keys(counts[sizeSelect.value]).forEach((wall) => {
+        levels[level][wall] = [...root.querySelectorAll(`[name="configuration[${level}][${wall}][]"]:not(:disabled)`)].map((input) => input.value);
+      });
     });
 
     return {
       size: sizeSelect.value,
       modules: modules(),
-      walls,
+      floors: floors(),
+      ...levels,
       colors: { cladding: color('cladding'), frame: color('frame') },
       background: field('background'),
     };
   };
 
-  const dimensions = () => ({ length: counts[sizeSelect.value].front, depth: counts[sizeSelect.value].left * modules() });
+  const dimensions = () => ({ length: counts[sizeSelect.value].front, depth: counts[sizeSelect.value].left * modules(), floors: floors() });
   const backdrops = JSON.parse(root.dataset.backdrops);
   let viewerModule = null;
   const loadViewerModule = () => {
@@ -146,8 +155,13 @@ function initConfigurator(root) {
       return;
     }
 
+    root.querySelectorAll('[data-configurator-level]').forEach((level) => {
+      level.hidden = Number(level.dataset.floor) >= floors();
+      level.querySelector('[data-configurator-level-title]').hidden = floors() === 1;
+    });
+
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
-      const inUse = Number(slot.dataset.index) < slotCount(size, slot.dataset.wall);
+      const inUse = LEVELS.indexOf(slot.dataset.level) < floors() && Number(slot.dataset.index) < slotCount(size, slot.dataset.wall);
       slot.hidden = !inUse;
       slot.querySelector('input').disabled = !inUse;
     });
@@ -182,10 +196,11 @@ function initConfigurator(root) {
   const applyConfiguration = (configuration) => {
     setSelectValue(sizeSelect, configuration.size);
     setSelectValue(modulesSelect, configuration.modules ?? 1);
+    setSelectValue(floorsSelect, configuration.floors ?? 1);
     applySize();
 
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
-      setSlot(slot, configuration.walls[slot.dataset.wall][Number(slot.dataset.index)] ?? 'empty');
+      setSlot(slot, configuration[slot.dataset.level]?.[slot.dataset.wall]?.[Number(slot.dataset.index)] ?? 'empty');
     });
     Object.entries(configuration.colors).forEach(([part, color]) => {
       const swatch = root.querySelector(`[name="configuration[colors][${part}]"][value="${color}"]`);
@@ -287,9 +302,11 @@ function initConfigurator(root) {
     refreshPreview();
   });
 
-  modulesSelect.addEventListener('change', () => {
-    applySize();
-    refreshPreview();
+  [modulesSelect, floorsSelect].forEach((select) => {
+    select.addEventListener('change', () => {
+      applySize();
+      refreshPreview();
+    });
   });
 
   root.querySelectorAll('[name^="configuration[colors]"]').forEach((input) => {

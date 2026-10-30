@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Lets Claude fill in the unit configurator from a description typed by the admin.
+ * Lets Claude fill in or change the unit configurator from a description, in the admin and in the customer's unit composer.
  */
 class UnitDesignController extends Controller
 {

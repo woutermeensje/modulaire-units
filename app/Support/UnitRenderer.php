@@ -63,13 +63,14 @@ class UnitRenderer
     private function compose(array $configuration, array $views, bool $captions): string
     {
         $configuration = UnitConfiguration::normalize($configuration);
-        ['length' => $length, 'depth' => $depth] = UnitConfiguration::dimensions($configuration);
+        ['length' => $length, 'depth' => $depth, 'floors' => $floors] = UnitConfiguration::dimensions($configuration);
+        $totalHeight = self::HEIGHT * $floors;
 
         // Single units share one canvas size, so they are drawn at the same scale; coupled units get more room.
         $largest = collect(UnitConfiguration::SIZES)->max(fn (array $size): int => $size['length'] + $size['depth']);
         $extent = max($largest, $length + $depth);
         $viewWidth = $extent * self::COS * self::SCALE + 2 * self::PADDING;
-        $viewHeight = ($extent / 2 + self::HEIGHT) * self::SCALE + 2 * self::PADDING;
+        $viewHeight = ($extent / 2 + $totalHeight) * self::SCALE + 2 * self::PADDING;
         $height = round($viewHeight + ($captions ? self::LABEL_HEIGHT : 0));
 
         if (count($views) === 1) {
@@ -77,7 +78,7 @@ class UnitRenderer
         }
 
         $width = round(count($views) * $viewWidth);
-        $originY = $viewHeight / 2 + (self::HEIGHT / 2 + ($depth - $length) / 4) * self::SCALE;
+        $originY = $viewHeight / 2 + ($totalHeight / 2 + ($depth - $length) / 4) * self::SCALE;
         $horizonY = $originY - ($depth / 2) * self::SCALE - 14;
 
         $body = $this->backdrop($configuration['background'], $width, $height, $horizonY);
@@ -85,9 +86,12 @@ class UnitRenderer
         foreach (array_values($views) as $index => $key) {
             $view = self::VIEWS[$key];
             $originX = $index * $viewWidth + ($viewWidth - ($length + $depth) * self::COS * self::SCALE) / 2;
-            $body .= '<g transform="translate('.$this->number($originX).' '.$this->number($originY).')">'
-                .$this->unit($length, $depth, $configuration['walls'][$view['front']], $configuration['walls'][$view['side']], $configuration['colors'], $this->seams($configuration))
-                .'</g>';
+            $body .= '<g transform="translate('.$this->number($originX).' '.$this->number($originY).')">';
+            foreach (array_slice(array_keys(UnitConfiguration::LEVELS), 0, $floors) as $floor => $level) {
+                $walls = $configuration[$level];
+                $body .= $this->unit($length, $depth, $walls[$view['front']], $walls[$view['side']], $configuration['colors'], $this->seams($configuration), $floor * self::HEIGHT);
+            }
+            $body .= '</g>';
 
             if ($captions) {
                 $body .= '<text x="'.$this->number($index * $viewWidth + $viewWidth / 2).'" y="'.$this->number($height - 12).'" text-anchor="middle" font-family="Work Sans, Arial, sans-serif" font-size="13" fill="#4a4a4a">'.e($view['label']).'</text>';
@@ -120,21 +124,23 @@ class UnitRenderer
      * @param  list<string>  $sideSlots
      * @param  array{cladding: string, frame: string}  $colors
      * @param  list<int>  $seams  Positions along the side face where two coupled units meet.
+     * @param  float  $base  Height in metres the layer stands on: 0 for the ground floor, the wall height for a stacked layer.
      */
-    private function unit(int $length, int $depth, array $frontSlots, array $sideSlots, array $colors, array $seams): string
+    private function unit(int $length, int $depth, array $frontSlots, array $sideSlots, array $colors, array $seams, float $base = 0): string
     {
-        $front = fn (float $s, float $z): array => $this->project($s, 0, $z);
-        $side = fn (float $s, float $z): array => $this->project($length, $s, $z);
+        $front = fn (float $s, float $z): array => $this->project($s, 0, $base + $z);
+        $side = fn (float $s, float $z): array => $this->project($length, $s, $base + $z);
         $height = self::HEIGHT;
 
-        $shadow = $this->polygon([
+        $shadow = $base > 0 ? '' : $this->polygon([
             $this->project(-0.1, -0.1, 0), $this->project($length + 0.35, -0.1, 0),
             $this->project($length + 0.35, $depth + 0.2, 0), $this->project(-0.1, $depth + 0.2, 0),
         ], '#000000', 'fill-opacity="0.16"');
 
+        // A stacked layer covers this roof again, since it is drawn afterwards.
         $roof = $this->polygon([
-            $this->project(0, 0, $height), $this->project($length, 0, $height),
-            $this->project($length, $depth, $height), $this->project(0, $depth, $height),
+            $this->project(0, 0, $base + $height), $this->project($length, 0, $base + $height),
+            $this->project($length, $depth, $base + $height), $this->project(0, $depth, $base + $height),
         ], $this->shade($colors['frame'], 1.35));
 
         return $shadow

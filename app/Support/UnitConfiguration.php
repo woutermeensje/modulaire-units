@@ -14,10 +14,15 @@ use Illuminate\Validation\Rule;
  * Several units can be coupled long side to long side into one open space: the front wall belongs to the
  * first unit, the back wall to the last one, and the left and right walls run along all of them.
  *
+ * A second layer of the same units can be stacked on top. It has walls of its own (upper_walls), so it can have
+ * other windows and doors than the ground floor; without a second layer upper_walls is left out.
+ *
  * @phpstan-type Configuration array{
  *     size: string,
  *     modules: int,
+ *     floors: int,
  *     walls: array{front: list<string>, back: list<string>, left: list<string>, right: list<string>},
+ *     upper_walls?: array{front: list<string>, back: list<string>, left: list<string>, right: list<string>},
  *     colors: array{cladding: string, frame: string},
  *     background: string,
  * }
@@ -39,6 +44,18 @@ class UnitConfiguration
     ];
 
     public const MAX_MODULES = 4;
+
+    public const MAX_FLOORS = 2;
+
+    /**
+     * The sets of walls per layer, from the ground up: configuration key => name.
+     *
+     * @var array<string, string>
+     */
+    public const LEVELS = [
+        'walls' => 'Begane grond',
+        'upper_walls' => 'Verdieping',
+    ];
 
     public const EMPTY = 'empty';
 
@@ -77,6 +94,25 @@ class UnitConfiguration
 
     public const COLOR_PATTERN = '/^#[0-9a-f]{6}$/i';
 
+    /** Query parameter that holds a composition in a share link. */
+    public const SHARE_KEY = 'samenstelling';
+
+    /**
+     * What a customer starts composing from: an anthracite 6x3 with two windows in the long front wall and a door on the right.
+     *
+     * @var array<string, mixed>
+     */
+    public const STARTER = [
+        'size' => '6x3',
+        'modules' => 1,
+        'walls' => [
+            'front' => ['empty', 'window', 'empty', 'empty', 'window', 'empty'],
+            'right' => ['empty', 'door', 'empty'],
+        ],
+        'colors' => ['cladding' => '#383e42', 'frame' => '#383e42'],
+        'background' => 'industrial',
+    ];
+
     /**
      * Validation rules for a configuration submitted under the given input key.
      *
@@ -88,9 +124,13 @@ class UnitConfiguration
             $key => ['nullable', 'array'],
             "{$key}.size" => ['nullable', Rule::in(array_keys(self::SIZES))],
             "{$key}.modules" => ['nullable', 'integer', 'between:1,'.self::MAX_MODULES],
+            "{$key}.floors" => ['nullable', 'integer', 'between:1,'.self::MAX_FLOORS],
             "{$key}.walls" => ['array'],
             "{$key}.walls.*" => ['array'],
             "{$key}.walls.*.*" => [Rule::in(array_keys(self::SLOTS))],
+            "{$key}.upper_walls" => ['array'],
+            "{$key}.upper_walls.*" => ['array'],
+            "{$key}.upper_walls.*.*" => [Rule::in(array_keys(self::SLOTS))],
             "{$key}.colors" => ['array'],
             "{$key}.colors.*" => ['nullable', 'string', Rule::in(array_keys(self::COLORS))],
             "{$key}.background" => ['nullable', Rule::in(array_keys(self::BACKGROUNDS))],
@@ -111,17 +151,18 @@ class UnitConfiguration
      * Outside dimensions in metres of all coupled units together.
      *
      * @param  Configuration  $configuration
-     * @return array{length: int, depth: int}
+     * @return array{length: int, depth: int, floors: int}
      */
     public static function dimensions(array $configuration): array
     {
         $size = self::SIZES[$configuration['size']];
 
-        return ['length' => $size['length'], 'depth' => $size['depth'] * $configuration['modules']];
+        return ['length' => $size['length'], 'depth' => $size['depth'] * $configuration['modules'], 'floors' => $configuration['floors']];
     }
 
     /**
-     * A description such as "Modulaire unit van 6 x 3 meter" or "2 gekoppelde units van 6 x 3 meter (6 x 6 meter)".
+     * A description such as "Modulaire unit van 6 x 3 meter", "2 gekoppelde units van 6 x 3 meter (6 x 6 meter)" or
+     * "8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)".
      *
      * @param  Configuration  $configuration
      */
@@ -129,13 +170,20 @@ class UnitConfiguration
     {
         $size = self::SIZES[$configuration['size']]['label'];
 
+        $dimensions = self::dimensions($configuration);
+        $footprint = "{$dimensions['length']} x {$dimensions['depth']} meter";
+
+        if ($configuration['floors'] > 1) {
+            $units = $configuration['modules'] * $configuration['floors'];
+
+            return "{$units} units van {$size} in {$configuration['floors']} lagen ({$footprint})";
+        }
+
         if ($configuration['modules'] === 1) {
             return 'Modulaire unit van '.$size;
         }
 
-        $dimensions = self::dimensions($configuration);
-
-        return "{$configuration['modules']} gekoppelde units van {$size} ({$dimensions['length']} x {$dimensions['depth']} meter)";
+        return "{$configuration['modules']} gekoppelde units van {$size} ({$footprint})";
     }
 
     /**
@@ -152,6 +200,19 @@ class UnitConfiguration
     }
 
     /**
+     * Read a composition from a share link (URL-safe base64 JSON), or start from the starter unit.
+     *
+     * @return Configuration
+     */
+    public static function fromShareCode(string $code): array
+    {
+        $json = base64_decode(strtr($code, '-_', '+/'), true);
+        $input = $json === false ? null : json_decode($json, true);
+
+        return self::normalize(is_array($input) && filled($input['size'] ?? null) ? $input : self::STARTER);
+    }
+
+    /**
      * Fill in missing values and drop anything that doesn't fit the chosen size.
      *
      * @param  array<string, mixed>  $input
@@ -161,14 +222,17 @@ class UnitConfiguration
     {
         $size = self::pick($input['size'] ?? null, self::SIZES, '6x3');
         $modules = max(1, min(self::MAX_MODULES, (int) ($input['modules'] ?? 1)));
+        $floors = max(1, min(self::MAX_FLOORS, (int) ($input['floors'] ?? 1)));
 
-        $walls = [];
-        foreach (array_keys(self::WALLS) as $wall) {
-            $slots = array_values((array) ($input['walls'][$wall] ?? []));
-            $walls[$wall] = array_map(
-                fn (int $index): string => self::pick($slots[$index] ?? null, self::SLOTS, self::EMPTY),
-                range(0, self::slotCount($size, $wall, $modules) - 1),
-            );
+        $levels = [];
+        foreach (array_slice(array_keys(self::LEVELS), 0, $floors) as $level) {
+            foreach (array_keys(self::WALLS) as $wall) {
+                $slots = array_values((array) ($input[$level][$wall] ?? []));
+                $levels[$level][$wall] = array_map(
+                    fn (int $index): string => self::pick($slots[$index] ?? null, self::SLOTS, self::EMPTY),
+                    range(0, self::slotCount($size, $wall, $modules) - 1),
+                );
+            }
         }
 
         $colors = [];
@@ -179,7 +243,7 @@ class UnitConfiguration
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
 
-        return ['size' => $size, 'modules' => $modules, 'walls' => $walls, 'colors' => $colors, 'background' => $background];
+        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'colors' => $colors, 'background' => $background];
     }
 
     /**

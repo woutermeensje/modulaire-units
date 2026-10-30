@@ -324,7 +324,7 @@ class UnitConfiguratorTest extends TestCase
         $this->assertCount(6, $configuration['walls']['back']);
         $this->assertCount(9, $configuration['walls']['left']);
         $this->assertCount(9, $configuration['walls']['right']);
-        $this->assertSame(['length' => 6, 'depth' => 9], UnitConfiguration::dimensions($configuration));
+        $this->assertSame(['length' => 6, 'depth' => 9, 'floors' => 1], UnitConfiguration::dimensions($configuration));
         $this->assertSame('3 gekoppelde units van 6 x 3 meter (6 x 9 meter)', UnitConfiguration::label($configuration));
         $this->assertSame(1, UnitConfiguration::normalize(['size' => '3x3'])['modules']);
         $this->assertSame(UnitConfiguration::MAX_MODULES, UnitConfiguration::normalize(['size' => '3x3', 'modules' => 99])['modules']);
@@ -370,6 +370,61 @@ class UnitConfiguratorTest extends TestCase
 
         $this->assertStringContainsString('aria-label="2 gekoppelde units van 3 x 3 meter (3 x 6 meter)"', $svg);
         $this->assertSame(2, substr_count($svg, 'fill="#9fbfd2"'));
+    }
+
+    public function test_a_second_layer_can_be_stacked_with_walls_of_its_own(): void
+    {
+        $single = UnitConfiguration::normalize(['size' => '6x3', 'modules' => 4]);
+        $this->assertSame(1, $single['floors']);
+        $this->assertArrayNotHasKey('upper_walls', $single);
+
+        $stacked = UnitConfiguration::normalize([
+            'size' => '6x3',
+            'modules' => 4,
+            'floors' => 2,
+            'walls' => ['front' => ['door']],
+            'upper_walls' => ['front' => ['window', 'window', 'window', 'window', 'window', 'window']],
+        ]);
+
+        $this->assertSame(2, $stacked['floors']);
+        $this->assertSame('door', $stacked['walls']['front'][0]);
+        $this->assertSame(array_fill(0, 6, 'window'), $stacked['upper_walls']['front']);
+        $this->assertCount(12, $stacked['upper_walls']['left']);
+        $this->assertSame('8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)', UnitConfiguration::label($stacked));
+        $this->assertSame(UnitConfiguration::MAX_FLOORS, UnitConfiguration::normalize(['size' => '3x3', 'floors' => 9])['floors']);
+
+        $svg = (new UnitRenderer)->renderView($stacked, 'front');
+        $this->assertSame(6, substr_count($svg, 'fill="#c4def0"'));
+        $this->assertStringContainsString('aria-label="8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)"', $svg);
+    }
+
+    public function test_admin_can_save_stacked_units(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Gestapeld kantoor',
+            'status' => 'published',
+            'configuration' => [
+                'size' => '3x3',
+                'modules' => '2',
+                'floors' => '2',
+                'upper_walls' => ['front' => ['window', 'empty', 'window']],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $unit = Unit::query()->where('slug', 'gestapeld-kantoor')->sole();
+        $this->assertSame(2, $unit->configuration['floors']);
+        $this->assertSame(['window', 'empty', 'window'], $unit->configuration['upper_walls']['front']);
+
+        $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
+            ->assertOk()
+            ->assertSee('<option value="2" selected>2 lagen (gestapeld)</option>', false)
+            ->assertSee('Verdieping');
+
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Te hoog',
+            'status' => 'published',
+            'configuration' => ['size' => '3x3', 'floors' => 3],
+        ])->assertSessionHasErrors('configuration.floors');
     }
 
     public function test_only_white_anthracite_and_blue_are_available(): void

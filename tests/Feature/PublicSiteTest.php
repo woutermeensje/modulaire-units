@@ -212,12 +212,12 @@ class PublicSiteTest extends TestCase
             ->assertOk()
             ->assertSee('Bekijk in 3D')
             ->assertSee('data-unit-viewer=\'{"configuration":{"size":"3x3"', false)
-            ->assertSee('"dimensions":{"length":3,"depth":3}', false);
+            ->assertSee('"dimensions":{"length":3,"depth":3,"floors":1}', false);
 
         $this->get('/units/zonder-configuratie/')->assertOk()->assertDontSee('Bekijk in 3D')->assertDontSee('data-unit-viewer', false);
 
         Unit::factory()->create(['slug' => 'gekoppeld', 'configuration' => UnitConfiguration::normalize(['size' => '6x3', 'modules' => 3])]);
-        $this->get('/units/gekoppeld/')->assertOk()->assertSee('"dimensions":{"length":6,"depth":9}', false);
+        $this->get('/units/gekoppeld/')->assertOk()->assertSee('"dimensions":{"length":6,"depth":9,"floors":1}', false);
     }
 
     public function test_configured_redirects_are_followed(): void

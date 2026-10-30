@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\Admin\UnitComposerController;
 use App\Models\User;
+use App\Services\UnitDesigner;
 use App\Support\UnitConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class UnitComposerTest extends TestCase
@@ -18,6 +19,7 @@ class UnitComposerTest extends TestCase
             ->assertOk()
             ->assertSee('Unit samenstellen (test)')
             ->assertSee('data-composer', false)
+            ->assertSee('data-preview-url="'.route('admin.units.preview').'"', false)
             ->assertSee('Kopieer link')
             ->assertSee('Bewerken met AI')
             ->assertDontSee('Genereer met AI')
@@ -27,13 +29,52 @@ class UnitComposerTest extends TestCase
         $this->actingAs(User::factory()->create())->get(route('admin.unit-composer'))->assertForbidden();
     }
 
+    public function test_customers_can_compose_a_unit_in_their_account(): void
+    {
+        $customer = User::factory()->create();
+
+        $this->actingAs($customer)->get(route('dashboard'))->assertOk()->assertSee(route('unit-composer'), false);
+
+        $this->actingAs($customer)->get(route('unit-composer'))
+            ->assertOk()
+            ->assertSee('Unit samenstellen')
+            ->assertDontSee('Unit samenstellen (test)')
+            ->assertSee('data-preview-url="'.route('unit-composer.preview').'"', false)
+            ->assertSee('data-design-url="'.route('unit-composer.design').'"', false)
+            ->assertSee('Bewerken met AI');
+
+        $this->actingAs($customer)->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3']])
+            ->assertOk()
+            ->assertHeader('Content-Type', 'image/svg+xml');
+    }
+
+    public function test_customers_can_edit_their_composition_with_ai(): void
+    {
+        config(['services.anthropic.key' => 'test-key']);
+        $design = ['configuration' => UnitConfiguration::normalize(UnitConfiguration::STARTER), 'title' => 'Unit', 'meta_description' => 'Meta'];
+        $this->mock(UnitDesigner::class, function (MockInterface $mock) use ($design): void {
+            $mock->shouldReceive('design')->once()->andReturn($design);
+        });
+
+        $this->actingAs(User::factory()->create())
+            ->postJson(route('unit-composer.design'), ['description' => 'Maak de wanden blauw', 'configuration' => UnitConfiguration::STARTER])
+            ->assertOk()
+            ->assertJson($design);
+    }
+
+    public function test_guests_are_sent_to_the_login_page(): void
+    {
+        $this->get(route('unit-composer'))->assertRedirect(route('login'));
+        $this->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3']])->assertRedirect(route('login'));
+    }
+
     public function test_a_composition_is_read_from_the_link(): void
     {
         $composition = ['size' => '3x3', 'modules' => 3, 'background' => 'site', 'walls' => ['right' => ['door']]];
         $encoded = strtr(base64_encode((string) json_encode($composition)), '+/', '-_');
 
-        $this->actingAs(User::factory()->admin()->create())
-            ->get(route('admin.unit-composer', [UnitComposerController::QUERY_KEY => $encoded]))
+        $this->actingAs(User::factory()->create())
+            ->get(route('unit-composer', [UnitConfiguration::SHARE_KEY => $encoded]))
             ->assertOk()
             ->assertSee('<option value="3x3" selected>', false)
             ->assertSee('<option value="3" selected>3 units gekoppeld</option>', false)
@@ -43,10 +84,10 @@ class UnitComposerTest extends TestCase
 
     public function test_customers_start_from_an_anthracite_6x3_with_two_windows_and_a_door_on_the_right(): void
     {
-        $this->assertSame(['empty', 'window', 'empty', 'empty', 'window', 'empty'], UnitConfiguration::normalize(UnitComposerController::STARTER_UNIT)['walls']['front']);
+        $this->assertSame(UnitConfiguration::normalize(UnitConfiguration::STARTER), UnitConfiguration::fromShareCode('geen-geldige-samenstelling'));
 
-        $response = $this->actingAs(User::factory()->admin()->create())
-            ->get(route('admin.unit-composer', [UnitComposerController::QUERY_KEY => 'geen-geldige-samenstelling']))
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('unit-composer'))
             ->assertOk()
             ->assertSee('<option value="6x3" selected>', false)
             ->assertSee('name="configuration[colors][cladding]" value="#383e42" checked', false)

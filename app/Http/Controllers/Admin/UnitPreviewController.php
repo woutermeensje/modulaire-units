@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
- * Renders the live preview of the unit configurator in the admin.
+ * Renders the live 2D preview of the unit configurator, in the admin and in the customer's unit composer.
  */
 class UnitPreviewController extends Controller
 {

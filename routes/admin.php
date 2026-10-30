@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\AccountController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\UnitComposerController as PortalUnitComposerController;
 use App\Http\Controllers\Portal\UsedListingController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('account/units', [UsedListingController::class, 'index'])->name('my-used-listings.index');
     Route::get('account/units/aanbieden', [UsedListingController::class, 'create'])->name('my-used-listings.create');
     Route::post('account/units', [UsedListingController::class, 'store'])->middleware('throttle:forms')->name('my-used-listings.store');
+    Route::get('account/unit-samenstellen', PortalUnitComposerController::class)->name('unit-composer');
+    Route::post('account/unit-samenstellen/voorbeeld', UnitPreviewController::class)->middleware('throttle:120,1')->name('unit-composer.preview');
+    Route::post('account/unit-samenstellen/ontwerpen', UnitDesignController::class)->middleware('throttle:10,1')->name('unit-composer.design');
 });
 
 /*

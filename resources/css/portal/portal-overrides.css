@@ -239,11 +239,28 @@
   outline-offset: 2px;
 }
 
+.unit-configurator__levels {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.unit-configurator__levels > .portal-help {
+  margin: 0;
+}
+
+.unit-configurator__level-title {
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: var(--border-default);
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .unit-configurator__walls {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px 24px;
-  margin-top: 20px;
 }
 
 .unit-configurator__walls > .portal-help {

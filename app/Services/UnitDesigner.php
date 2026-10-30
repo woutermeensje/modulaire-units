@@ -31,6 +31,9 @@ class UnitDesigner
         - Vakken lopen van links naar rechts, gezien van buitenaf terwijl je recht voor die gevel staat.
           De rechterzijde begint dus bij de voorste unit, de linkerzijde bij de achterste unit.
         - Geef per gevel precies zoveel vakken als die gevel heeft.
+        Met floors kies je 1 of 2 lagen: bij 2 staat er op elke unit een tweede unit. walls zijn de gevels van de begane grond,
+        upper_walls die van de verdieping, met hetzelfde aantal vakken. Gebruik 1 laag tenzij om stapelen of een verdieping
+        gevraagd wordt; geef upper_walls dan dezelfde vakken als walls, ze worden genegeerd.
 
         Kleuren zijn hexcodes: cladding is de kleur van de wanden, frame die van de kozijnen en het stalen frame.
         Er zijn drie kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet) en "#0e4c92" (blauw).
@@ -119,6 +122,17 @@ class UnitDesigner
     private function schema(): array
     {
         $slots = ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::SLOTS)]];
+        $walls = [
+            'type' => 'object',
+            'properties' => [
+                'front' => $slots + ['description' => '3 vakken bij 3x3, 6 vakken bij 6x3'],
+                'back' => $slots + ['description' => '3 vakken bij 3x3, 6 vakken bij 6x3'],
+                'left' => $slots + ['description' => '3 vakken per module'],
+                'right' => $slots + ['description' => '3 vakken per module'],
+            ],
+            'required' => ['front', 'back', 'left', 'right'],
+            'additionalProperties' => false,
+        ];
         $color = ['type' => 'string', 'enum' => array_keys(UnitConfiguration::COLORS)];
 
         return [
@@ -126,17 +140,9 @@ class UnitDesigner
             'properties' => [
                 'size' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::SIZES)],
                 'modules' => ['type' => 'integer', 'enum' => range(1, UnitConfiguration::MAX_MODULES), 'description' => 'Aantal gekoppelde units'],
-                'walls' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'front' => $slots + ['description' => '3 vakken bij 3x3, 6 vakken bij 6x3'],
-                        'back' => $slots + ['description' => '3 vakken bij 3x3, 6 vakken bij 6x3'],
-                        'left' => $slots + ['description' => '3 vakken per module'],
-                        'right' => $slots + ['description' => '3 vakken per module'],
-                    ],
-                    'required' => ['front', 'back', 'left', 'right'],
-                    'additionalProperties' => false,
-                ],
+                'floors' => ['type' => 'integer', 'enum' => range(1, UnitConfiguration::MAX_FLOORS), 'description' => 'Aantal lagen'],
+                'walls' => $walls,
+                'upper_walls' => $walls,
                 'colors' => [
                     'type' => 'object',
                     'properties' => ['cladding' => $color, 'frame' => $color],
@@ -147,7 +153,7 @@ class UnitDesigner
                 'title' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'walls', 'colors', 'background', 'title', 'meta_description'],
+            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'colors', 'background', 'title', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

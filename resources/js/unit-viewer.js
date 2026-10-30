@@ -321,34 +321,41 @@ function buildFrame(length, depth, seams, materials) {
   return group;
 }
 
+/** The sets of walls per layer, from the ground up, as in App\Support\UnitConfiguration::LEVELS. */
+const LEVELS = ['walls', 'upper_walls'];
+
 function buildUnit(configuration, dimensions, materials) {
   const { length, depth } = dimensions;
+  const floors = configuration.floors ?? 1;
   const unit = new Group();
-  const body = new Group();
-  body.position.y = RAISE;
-
-  Object.entries(WALLS).forEach(([name, wall]) => {
-    const [x, z] = wall.start(length, depth);
-    const group = buildWall(dimensions[wall.width], configuration.walls[name] ?? [], materials);
-    group.position.set(x, 0, z);
-    group.rotation.y = wall.angle;
-    body.add(group);
-  });
 
   const modules = configuration.modules ?? 1;
   const seams = Array.from({ length: modules - 1 }, (_, index) => depth / 2 - ((index + 1) * depth) / modules);
-  body.add(buildFrame(length, depth, seams, materials));
-
   const wallThickness = CLADDING_THICKNESS + LINING_THICKNESS;
-  body.add(box(length - 2 * wallThickness, 0.03, depth - 2 * wallThickness, 0, BOTTOM_RAIL - 0.015, 0, materials.floor));
+
+  // Stacked layers stand on the top rail of the one below, which is 1 cm proud of its walls.
+  LEVELS.slice(0, floors).forEach((level, floor) => {
+    const body = new Group();
+    body.position.y = RAISE + floor * (HEIGHT + 0.01);
+
+    Object.entries(WALLS).forEach(([name, wall]) => {
+      const [x, z] = wall.start(length, depth);
+      const group = buildWall(dimensions[wall.width], configuration[level]?.[name] ?? [], materials);
+      group.position.set(x, 0, z);
+      group.rotation.y = wall.angle;
+      body.add(group);
+    });
+
+    body.add(buildFrame(length, depth, seams, materials));
+    body.add(box(length - 2 * wallThickness, 0.03, depth - 2 * wallThickness, 0, BOTTOM_RAIL - 0.015, 0, materials.floor));
+    unit.add(body);
+  });
 
   [-depth / 2 + 0.15, ...seams, depth / 2 - 0.15].forEach((z) => {
     [-1, 1].forEach((signX) => {
       unit.add(box(0.3, RAISE, 0.3, signX * (length / 2 - 0.15), RAISE / 2, z, materials.concrete));
     });
   });
-
-  unit.add(body);
 
   return unit;
 }
@@ -474,11 +481,11 @@ function createStage(renderer, backdrops) {
   };
 }
 
-function aim(camera, target, { length, depth }, view, zoom) {
-  const distance = ((length + depth) * 1.3 + 3) * zoom;
+function aim(camera, target, { length, depth, floors = 1 }, view, zoom) {
+  const distance = ((length + depth) * 1.3 + 3 + (floors - 1) * HEIGHT * 1.5) * zoom;
   const direction = new Vector3(...(view === 'corner' ? CORNER_DIRECTION : VIEW_DIRECTIONS[view])).normalize().multiplyScalar(distance);
   camera.position.copy(direction);
-  target.set(0, 1, 0);
+  target.set(0, 1 + (floors - 1) * HEIGHT * 0.6, 0);
   camera.lookAt(target);
 }
 
@@ -506,7 +513,7 @@ export function createUnitViewer(container, backdrops, { zoom = true, distance =
   controls.maxDistance = 30;
   controls.maxPolarAngle = Math.PI / 2 - 0.05;
 
-  let currentSize = null;
+  let currentFootprint = null;
 
   const render = () => renderer.render(stage.scene, camera);
   controls.addEventListener('change', render);
@@ -532,8 +539,10 @@ export function createUnitViewer(container, backdrops, { zoom = true, distance =
     update(configuration, dimensions) {
       stage.show(configuration, dimensions);
 
-      if (configuration.size !== currentSize) {
-        currentSize = configuration.size;
+      // Reframe the camera when the building changes size; otherwise keep the angle the user turned to.
+      const footprint = `${configuration.size}-${configuration.modules ?? 1}-${configuration.floors ?? 1}`;
+      if (footprint !== currentFootprint) {
+        currentFootprint = footprint;
         aim(camera, controls.target, dimensions, view, distance);
         controls.update();
       }
