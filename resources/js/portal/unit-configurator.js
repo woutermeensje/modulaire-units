@@ -115,9 +115,63 @@ function initConfigurator(root) {
     setTimeout(() => { shareCopy.lastChild.textContent = ' Kopieer link'; }, 2000);
   });
 
+  // "Toevoegen aan offerte" appears once the visitor changes the unit, and is offered again after every change.
+  const quote = root.querySelector('[data-configurator-quote]');
+  const quoteButton = quote?.querySelector('[data-configurator-quote-add]');
+  const quoteLabel = quoteButton?.querySelector('span');
+  const resetQuote = () => {
+    if (!quote) {
+      return;
+    }
+
+    quote.hidden = false;
+    quoteButton.disabled = false;
+    quoteLabel.textContent = 'Toevoegen aan offerte';
+  };
+
+  const showQuoteCount = (count) => {
+    [['.mh-header__quote-icon', 'mh-header__quote-badge'], ['.mh-btn--nav-quote', 'mh-nav-badge']].forEach(([selector, badgeClass]) => {
+      document.querySelectorAll(selector).forEach((link) => {
+        let badge = link.querySelector(`.${badgeClass}`);
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = badgeClass;
+          link.append(badge);
+        }
+        badge.textContent = count;
+      });
+    });
+  };
+
+  quoteButton?.addEventListener('click', async () => {
+    quoteButton.disabled = true;
+    const body = new FormData();
+    root.querySelectorAll(FIELDS).forEach((input) => body.append(input.name, input.value));
+
+    try {
+      const response = await fetch(quote.dataset.quoteUrl, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
+        body,
+      });
+      if (!response.ok) {
+        throw new Error(`Status ${response.status}`);
+      }
+
+      const data = await response.json();
+      quoteLabel.textContent = 'Toegevoegd aan offerte';
+      quote.querySelector('[data-configurator-quote-link]').hidden = false;
+      showQuoteCount(data.count);
+    } catch {
+      quoteLabel.textContent = 'Mislukt, probeer opnieuw';
+      quoteButton.disabled = false;
+    }
+  });
+
   const refreshPreview = () => {
     updateViewer();
     updateShareUrl();
+    resetQuote();
     clearTimeout(timer);
     timer = setTimeout(async () => {
       if (!sizeSelect.value) {

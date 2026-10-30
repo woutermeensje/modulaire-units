@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\QuoteSubmitRequest;
 use App\Services\QuoteCart;
 use App\Services\SubmissionRecorder;
+use App\Support\ComposedUnit;
 use App\Support\Seo;
 use App\Support\SiteUrl;
+use App\Support\UnitConfiguration;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -43,6 +46,24 @@ class QuoteController extends Controller
         return redirect()->to(url()->previous($model->url()))->with('quote_added', true);
     }
 
+    /**
+     * Add a composition from the unit composer. Answers with the new number of items when asked for JSON.
+     */
+    public function addComposition(Request $request): RedirectResponse|JsonResponse
+    {
+        $rules = UnitConfiguration::rules('configuration');
+        $rules['configuration.size'] = ['required', Rule::in(array_keys(UnitConfiguration::SIZES))];
+        $validated = $request->validate($rules);
+
+        $this->cart->addComposition($validated['configuration']);
+
+        if ($request->expectsJson()) {
+            return response()->json(['count' => $this->cart->count(), 'quote_url' => route('quote.show').'/']);
+        }
+
+        return redirect()->route('quote.show');
+    }
+
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -53,12 +74,12 @@ class QuoteController extends Controller
 
         foreach ($validated['quantities'] ?? [] as $key => $quantity) {
             [$type, $id] = explode(':', (string) $key) + [null, null];
-            $this->cart->update((string) $type, (int) $id, (int) $quantity);
+            $this->cart->update((string) $type, (string) $id, (int) $quantity);
         }
 
         if (! empty($validated['remove'])) {
             [$type, $id] = explode(':', $validated['remove']) + [null, null];
-            $this->cart->remove((string) $type, (int) $id);
+            $this->cart->remove((string) $type, (string) $id);
         }
 
         return redirect()->route('quote.show');
@@ -78,13 +99,21 @@ class QuoteController extends Controller
                 'email' => $request->input('email'),
                 'phone' => $request->input('phone'),
                 'message' => $request->input('message'),
-                'items' => $items->map(fn (array $item): array => [
-                    'type' => $item['type'],
-                    'id' => $item['model']->getKey(),
-                    'title' => $item['model']->title,
-                    'url' => SiteUrl::absolute($item['model']->url()),
-                    'quantity' => $item['quantity'],
-                ])->all(),
+                'items' => $items->map(fn (array $item): array => $item['model'] instanceof ComposedUnit
+                    ? [
+                        'type' => $item['type'],
+                        'id' => $item['model']->key(),
+                        'title' => $item['model']->title().' ('.$item['model']->summary().')',
+                        'url' => SiteUrl::absolute($item['model']->url()),
+                        'quantity' => $item['quantity'],
+                    ]
+                    : [
+                        'type' => $item['type'],
+                        'id' => $item['model']->getKey(),
+                        'title' => $item['model']->title,
+                        'url' => SiteUrl::absolute($item['model']->url()),
+                        'quantity' => $item['quantity'],
+                    ])->all(),
                 'source_url' => SiteUrl::absolute(route('quote.show', [], false).'/'),
             ], $request);
         }

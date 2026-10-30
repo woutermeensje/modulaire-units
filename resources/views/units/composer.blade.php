@@ -19,6 +19,8 @@
             'composer' => true,
             'ai' => false,
             'previewUrl' => route('unit-composer.public.preview'),
+            'quoteUrl' => route('unit-composer.quote'),
+            'quoteReady' => $quoteReady,
         ])
     </main>
 @endsection

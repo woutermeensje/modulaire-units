@@ -239,6 +239,16 @@ class UnitConfiguration
     }
 
     /**
+     * The composition as it is written in a share link: URL-safe base64 JSON, as the configurator's JavaScript does.
+     *
+     * @param  Configuration  $configuration
+     */
+    public static function toShareCode(array $configuration): string
+    {
+        return strtr(base64_encode((string) json_encode($configuration)), '+/', '-_');
+    }
+
+    /**
      * Read a composition from a share link (URL-safe base64 JSON), or start from the starter unit.
      *
      * @return Configuration

@@ -42,9 +42,12 @@ body main.site-main.unit-composer {
   margin: 0 0 24px;
 }
 
-/* The 3D view (900px) with the settings next to it (300px); the view stays in sight while scrolling the settings. */
+/*
+ * The view takes the remaining width next to a fixed 380px settings column (the usual 320–400px for configurators),
+ * both starting on the same line; the view stays in sight while scrolling the settings.
+ */
 .unit-composer .unit-configurator--composer {
-  grid-template-columns: minmax(0, 900px) 300px;
+  grid-template-columns: minmax(0, 1fr) 380px;
   align-items: start;
   column-gap: 24px;
 }
@@ -54,6 +57,29 @@ body main.site-main.unit-composer {
   top: 100px;
   grid-column: 1;
   grid-row: 1;
+}
+
+/* The floor plan / 3D switch floats in the top left corner of the view, so the view's top lines up with the settings. */
+.unit-composer .unit-configurator__views {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(16, 36, 56, 0.12);
+}
+
+.unit-composer .unit-configurator__palette {
+  flex: 1 1 100%;
+}
+
+.unit-composer .unit-configurator__quote {
+  top: 12px;
+  right: 12px;
+}
+
+.unit-composer .unit-configurator__swatches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .unit-composer .unit-configurator__controls {
@@ -66,9 +92,9 @@ body main.site-main.unit-composer {
   border: 0;
 }
 
-/* The top view has to fit the 300px column: smaller slots with icons only. */
+/* The top view has to fit the 380px column: smaller slots with icons only. */
 .unit-composer .unit-plan {
-  --slot: 34px;
+  --slot: 40px;
   --slot-gap: 4px;
 }
 
@@ -77,7 +103,7 @@ body main.site-main.unit-composer {
 }
 
 .unit-composer .unit-slot i {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .unit-composer .unit-plan__name {
@@ -90,7 +116,8 @@ body main.site-main.unit-composer {
   }
 
   .unit-composer .unit-configurator__preview-panel {
-    position: static;
+    position: relative;
+    top: auto;
   }
 
   .unit-composer .unit-configurator__controls {
@@ -199,6 +226,11 @@ body main.site-main.unit-composer {
 .unit-composer .unit-configurator__view.is-active:is(:hover, :focus) {
   background: var(--color-primary-soft);
   color: var(--color-primary-strong);
+}
+
+.unit-composer .unit-configurator__quote-button:is(:hover, :focus) {
+  background: var(--color-primary-strong);
+  color: #ffffff;
 }
 
 .unit-composer .btn:is(:hover, :focus) {

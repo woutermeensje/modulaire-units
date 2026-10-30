@@ -95,15 +95,3 @@
         </div>
     </div>
 </div>
-
-<div class="mh-cta-bar" id="mh-cta-bar" role="complementary" aria-label="Hulp nodig?">
-    <div class="mh-cta-bar__inner">
-        <p class="mh-cta-bar__text">{{ \App\Models\Setting::get('cta_bar_text') }}</p>
-        <div class="mh-cta-bar__actions">
-            <a href="{{ url('offerte-aanvragen') }}/" class="mh-btn mh-btn--accent mh-cta-bar__btn">Neem contact op</a>
-        </div>
-        <button class="mh-cta-bar__close" id="mh-cta-bar-close" aria-label="Balk sluiten">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-    </div>
-</div>

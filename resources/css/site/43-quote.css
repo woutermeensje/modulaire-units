@@ -141,6 +141,12 @@
 		flex-shrink: 0;
 		display: block;
 	}
+	/* A composition from the unit composer has no photo: a cube icon in the placeholder, in the brand colour.
+	   The placeholder colours are set with !important in 27-mh-shortcodes.css. */
+	.mh-qp__thumb-placeholder.mh-qp__thumb-placeholder--composition {
+		background: #eef5f8 !important;
+		color: var(--color-primary-text, #2B6E8F) !important;
+	}
 	.mh-qp__thumb-placeholder {
 		width: 64px;
 		height: 64px;

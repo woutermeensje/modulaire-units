@@ -17,6 +17,7 @@ class UnitComposerController extends Controller
     {
         return view('units.composer', [
             'configuration' => UnitConfiguration::fromShareCode((string) $request->query(UnitConfiguration::SHARE_KEY, '')),
+            'quoteReady' => $request->filled(UnitConfiguration::SHARE_KEY),
             'seo' => Seo::make('Unit samenstellen', 'Stel je eigen modulaire unit samen in 3D: kies de afmeting, het aantal units, de kleuren en waar ramen en deuren komen.'),
         ]);
     }

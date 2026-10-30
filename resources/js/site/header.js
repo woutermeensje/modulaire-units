@@ -1,5 +1,5 @@
 /**
- * Mobile navigation, header search and the sticky CTA bar (ported from the WordPress child theme).
+ * Mobile navigation and header search (ported from the WordPress child theme).
  */
 const hamburger = document.querySelector('.mh-header__hamburger');
 const mobileNav = document.getElementById('mh-mobile-nav');
@@ -86,28 +86,6 @@ if (hamburger && mobileNav) {
     window.addEventListener('resize', () => {
         if (window.innerWidth > 960) {
             closeMenu();
-        }
-    });
-}
-
-const ctaBar = document.getElementById('mh-cta-bar');
-const ctaClose = document.getElementById('mh-cta-bar-close');
-
-if (ctaBar && ctaClose) {
-    try {
-        if (sessionStorage.getItem('mh_cta_bar_closed') === '1') {
-            ctaBar.classList.add('is-hidden');
-        }
-    } catch {
-        // Storage can be unavailable (private mode); the bar simply stays visible.
-    }
-
-    ctaClose.addEventListener('click', () => {
-        ctaBar.classList.add('is-hidden');
-        try {
-            sessionStorage.setItem('mh_cta_bar_closed', '1');
-        } catch {
-            // Ignore unavailable storage.
         }
     });
 }

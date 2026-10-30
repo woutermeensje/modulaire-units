@@ -43,6 +43,7 @@ Route::get('wp-content/uploads/{path}', fn (string $path) => redirect(SiteUrl::m
 */
 Route::middleware('throttle:forms')->group(function (): void {
     Route::post('offerte/toevoegen', [QuoteController::class, 'add'])->name('quote.add');
+    Route::post('unit-samensteller/offerte', [QuoteController::class, 'addComposition'])->name('unit-composer.quote');
     Route::post('offerte/bijwerken', [QuoteController::class, 'update'])->name('quote.update');
     Route::post('offerte/versturen', [QuoteController::class, 'submit'])->name('quote.submit');
     Route::post('formulier/informatie', [FormController::class, 'information'])->name('forms.information');

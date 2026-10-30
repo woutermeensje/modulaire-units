@@ -80,8 +80,6 @@ a.mh-btn--solid.mh-btn--nav-contact:focus,
 .mh-btn--accent:focus,
 a.mh-btn--accent:hover,
 a.mh-btn--accent:focus,
-.mh-cta-bar .mh-cta-bar__btn:hover,
-.mh-cta-bar .mh-cta-bar__btn:focus,
 .mh-form .mh-form__submit:hover,
 .mh-form .mh-form__submit:focus,
 .mh-offer .mh-offer-request .mh-offer-btn--primary:hover,
@@ -183,11 +181,6 @@ a.mh-btn--accent:focus,
   .mh-footer__inner {
     grid-template-columns: 1fr;
   }
-}
-
-/* Ruimte zodat de sticky CTA-balk de footer niet afdekt. */
-body {
-  padding-bottom: 72px;
 }
 
 /* ── Standaardpagina's zonder Elementor-opmaak ── */

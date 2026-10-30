@@ -586,7 +586,6 @@ class ImportWordPress extends Command
         $site = json_decode($this->client->html($this->client->baseUrl().'/wp-json/'), true);
         Setting::put('site_name', html_entity_decode($site['name'] ?? Setting::get('site_name')));
         Setting::put('site_tagline', html_entity_decode($site['description'] ?? Setting::get('site_tagline')));
-        Setting::put('cta_bar_text', trim((string) $document->querySelector('.mh-cta-bar__text')?->textContent) ?: Setting::get('cta_bar_text'));
 
         if (preg_match('/gtag\(["\']config["\'],\s*["\']((?:G|GT)-[A-Z0-9]+)["\']/', $document->saveHtml(), $analytics)) {
             Setting::put('google_analytics_id', $analytics[1]);

@@ -41,17 +41,25 @@
                                 @foreach ($items as $item)
                                     @php
                                         $model = $item['model'];
-                                        $thumb = \App\Support\SiteUrl::media(\App\Models\Media::variant($model->featured_image, 'thumbnail'));
-                                        $categories = $item['type'] === 'unit'
-                                            ? collect([$model->offerLabel(), $model->termsFor(\App\Models\UnitTerm::CONDITION)->first()?->name])->filter()->implode(' • ')
-                                            : 'Product';
+                                        $isComposition = $model instanceof \App\Support\ComposedUnit;
+                                        $title = $isComposition ? $model->title() : $model->title;
+                                        $thumb = $isComposition ? null : \App\Support\SiteUrl::media(\App\Models\Media::variant($model->featured_image, 'thumbnail'));
+                                        $categories = match (true) {
+                                            $isComposition => $model->summary(),
+                                            $item['type'] === 'unit' => collect([$model->offerLabel(), $model->termsFor(\App\Models\UnitTerm::CONDITION)->first()?->name])->filter()->implode(' • '),
+                                            default => 'Product',
+                                        };
                                     @endphp
                                     <div class="mh-qp__product-row">
                                         @if ($thumb)
-                                            <img width="64" height="64" src="{{ $thumb }}" class="mh-qp__thumb" alt="{{ $model->featured_image_alt ?: $model->title }}">
+                                            <img width="64" height="64" src="{{ $thumb }}" class="mh-qp__thumb" alt="{{ $model->featured_image_alt ?: $title }}">
+                                        @elseif ($isComposition)
+                                            <span class="mh-qp__thumb-placeholder mh-qp__thumb-placeholder--composition" aria-hidden="true">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                            </span>
                                         @endif
                                         <div class="mh-qp__product-info">
-                                            <a href="{{ $model->url() }}" class="mh-qp__product-name">{{ $model->title }}</a>
+                                            <a href="{{ $model->url() }}" class="mh-qp__product-name">{{ $title }}</a>
                                             <span class="mh-qp__product-cat">{{ $categories }}</span>
                                         </div>
                                         <div class="mh-qp__product-actions">

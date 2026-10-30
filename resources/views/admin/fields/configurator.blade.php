@@ -107,6 +107,15 @@
         </div>
 
         <div class="unit-configurator__levels" data-configurator-body @unless ($isConfigured) hidden @endunless>
+            <ul class="unit-plan-legend" aria-label="Legenda">
+                @foreach ([UnitConfiguration::EMPTY => 'Dicht', UnitConfiguration::WINDOW => 'Raam (180 cm)', UnitConfiguration::DOOR => 'Deur (87,5 cm)'] as $slot => $legendLabel)
+                    <li class="unit-plan-legend__item">
+                        <span class="unit-plan-legend__icon unit-slot--{{ $slot }}"><i class="ph {{ $slotIcons[$slot] }}"></i></span>
+                        {{ $legendLabel }}
+                    </li>
+                @endforeach
+                <li class="unit-plan-legend__hint">Klik op een vak om te wisselen.</li>
+            </ul>
             @foreach (UnitConfiguration::LEVELS as $level => $levelLabel)
                 @php($levelInUse = $loop->index < $configuration['floors'])
                 <section class="unit-configurator__level" data-configurator-level="{{ $level }}" data-floor="{{ $loop->index }}" @unless ($levelInUse) hidden @endunless>
@@ -157,6 +166,15 @@
     </div>
 
     <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
+        @if ($quoteUrl ?? null)
+            {{-- Shown once the visitor has made the unit their own (or opened a shared composition). --}}
+            <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}" @if (! ($quoteReady ?? false)) hidden @endif>
+                <a href="{{ route('quote.show') }}/" class="unit-configurator__quote-link" data-configurator-quote-link hidden>Bekijk offerte</a>
+                <button type="button" class="unit-configurator__quote-button" data-configurator-quote-add>
+                    <i class="ph ph-shopping-bag"></i> <span>Toevoegen aan offerte</span>
+                </button>
+            </div>
+        @endif
         <div class="unit-configurator__views">
             <button type="button" @class(['unit-configurator__view', 'is-active' => ! $composer]) data-configurator-view="2d" aria-pressed="{{ $composer ? 'false' : 'true' }}">
                 <i class="ph ph-ruler"></i> Plattegrond

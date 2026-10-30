@@ -21,6 +21,8 @@ class UnitComposerController extends Controller
             'configuration' => UnitConfiguration::fromShareCode((string) $request->query(UnitConfiguration::SHARE_KEY, '')),
             'previewUrl' => route('unit-composer.preview'),
             'designUrl' => route('unit-composer.design'),
+            'quoteUrl' => route('unit-composer.quote'),
+            'quoteReady' => $request->filled(UnitConfiguration::SHARE_KEY),
         ]);
     }
 }
