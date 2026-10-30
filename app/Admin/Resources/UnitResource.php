@@ -54,7 +54,6 @@ class UnitResource extends Resource
             'Unit' => [
                 Field::make('title', 'Titel')->required(),
                 Field::make('slug', 'Slug', 'slug')->slugFrom('title'),
-                Field::make('excerpt', 'Korte omschrijving', 'textarea')->rows(3)->help('Getoond op de unitkaart en bovenaan de unitpagina.'),
                 Field::make('content', 'Unit beschrijving', 'richtext')->rows(16),
                 Field::make('terms', 'Kenmerken', 'terms'),
             ],
@@ -85,7 +84,6 @@ class UnitResource extends Resource
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:190', Rule::unique('units', 'slug')->ignore($record?->id)],
-            'excerpt' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'price_rent' => ['nullable', 'string', 'max:190'],
             'price_buy' => ['nullable', 'string', 'max:190'],
@@ -93,7 +91,7 @@ class UnitResource extends Resource
             'featured_image_alt' => ['nullable', 'string', 'max:255'],
             'gallery_upload.*' => ['image', 'max:10240'],
             'terms' => ['array'],
-            'terms.*' => ['integer', Rule::exists('unit_terms', 'id')],
+            'terms.*' => ['nullable', 'integer', Rule::exists('unit_terms', 'id')],
             'status' => ['required', Rule::in(array_keys($this->statusOptions()))],
             'sort' => ['nullable', 'integer'],
             'published_at' => ['nullable', 'date'],
@@ -118,7 +116,7 @@ class UnitResource extends Resource
     public function afterSave(Model $record, Request $request): void
     {
         /** @var Unit $record */
-        $record->terms()->sync(array_map('intval', (array) $request->input('terms', [])));
+        $record->terms()->sync(array_values(array_filter(array_map('intval', (array) $request->input('terms', [])))));
         $usesPhotos = $request->boolean('photos_3d_enabled');
         app(UnitConfigurationImages::class)->sync($record, $usesPhotos ? $request->file('photos_3d', []) : [], keepPhotos: $usesPhotos);
     }

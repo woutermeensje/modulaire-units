@@ -177,6 +177,29 @@ class AdminCmsTest extends TestCase
         $this->get($unit->url())->assertOk()->assertSee('Vanaf € 4.950,-');
     }
 
+    public function test_unit_terms_are_one_select_per_group_and_may_be_left_empty(): void
+    {
+        $type = UnitTerm::factory()->create(['taxonomy' => UnitTerm::TYPE, 'name' => 'Kantoor unit']);
+        $offer = UnitTerm::factory()->create(['taxonomy' => UnitTerm::OFFER, 'name' => 'Huur']);
+
+        $this->actingAs($this->admin)->get(route('admin.units.create'))
+            ->assertOk()
+            ->assertSee('<select class="portal-input" id="terms_'.UnitTerm::TYPE.'" name="terms[]" data-search-select>', false);
+
+        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+            'title' => 'Kantoor zonder conditie',
+            'status' => 'published',
+            'terms' => [$type->id, '', $offer->id],
+        ])->assertSessionHasNoErrors();
+
+        $unit = Unit::query()->where('slug', 'kantoor-zonder-conditie')->sole();
+        $this->assertEqualsCanonicalizing([$type->id, $offer->id], $unit->terms->pluck('id')->all());
+
+        $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
+            ->assertOk()
+            ->assertSee('<option value="'.$type->id.'" selected>Kantoor unit</option>', false);
+    }
+
     public function test_changing_a_parent_slug_updates_child_paths(): void
     {
         $parent = Page::factory()->create(['slug' => 'kopen']);

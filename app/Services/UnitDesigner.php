@@ -13,7 +13,7 @@ use JsonException;
  *
  * @phpstan-import-type Configuration from UnitConfiguration
  *
- * @phpstan-type Design array{configuration: Configuration, title: string, excerpt: string, meta_description: string}
+ * @phpstan-type Design array{configuration: Configuration, title: string, meta_description: string}
  */
 class UnitDesigner
 {
@@ -42,7 +42,6 @@ class UnitDesigner
 
         Schrijf daarnaast in het Nederlands, zakelijk en zonder overdrijving:
         - title: korte producttitel, bijv. "Kantoorunit 6x3 met twee ramen".
-        - excerpt: 1 à 2 zinnen voor de unitkaart op de website.
         - meta_description: maximaal 155 tekens, voor zoekmachines.
         PROMPT;
 
@@ -109,7 +108,6 @@ class UnitDesigner
         return [
             'configuration' => UnitConfiguration::normalize($data),
             'title' => trim((string) ($data['title'] ?? '')),
-            'excerpt' => trim((string) ($data['excerpt'] ?? '')),
             'meta_description' => mb_substr(trim((string) ($data['meta_description'] ?? '')), 0, 160),
         ];
     }
@@ -146,10 +144,9 @@ class UnitDesigner
                 ],
                 'background' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::BACKGROUNDS)],
                 'title' => ['type' => 'string'],
-                'excerpt' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'walls', 'colors', 'background', 'title', 'excerpt', 'meta_description'],
+            'required' => ['size', 'modules', 'walls', 'colors', 'background', 'title', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

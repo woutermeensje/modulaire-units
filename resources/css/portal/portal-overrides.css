@@ -365,3 +365,100 @@
 *::after {
   box-shadow: none !important;
 }
+
+/* Single selects (Tom Select, see resources/js/portal/search-select.js) in the style of .portal-input. */
+.ts-wrapper.portal-input {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.ts-wrapper.portal-input .ts-control {
+  min-height: 0;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid #d8dee6;
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: none;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #333;
+  cursor: pointer;
+  transition: border-color .16s ease;
+}
+
+.ts-wrapper.portal-input .ts-control:hover {
+  border-color: #c9d2dc;
+}
+
+.ts-wrapper.portal-input.focus .ts-control {
+  border-color: rgba(10, 107, 141, 0.45);
+  box-shadow: 0 0 0 3px rgba(10, 107, 141, 0.08);
+}
+
+.ts-wrapper.portal-input .ts-control > input {
+  font: inherit;
+  color: inherit;
+}
+
+.ts-wrapper.portal-input.single .ts-control::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 7px;
+  height: 7px;
+  margin-top: -5px;
+  border-right: 1.5px solid #6b7785;
+  border-bottom: 1.5px solid #6b7785;
+  transform: rotate(45deg);
+  transition: transform .16s ease, margin-top .16s ease;
+}
+
+.ts-wrapper.portal-input.single.dropdown-active .ts-control::after {
+  margin-top: -1px;
+  transform: rotate(-135deg);
+}
+
+.ts-wrapper.portal-input .ts-dropdown {
+  margin-top: 6px;
+  padding: 4px;
+  border: 1px solid #d8dee6;
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(16, 36, 56, 0.12);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+
+.ts-wrapper.portal-input .ts-dropdown .option,
+.ts-wrapper.portal-input .ts-dropdown .no-results {
+  padding: 8px 10px;
+  border-radius: calc(var(--radius-md) - 2px);
+}
+
+.ts-wrapper.portal-input .ts-dropdown .active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+.ts-wrapper.portal-input .ts-dropdown .selected {
+  font-weight: 500;
+}
+
+.ts-wrapper.portal-input .ts-dropdown .dropdown-input-wrap {
+  padding: 4px;
+}
+
+.unit-configurator__share {
+  display: flex;
+  gap: 8px;
+}
+
+.unit-configurator__share .portal-input {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-muted);
+}

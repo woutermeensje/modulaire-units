@@ -2,8 +2,11 @@
 @use('App\Support\UnitRenderer')
 @use('App\Services\UnitDesigner')
 @use('App\Services\UnitConfigurationImages')
+@use('App\Http\Controllers\Admin\UnitComposerController')
 @php
-    $isConfigured = filled($value['size'] ?? null);
+    // In the composer test environment the configurator stands on its own: always configured, opened in 3D, no unit fields.
+    $composer ??= false;
+    $isConfigured = $composer || filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
     $maxSlots = fn (string $wall): int => max(array_map(fn (string $size): int => UnitConfiguration::slotCount($size, $wall, UnitConfiguration::MAX_MODULES), array_keys(UnitConfiguration::SIZES)));
     $sideWalls = ['left', 'right'];
@@ -22,16 +25,19 @@
 <span class="portal-label">{{ $field->label }}</span>
 <div class="unit-configurator" data-unit-configurator data-preview-url="{{ route('admin.units.preview') }}" data-design-url="{{ route('admin.units.design') }}"
      data-slot-labels='@json(UnitConfiguration::SLOTS)' data-slot-icons='@json($slotIcons)'
-     data-slot-counts='@json($slotCounts)' data-backdrops='@json(UnitRenderer::BACKDROPS)'>
+     data-slot-counts='@json($slotCounts)' data-backdrops='@json(UnitRenderer::BACKDROPS)'
+     @if ($composer) data-composer data-share-param="{{ UnitComposerController::QUERY_KEY }}" @endif>
     <div class="unit-configurator__ai">
         <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i> Beschrijf de unit en laat Claude de configuratie invullen</label>
         <textarea class="portal-textarea" id="configuration_description" rows="3" data-quill="off" data-configurator-description
                   placeholder="Bijv. 6x3 kantoorunit in lichtgrijs, deur in het midden van de voorkant met aan beide kanten twee ramen, één raam in elke kopgevel, op een bouwterrein"></textarea>
         <div class="unit-configurator__ai-actions">
-            <label class="portal-checkbox">
-                <input type="checkbox" data-configurator-texts checked>
-                Ook titel, korte omschrijving en meta description invullen (alleen lege velden)
-            </label>
+            @unless ($composer)
+                <label class="portal-checkbox">
+                    <input type="checkbox" data-configurator-texts checked>
+                    Ook titel en meta description invullen (alleen lege velden)
+                </label>
+            @endunless
             <button type="button" class="btn btn-primary" data-configurator-generate @disabled(! UnitDesigner::isConfigured())>
                 <i class="ph ph-sparkle"></i> Genereer met AI
             </button>
@@ -47,8 +53,10 @@
         <div class="unit-configurator__options">
             <div>
                 <label class="portal-label" for="configuration_size">Afmeting</label>
-                <select class="portal-input" id="configuration_size" name="configuration[size]" data-configurator-size>
-                    <option value="">Geen configuratie</option>
+                <select class="portal-input" id="configuration_size" name="configuration[size]" data-configurator-size data-search-select>
+                    @unless ($composer)
+                        <option value="">Geen configuratie</option>
+                    @endunless
                     @foreach (UnitConfiguration::SIZES as $size => $dimensions)
                         <option value="{{ $size }}" @selected($isConfigured && $configuration['size'] === $size)>{{ $dimensions['label'] }}</option>
                     @endforeach
@@ -56,7 +64,7 @@
             </div>
             <div data-configurator-body @unless ($isConfigured) hidden @endunless>
                 <label class="portal-label" for="configuration_modules">Aantal units</label>
-                <select class="portal-input" id="configuration_modules" name="configuration[modules]" data-configurator-modules>
+                <select class="portal-input" id="configuration_modules" name="configuration[modules]" data-configurator-modules data-search-select>
                     @for ($modules = 1; $modules <= UnitConfiguration::MAX_MODULES; $modules++)
                         <option value="{{ $modules }}" @selected($configuration['modules'] === $modules)>{{ $modules === 1 ? '1 unit' : $modules.' units gekoppeld' }}</option>
                     @endfor
@@ -64,7 +72,7 @@
             </div>
             <div data-configurator-body @unless ($isConfigured) hidden @endunless>
                 <label class="portal-label" for="configuration_background">Achtergrond</label>
-                <select class="portal-input" id="configuration_background" name="configuration[background]">
+                <select class="portal-input" id="configuration_background" name="configuration[background]" data-search-select>
                     @foreach (UnitConfiguration::BACKGROUNDS as $background => $label)
                         <option value="{{ $background }}" @selected($configuration['background'] === $background)>{{ $label }}</option>
                     @endforeach
@@ -116,25 +124,32 @@
 
     <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
         <div class="unit-configurator__views">
-            <button type="button" class="unit-configurator__view is-active" data-configurator-view="2d" aria-pressed="true">
+            <button type="button" @class(['unit-configurator__view', 'is-active' => ! $composer]) data-configurator-view="2d" aria-pressed="{{ $composer ? 'false' : 'true' }}">
                 <i class="ph ph-image"></i> 2D-tekening
             </button>
-            <button type="button" class="unit-configurator__view" data-configurator-view="3d" aria-pressed="false">
+            <button type="button" @class(['unit-configurator__view', 'is-active' => $composer]) data-configurator-view="3d" aria-pressed="{{ $composer ? 'true' : 'false' }}">
                 <i class="ph ph-cube"></i> 3D (prototype)
             </button>
         </div>
-        <div class="unit-configurator__preview" data-configurator-preview>
+        <div class="unit-configurator__preview" data-configurator-preview @if ($composer) hidden @endif>
             {!! app(UnitRenderer::class)->render($configuration) !!}
         </div>
-        <div class="unit-configurator__viewer" data-configurator-viewer hidden></div>
-        <p class="portal-help" data-configurator-viewer-help hidden>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>
-        <label class="portal-checkbox">
-            <input type="checkbox" name="photos_3d_enabled" value="1" data-configurator-photos @checked($usesPhotos)>
-            Gebruik 3D-beelden als foto's op de website in plaats van de 2D-tekeningen
-        </label>
-        <p class="portal-help" role="status" data-configurator-photos-status></p>
-        @foreach (array_keys(UnitRenderer::VIEWS) as $view)
-            <input type="file" name="photos_3d[{{ $view }}]" accept="image/jpeg" hidden data-configurator-photo="{{ $view }}">
-        @endforeach
+        <div class="unit-configurator__viewer" data-configurator-viewer @unless ($composer) hidden @endunless></div>
+        <p class="portal-help" data-configurator-viewer-help @unless ($composer) hidden @endunless>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>
+        @if ($composer)
+            <div class="unit-configurator__share">
+                <input class="portal-input" readonly value="{{ request()->fullUrl() }}" aria-label="Link naar deze samenstelling" data-configurator-share-url>
+                <button type="button" class="btn btn-secondary" data-configurator-share-copy><i class="ph ph-link"></i> Kopieer link</button>
+            </div>
+        @else
+            <label class="portal-checkbox">
+                <input type="checkbox" name="photos_3d_enabled" value="1" data-configurator-photos @checked($usesPhotos)>
+                Gebruik 3D-beelden als foto's op de website in plaats van de 2D-tekeningen
+            </label>
+            <p class="portal-help" role="status" data-configurator-photos-status></p>
+            @foreach (array_keys(UnitRenderer::VIEWS) as $view)
+                <input type="file" name="photos_3d[{{ $view }}]" accept="image/jpeg" hidden data-configurator-photo="{{ $view }}">
+            @endforeach
+        @endif
     </div>
 </div>

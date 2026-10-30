@@ -42,6 +42,7 @@
                 @foreach ($adminContent as $routePrefix => [$icon, $label])
                     <a href="{{ route($routePrefix.'.index') }}" class="backend-sublink {{ request()->routeIs($routePrefix.'.*') ? 'is-active' : '' }}"><i class="ph {{ $icon }}"></i><span>{{ $label }}</span></a>
                 @endforeach
+                <a href="{{ route('admin.unit-composer') }}" class="backend-sublink {{ request()->routeIs('admin.unit-composer') ? 'is-active' : '' }}"><i class="ph ph-flask"></i><span>Unit samenstellen (test)</span></a>
             </div>
 
             <div class="backend-nav-group">

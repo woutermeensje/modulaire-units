@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PasswordResetController as AdminPasswordResetCont
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubmissionController;
+use App\Http\Controllers\Admin\UnitComposerController;
 use App\Http\Controllers\Admin\UnitDesignController;
 use App\Http\Controllers\Admin\UnitPreviewController;
 use App\Http\Controllers\Auth\LoginController;
@@ -81,6 +82,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureUserIsAdmin::c
     Route::get('instellingen', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('instellingen', [SettingsController::class, 'update'])->name('settings.update');
 
+    Route::get('unit-samensteller', UnitComposerController::class)->name('unit-composer');
     Route::post('units/voorbeeld', UnitPreviewController::class)->name('units.preview');
     Route::post('units/ontwerpen', UnitDesignController::class)->middleware('throttle:20,1')->name('units.design');
 

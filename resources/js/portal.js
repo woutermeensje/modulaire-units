@@ -1,10 +1,12 @@
 import { exposeQuillHelpers, initQuillEditors } from './portal/quill-editor';
+import { initSearchSelects } from './portal/search-select';
 import { initUnitConfigurators } from './portal/unit-configurator';
 
 exposeQuillHelpers();
 
 document.addEventListener('DOMContentLoaded', () => {
     initQuillEditors();
+    initSearchSelects();
     initUnitConfigurators();
 
     const shell = document.querySelector('[data-backend-shell]');

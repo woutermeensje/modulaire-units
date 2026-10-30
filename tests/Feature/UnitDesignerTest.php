@@ -47,7 +47,6 @@ class UnitDesignerTest extends TestCase
             'colors' => ['cladding' => '#C9CDCF', 'frame' => 'zwart'],
             'background' => 'site',
             'title' => ' Kantoorunit 6x3 ',
-            'excerpt' => 'Lichte kantoorunit met vier ramen.',
             'meta_description' => str_repeat('a', 200),
         ]);
 
@@ -87,7 +86,7 @@ class UnitDesignerTest extends TestCase
 
     public function test_endpoint_returns_the_design_to_admins(): void
     {
-        $design = ['configuration' => UnitConfiguration::defaults('3x3'), 'title' => 'Unit', 'excerpt' => 'Tekst', 'meta_description' => 'Meta'];
+        $design = ['configuration' => UnitConfiguration::defaults('3x3'), 'title' => 'Unit', 'meta_description' => 'Meta'];
         $this->mock(UnitDesigner::class, function (MockInterface $mock) use ($design): void {
             $mock->shouldReceive('design')->once()->with('Een 3x3 unit', null)->andReturn($design);
         });

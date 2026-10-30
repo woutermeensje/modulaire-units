@@ -1,3 +1,5 @@
+import { setSelectValue } from './search-select';
+
 const SLOT_ORDER = ['empty', 'window', 'door'];
 
 // The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
@@ -74,8 +76,34 @@ function initConfigurator(root) {
     button.addEventListener('click', () => showView(button.dataset.configuratorView));
   });
 
+  // In the composer the composition lives in the URL, so every change gives a new link to share.
+  const shareInput = root.querySelector('[data-configurator-share-url]');
+  const updateShareUrl = () => {
+    if (!shareInput || !sizeSelect.value) {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set(root.dataset.shareParam, btoa(JSON.stringify(readConfiguration())).replace(/\+/g, '-').replace(/\//g, '_'));
+    window.history.replaceState(null, '', url);
+    shareInput.value = url.toString();
+  };
+
+  const shareCopy = root.querySelector('[data-configurator-share-copy]');
+  shareCopy?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(shareInput.value);
+      shareCopy.lastChild.textContent = ' Gekopieerd';
+    } catch {
+      shareInput.select();
+      shareCopy.lastChild.textContent = ' Kopieer met Ctrl/Cmd+C';
+    }
+    setTimeout(() => { shareCopy.lastChild.textContent = ' Kopieer link'; }, 2000);
+  });
+
   const refreshPreview = () => {
     updateViewer();
+    updateShareUrl();
     clearTimeout(timer);
     timer = setTimeout(async () => {
       if (!sizeSelect.value) {
@@ -148,8 +176,8 @@ function initConfigurator(root) {
   });
 
   const applyConfiguration = (configuration) => {
-    sizeSelect.value = configuration.size;
-    modulesSelect.value = configuration.modules ?? 1;
+    setSelectValue(sizeSelect, configuration.size);
+    setSelectValue(modulesSelect, configuration.modules ?? 1);
     applySize();
 
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
@@ -158,7 +186,7 @@ function initConfigurator(root) {
     Object.entries(configuration.colors).forEach(([name, color]) => {
       root.querySelector(`[name="configuration[colors][${name}]"]`).value = color;
     });
-    root.querySelector('[name="configuration[background]"]').value = configuration.background;
+    setSelectValue(root.querySelector('[name="configuration[background]"]'), configuration.background);
   };
 
   const fillIfEmpty = (id, value) => {
@@ -203,9 +231,8 @@ function initConfigurator(root) {
       }
 
       applyConfiguration(data.configuration);
-      if (root.querySelector('[data-configurator-texts]').checked) {
+      if (root.querySelector('[data-configurator-texts]')?.checked) {
         fillIfEmpty('title', data.title);
-        fillIfEmpty('excerpt', data.excerpt);
         fillIfEmpty('meta_description', data.meta_description);
       }
       refreshPreview();
@@ -258,9 +285,14 @@ function initConfigurator(root) {
     refreshPreview();
   });
 
-  root.querySelectorAll('input[type="color"], select:not([data-configurator-size]):not([data-configurator-modules])').forEach((input) => {
+  root.querySelectorAll('input[type="color"]').forEach((input) => {
     input.addEventListener('input', refreshPreview);
   });
+  root.querySelector('[name="configuration[background]"]').addEventListener('change', refreshPreview);
+
+  if (root.dataset.composer !== undefined) {
+    showView('3d');
+  }
 }
 
 export function initUnitConfigurators() {
