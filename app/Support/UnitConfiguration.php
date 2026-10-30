@@ -72,6 +72,23 @@ class UnitConfiguration
         self::DOOR => 'Deur',
     ];
 
+    /**
+     * Outside sizes in metres of the window and door frames, the height their bottom stands at from the bottom of the
+     * wall (the floor is at 0.15), and how many 1 m slots they take. A window covers two neighbouring slots.
+     *
+     * @var array<string, array{width: float, height: float, bottom: float, slots: int}>
+     */
+    public const OPENING_SIZES = [
+        self::WINDOW => ['width' => 1.8, 'height' => 1.2, 'bottom' => 0.9, 'slots' => 2],
+        self::DOOR => ['width' => 0.875, 'height' => 2.125, 'bottom' => 0.15, 'slots' => 1],
+    ];
+
+    /** Clear opening in metres of the door frame. */
+    public const DOOR_CLEAR = ['width' => 0.811, 'height' => 2.093];
+
+    /** Distance in metres openings keep from wall ends and from seams between coupled units, where the frame posts stand. */
+    public const POST_CLEARANCE = 0.12;
+
     /** @var array<string, string> */
     public const BACKGROUNDS = [
         'industrial' => 'Industrieterrein',
@@ -108,7 +125,7 @@ class UnitConfiguration
         'size' => '6x3',
         'modules' => 1,
         'walls' => [
-            'front' => ['empty', 'window', 'empty', 'empty', 'window', 'empty'],
+            'front' => ['empty', 'window', 'window', 'window', 'window', 'empty'],
             'right' => ['empty', 'door', 'empty'],
         ],
         'colors' => ['cladding' => '#383e42', 'frame' => '#383e42'],
@@ -231,10 +248,10 @@ class UnitConfiguration
         foreach (array_slice(array_keys(self::LEVELS), 0, $floors) as $level) {
             foreach (array_keys(self::WALLS) as $wall) {
                 $slots = array_values((array) ($input[$level][$wall] ?? []));
-                $levels[$level][$wall] = array_map(
+                $levels[$level][$wall] = self::pairWindows(array_map(
                     fn (int $index): string => self::pick($slots[$index] ?? null, self::SLOTS, self::EMPTY),
                     range(0, self::slotCount($size, $wall, $modules) - 1),
-                );
+                ), self::slotCount($size, $wall));
             }
         }
 
@@ -248,6 +265,79 @@ class UnitConfiguration
         $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);
 
         return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background];
+    }
+
+    /**
+     * Where the windows and doors of a wall are, in metres from its left end (seen from outside) and from the bottom of
+     * the wall. Each opening is centred on its slots, but kept clear of the posts at wall ends and seams.
+     *
+     * @param  list<string>  $slots  Normalized slots of one wall.
+     * @param  int  $segment  Slots per unit along this wall, see slotCount() for a single unit.
+     * @return list<array{type: string, left: float, right: float, bottom: float, top: float}>
+     */
+    public static function openings(array $slots, int $segment): array
+    {
+        $openings = [];
+        $index = 0;
+
+        while ($index < count($slots)) {
+            $type = $slots[$index];
+            $size = self::OPENING_SIZES[$type] ?? null;
+
+            if ($size === null) {
+                $index++;
+
+                continue;
+            }
+
+            $start = intdiv($index, $segment) * $segment;
+            $left = $index + ($size['slots'] - $size['width']) / 2;
+            $left = min(max($left, $start + self::POST_CLEARANCE), $start + $segment - self::POST_CLEARANCE - $size['width']);
+            $openings[] = ['type' => $type, 'left' => $left, 'right' => $left + $size['width'], 'bottom' => $size['bottom'], 'top' => $size['bottom'] + $size['height']];
+            $index += $size['slots'];
+        }
+
+        return $openings;
+    }
+
+    /**
+     * Make every window take two neighbouring slots within one unit: a lone window slot takes the next slot (or the
+     * previous one) when that is free, and is dropped when it can't.
+     *
+     * @param  list<string>  $slots
+     * @return list<string>
+     */
+    private static function pairWindows(array $slots, int $segment): array
+    {
+        $index = 0;
+
+        while ($index < count($slots)) {
+            if ($slots[$index] !== self::WINDOW) {
+                $index++;
+
+                continue;
+            }
+
+            $segmentStart = intdiv($index, $segment) * $segment;
+            $next = $index + 1;
+            $previous = $index - 1;
+
+            if ($next < $segmentStart + $segment && $next < count($slots) && $slots[$next] !== self::DOOR) {
+                $slots[$next] = self::WINDOW;
+                $index += 2;
+
+                continue;
+            }
+
+            if ($previous >= $segmentStart && $slots[$previous] === self::EMPTY) {
+                $slots[$previous] = self::WINDOW;
+            } else {
+                $slots[$index] = self::EMPTY;
+            }
+            $index++;
+        }
+
+        return $slots;
     }
 
     /**

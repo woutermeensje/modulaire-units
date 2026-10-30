@@ -94,6 +94,6 @@ class UnitComposerTest extends TestCase
             ->assertSee('name="configuration[colors][frame]" value="#383e42" checked', false);
 
         $this->assertSame(1, substr_count($response->getContent(), 'name="configuration[walls][right][]" value="door"'));
-        $this->assertSame(2, substr_count($response->getContent(), 'name="configuration[walls][front][]" value="window"'));
+        $this->assertSame(4, substr_count($response->getContent(), 'name="configuration[walls][front][]" value="window"'), 'Two windows of two slots each.');
     }
 }

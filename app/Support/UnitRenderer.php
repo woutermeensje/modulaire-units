@@ -144,7 +144,7 @@ class UnitRenderer
         ], $this->shade($colors['frame'], 1.35));
 
         return $shadow
-            .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), '#9fbfd2', $seams)
+            .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), '#9fbfd2', $seams, $seams[0] ?? $depth)
             .$this->face($front, $length, $frontSlots, $colors['cladding'], $colors['frame'], '#c4def0')
             .$roof;
     }
@@ -153,8 +153,9 @@ class UnitRenderer
      * @param  \Closure(float, float): array{float, float}  $point
      * @param  list<string>  $slots
      * @param  list<int>  $seams
+     * @param  int|null  $segment  Slots per unit along this face; the whole face when it belongs to one unit.
      */
-    private function face(\Closure $point, int $width, array $slots, string $cladding, string $frame, string $glass, array $seams = []): string
+    private function face(\Closure $point, int $width, array $slots, string $cladding, string $frame, string $glass, array $seams = [], ?int $segment = null): string
     {
         $height = self::HEIGHT;
         $rect = fn (float $s1, float $s2, float $z1, float $z2): array => [$point($s1, $z1), $point($s2, $z1), $point($s2, $z2), $point($s1, $z2)];
@@ -167,12 +168,13 @@ class UnitRenderer
             $svg .= '<line x1="'.$this->number($x1).'" y1="'.$this->number($y1).'" x2="'.$this->number($x2).'" y2="'.$this->number($y2).'" stroke="'.$this->shade($cladding, 0.86).'" stroke-width="1"/>';
         }
 
-        foreach ($slots as $index => $slot) {
-            $svg .= match ($slot) {
-                UnitConfiguration::WINDOW => $this->polygon($rect($index + 0.15, $index + 0.85, 0.9, 2.1), $glass, 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
-                    .$this->polygon($rect($index + 0.48, $index + 0.52, 0.9, 2.1), $frame),
-                UnitConfiguration::DOOR => $this->polygon($rect($index + 0.12, $index + 0.88, 0.15, 2.2), $this->shade($frame, 1.25), 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
-                    .$this->polygon($rect($index + 0.7, $index + 0.78, 1.0, 1.08), '#d9d9d9'),
+        foreach (UnitConfiguration::openings($slots, $segment ?? $width) as ['type' => $type, 'left' => $left, 'right' => $right, 'bottom' => $bottom, 'top' => $top]) {
+            $middle = ($left + $right) / 2;
+            $svg .= match ($type) {
+                UnitConfiguration::WINDOW => $this->polygon($rect($left, $right, $bottom, $top), $glass, 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
+                    .$this->polygon($rect($middle - 0.02, $middle + 0.02, $bottom, $top), $frame),
+                UnitConfiguration::DOOR => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($frame, 1.25), 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
+                    .$this->polygon($rect($right - 0.18, $right - 0.1, 1.05, 1.13), '#d9d9d9'),
                 default => '',
             };
         }

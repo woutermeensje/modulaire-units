@@ -38,10 +38,38 @@ const BOTTOM_RAIL = 0.15;
 const RAISE = 0.1;
 const CORNER_CASTING = 0.18;
 
-const OPENINGS = {
-  window: { left: 0.15, right: 0.85, bottom: 0.9, top: 2.1 },
-  door: { left: 0.12, right: 0.88, bottom: 0.15, top: 2.2 },
+// Window and door sizes and placement, matching App\Support\UnitConfiguration::OPENING_SIZES and openings().
+const OPENING_SIZES = {
+  window: { width: 1.8, height: 1.2, bottom: 0.9, slots: 2 },
+  door: { width: 0.875, height: 2.125, bottom: 0.15, slots: 1 },
 };
+const DOOR_CLEAR = { width: 0.811, height: 2.093 };
+const POST_CLEARANCE = 0.12;
+
+/**
+ * Where the windows and doors of a wall are, in metres from its left end (seen from outside), each centred on its
+ * slots but kept clear of the posts at wall ends and at seams between units every `segment` slots.
+ */
+function openings(slots, segment) {
+  const result = [];
+  let index = 0;
+
+  while (index < slots.length) {
+    const size = OPENING_SIZES[slots[index]];
+    if (!size) {
+      index++;
+      continue;
+    }
+
+    const start = Math.floor(index / segment) * segment;
+    let left = index + (size.slots - size.width) / 2;
+    left = Math.min(Math.max(left, start + POST_CLEARANCE), start + segment - POST_CLEARANCE - size.width);
+    result.push({ type: slots[index], left, right: left + size.width, bottom: size.bottom, top: size.bottom + size.height });
+    index += size.slots;
+  }
+
+  return result;
+}
 
 /**
  * Each wall is built along local +x from its left end (seen from outside) with its outside facing local +z,
@@ -197,18 +225,17 @@ function createMaterials(colors, ribs) {
   };
 }
 
-function buildWindow(index, materials) {
-  const { left, right, bottom, top } = OPENINGS.window;
+function buildWindow({ left, right, bottom, top }, materials) {
   const width = right - left;
   const height = top - bottom;
-  const centerX = index + (left + right) / 2;
+  const centerX = (left + right) / 2;
   const centerY = (bottom + top) / 2;
   const group = new Group();
 
   group.add(
     box(width, height, 0.01, centerX, centerY, -CLADDING_THICKNESS / 2, materials.glass),
-    box(0.05, height, 0.08, index + left + 0.025, centerY, -0.02, materials.frame),
-    box(0.05, height, 0.08, index + right - 0.025, centerY, -0.02, materials.frame),
+    box(0.05, height, 0.08, left + 0.025, centerY, -0.02, materials.frame),
+    box(0.05, height, 0.08, right - 0.025, centerY, -0.02, materials.frame),
     box(width, 0.05, 0.08, centerX, bottom + 0.025, -0.02, materials.frame),
     box(width, 0.05, 0.08, centerX, top - 0.025, -0.02, materials.frame),
     box(0.04, height, 0.06, centerX, centerY, -0.02, materials.frame),
@@ -217,19 +244,23 @@ function buildWindow(index, materials) {
   return group;
 }
 
-function buildDoor(index, materials) {
-  const { left, right, bottom, top } = OPENINGS.door;
+/**
+ * A door: the frame is as thick as the difference between its outside size and the clear opening.
+ */
+function buildDoor({ left, right, bottom, top }, materials) {
   const width = right - left;
   const height = top - bottom;
-  const centerX = index + (left + right) / 2;
+  const centerX = (left + right) / 2;
+  const jamb = (width - DOOR_CLEAR.width) / 2;
+  const head = height - DOOR_CLEAR.height;
   const group = new Group();
 
   group.add(
     box(width, height, 0.04, centerX, (bottom + top) / 2, -0.03, materials.doorLeaf),
-    box(0.05, height, 0.08, index + left + 0.025, (bottom + top) / 2, -0.02, materials.frame),
-    box(0.05, height, 0.08, index + right - 0.025, (bottom + top) / 2, -0.02, materials.frame),
-    box(width, 0.05, 0.08, centerX, top - 0.025, -0.02, materials.frame),
-    box(0.08, 0.03, 0.05, index + 0.74, 1.04, 0.01, materials.handle),
+    box(jamb, height, 0.08, left + jamb / 2, (bottom + top) / 2, -0.02, materials.frame),
+    box(jamb, height, 0.08, right - jamb / 2, (bottom + top) / 2, -0.02, materials.frame),
+    box(width, head, 0.08, centerX, top - head / 2, -0.02, materials.frame),
+    box(0.08, 0.03, 0.05, right - 0.14, 1.09, 0.01, materials.handle),
   );
 
   return group;
@@ -239,7 +270,7 @@ function buildDoor(index, materials) {
  * One wall: a cladding panel and a white inner lining with real openings, filled with windows and doors.
  * The unit has no roof, so the top of both layers shows the thickness of the wall.
  */
-function buildWall(width, slots, materials) {
+function buildWall(width, slots, segment, materials) {
   const shape = new Shape();
   shape.moveTo(0, 0);
   shape.lineTo(width, 0);
@@ -249,21 +280,16 @@ function buildWall(width, slots, materials) {
 
   const group = new Group();
 
-  slots.forEach((slot, index) => {
-    const opening = OPENINGS[slot];
-    if (!opening) {
-      return;
-    }
-
+  openings(slots, segment).forEach((opening) => {
     const hole = new Path();
-    hole.moveTo(index + opening.left, opening.bottom);
-    hole.lineTo(index + opening.right, opening.bottom);
-    hole.lineTo(index + opening.right, opening.top);
-    hole.lineTo(index + opening.left, opening.top);
+    hole.moveTo(opening.left, opening.bottom);
+    hole.lineTo(opening.right, opening.bottom);
+    hole.lineTo(opening.right, opening.top);
+    hole.lineTo(opening.left, opening.top);
     hole.closePath();
     shape.holes.push(hole);
 
-    group.add(slot === 'door' ? buildDoor(index, materials) : buildWindow(index, materials));
+    group.add(opening.type === 'door' ? buildDoor(opening, materials) : buildWindow(opening, materials));
   });
 
   [[materials.cladding, CLADDING_THICKNESS, -CLADDING_THICKNESS], [materials.lining, LINING_THICKNESS, -CLADDING_THICKNESS - LINING_THICKNESS]]
@@ -335,13 +361,12 @@ const RAIL_HEIGHT = 1.0;
  * a landing in front of the door and a flight down to the ground. The flight runs along the wall towards the side
  * with the most room, or straight out from the wall when it does not fit alongside.
  */
-function buildStairs(doorIndex, wallWidth, sill, ground, materials) {
+function buildStairs(doorCenter, wallWidth, sill, ground, materials) {
   const group = new Group();
   const rise = sill - ground;
   const steps = Math.ceil(rise / STEP_RISE);
   const stepRise = rise / steps;
   const run = (steps - 1) * STEP_GOING;
-  const doorCenter = doorIndex + 0.5;
   const landingZ = LANDING_DEPTH / 2 + 0.02;
 
   group.add(box(LANDING_WIDTH, 0.06, LANDING_DEPTH, doorCenter, sill - 0.03, landingZ, materials.steel));
@@ -414,16 +439,15 @@ function buildUnit(configuration, dimensions, materials) {
     Object.entries(WALLS).forEach(([name, wall]) => {
       const [x, z] = wall.start(length, depth);
       const slots = configuration[level]?.[name] ?? [];
-      const group = buildWall(dimensions[wall.width], slots, materials);
+      const segment = wall.width === 'depth' ? depth / modules : length;
+      const group = buildWall(dimensions[wall.width], slots, segment, materials);
       group.position.set(x, 0, z);
       group.rotation.y = wall.angle;
       body.add(group);
 
       if (floor > 0 && configuration.stairs) {
-        slots.forEach((slot, index) => {
-          if (slot === 'door') {
-            group.add(buildStairs(index, dimensions[wall.width], OPENINGS.door.bottom, -body.position.y, materials));
-          }
+        openings(slots, segment).filter(({ type }) => type === 'door').forEach(({ left, right, bottom }) => {
+          group.add(buildStairs((left + right) / 2, dimensions[wall.width], bottom, -body.position.y, materials));
         });
       }
     });

@@ -1,7 +1,5 @@
 import { setSelectValue } from './search-select';
 
-const SLOT_ORDER = ['empty', 'window', 'door'];
-
 // Every configuration field that is part of the request; unchosen colour swatches are left out.
 const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:checked)):not([type="checkbox"]:not(:checked))';
 
@@ -167,6 +165,7 @@ function initConfigurator(root) {
       slot.hidden = !inUse;
       slot.querySelector('input').disabled = !inUse;
     });
+    markWindowPairs();
 
     // Seen from outside, the right wall starts at the front unit and the left wall at the back one.
     root.querySelectorAll('[data-configurator-group]').forEach((group) => {
@@ -187,10 +186,62 @@ function initConfigurator(root) {
     slot.querySelector('span').textContent = labels[value];
   };
 
+  // A window takes two neighbouring slots within one unit, as App\Support\UnitConfiguration pairs them: from left to
+  // right, every window slot forms a window together with the next one.
+  const slotValue = (slot) => slot.querySelector('input').value;
+  const wallSlots = (slot) => [...root.querySelectorAll(`[data-configurator-slot][data-level="${slot.dataset.level}"][data-wall="${slot.dataset.wall}"]`)]
+    .filter((candidate) => !candidate.querySelector('input').disabled);
+  const windowPairs = (slots) => {
+    const pairs = [];
+    for (let index = 0; index < slots.length; index++) {
+      if (slotValue(slots[index]) === 'window' && slots[index + 1]) {
+        pairs.push([slots[index], slots[index + 1]]);
+        index++;
+      }
+    }
+
+    return pairs;
+  };
+  const markWindowPairs = () => {
+    const walls = new Set([...root.querySelectorAll('[data-configurator-slot]')].map((slot) => `${slot.dataset.level}|${slot.dataset.wall}`));
+    walls.forEach((key) => {
+      const [level, wall] = key.split('|');
+      const first = root.querySelector(`[data-configurator-slot][data-level="${level}"][data-wall="${wall}"]`);
+      windowPairs(wallSlots(first)).forEach(([start, end]) => {
+        start.classList.add('unit-slot--pair-start');
+        end.classList.add('unit-slot--pair-end');
+      });
+    });
+  };
+
+  const cycleSlot = (slot) => {
+    const slots = wallSlots(slot);
+    const index = slots.indexOf(slot);
+    const current = slotValue(slot);
+
+    if (current === 'window') {
+      const pair = windowPairs(slots).find((candidate) => candidate.includes(slot));
+      pair?.forEach((part) => setSlot(part, 'empty'));
+      setSlot(slot, 'door');
+    } else if (current === 'door') {
+      setSlot(slot, 'empty');
+    } else {
+      const segment = counts[sizeSelect.value][slot.dataset.wall];
+      const unitOf = (position) => Math.floor(position / segment);
+      const partner = [index + 1, index - 1].find((position) => slots[position] && unitOf(position) === unitOf(index) && slotValue(slots[position]) === 'empty');
+      if (partner === undefined) {
+        setSlot(slot, 'door');
+      } else {
+        setSlot(slot, 'window');
+        setSlot(slots[partner], 'window');
+      }
+    }
+  };
+
   root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
     slot.addEventListener('click', () => {
-      const current = slot.querySelector('input').value;
-      setSlot(slot, SLOT_ORDER[(SLOT_ORDER.indexOf(current) + 1) % SLOT_ORDER.length]);
+      cycleSlot(slot);
+      markWindowPairs();
       refreshPreview();
     });
   });
@@ -205,6 +256,7 @@ function initConfigurator(root) {
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
       setSlot(slot, configuration[slot.dataset.level]?.[slot.dataset.wall]?.[Number(slot.dataset.index)] ?? 'empty');
     });
+    markWindowPairs();
     Object.entries(configuration.colors).forEach(([part, color]) => {
       const swatch = root.querySelector(`[name="configuration[colors][${part}]"][value="${color}"]`);
       if (swatch) {
@@ -317,6 +369,7 @@ function initConfigurator(root) {
   });
   root.querySelector('[name="configuration[background]"]').addEventListener('change', refreshPreview);
   stairsToggle.addEventListener('change', refreshPreview);
+  markWindowPairs();
 
   if (root.dataset.composer !== undefined) {
     showView('3d');

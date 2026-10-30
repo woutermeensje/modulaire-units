@@ -48,7 +48,7 @@ class UnitConfiguratorTest extends TestCase
         $unit = Unit::query()->where('slug', 'kantoorunit-6x3')->sole();
         $this->assertSame('6x3', $unit->configuration['size']);
         $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $unit->configuration['walls']['front']);
-        $this->assertSame(['empty', 'window', 'empty'], $unit->configuration['walls']['left']);
+        $this->assertSame(['empty', 'window', 'window'], $unit->configuration['walls']['left'], 'A window takes the free slot next to it.');
         $this->assertSame('#0e4c92', $unit->configuration['colors']['cladding']);
         $this->assertSame('#f2f0e8', $unit->configuration['colors']['frame']);
         $this->assertSame('site', $unit->configuration['background']);
@@ -77,7 +77,7 @@ class UnitConfiguratorTest extends TestCase
             'walls' => ['front' => ['door', 'empty', 'window', 'window', 'window', 'window']],
         ]);
 
-        $this->assertSame(['door', 'empty', 'window'], $configuration['walls']['front']);
+        $this->assertSame(['door', 'window', 'window'], $configuration['walls']['front']);
         $this->assertSame(['empty', 'empty', 'empty'], $configuration['walls']['back']);
         $this->assertSame(UnitConfiguration::DEFAULT_COLORS, $configuration['colors']);
     }
@@ -112,9 +112,9 @@ class UnitConfiguratorTest extends TestCase
         $configuration = UnitConfiguration::normalize([
             'size' => '6x3',
             'walls' => [
-                'front' => ['window', 'door', 'empty', 'empty', 'empty', 'window'],
+                'front' => ['window', 'window', 'door', 'empty', 'window', 'window'],
                 'back' => ['door', 'empty', 'empty', 'empty', 'empty', 'empty'],
-                'left' => ['window', 'empty', 'empty'],
+                'left' => ['window', 'window', 'empty'],
                 'right' => ['empty', 'empty', 'empty'],
             ],
         ]);
@@ -338,13 +338,13 @@ class UnitConfiguratorTest extends TestCase
             'configuration' => [
                 'size' => '6x3',
                 'modules' => '2',
-                'walls' => ['right' => ['empty', 'window', 'empty', 'empty', 'window', 'empty']],
+                'walls' => ['right' => ['empty', 'window', 'window', 'window', 'window', 'empty']],
             ],
         ])->assertSessionHasNoErrors();
 
         $unit = Unit::query()->where('slug', 'kantoor-6x6')->sole();
         $this->assertSame(2, $unit->configuration['modules']);
-        $this->assertSame(['empty', 'window', 'empty', 'empty', 'window', 'empty'], $unit->configuration['walls']['right']);
+        $this->assertSame(['empty', 'window', 'window', 'window', 'window', 'empty'], $unit->configuration['walls']['right']);
 
         $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
             ->assertOk()
@@ -394,7 +394,7 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame(UnitConfiguration::MAX_FLOORS, UnitConfiguration::normalize(['size' => '3x3', 'floors' => 9])['floors']);
 
         $svg = (new UnitRenderer)->renderView($stacked, 'front');
-        $this->assertSame(6, substr_count($svg, 'fill="#c4def0"'));
+        $this->assertSame(3, substr_count($svg, 'fill="#c4def0"'), 'Six window slots make three windows of 1.8 m.');
         $this->assertStringContainsString('aria-label="8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)"', $svg);
     }
 
@@ -428,13 +428,13 @@ class UnitConfiguratorTest extends TestCase
                 'size' => '3x3',
                 'modules' => '2',
                 'floors' => '2',
-                'upper_walls' => ['front' => ['window', 'empty', 'window']],
+                'upper_walls' => ['front' => ['window', 'window', 'empty']],
             ],
         ])->assertSessionHasNoErrors();
 
         $unit = Unit::query()->where('slug', 'gestapeld-kantoor')->sole();
         $this->assertSame(2, $unit->configuration['floors']);
-        $this->assertSame(['window', 'empty', 'window'], $unit->configuration['upper_walls']['front']);
+        $this->assertSame(['window', 'window', 'empty'], $unit->configuration['upper_walls']['front']);
 
         $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
             ->assertOk()
@@ -446,6 +446,32 @@ class UnitConfiguratorTest extends TestCase
             'status' => 'published',
             'configuration' => ['size' => '3x3', 'floors' => 3],
         ])->assertSessionHasErrors('configuration.floors');
+    }
+
+    public function test_windows_take_two_slots_within_one_unit(): void
+    {
+        $pair = fn (array $right, int $modules = 1): array => UnitConfiguration::normalize(['size' => '3x3', 'modules' => $modules, 'walls' => ['right' => $right]])['walls']['right'];
+
+        $this->assertSame(['window', 'window', 'empty'], $pair(['window', 'empty', 'empty']));
+        $this->assertSame(['empty', 'window', 'window'], $pair(['empty', 'empty', 'window']));
+        $this->assertSame(['empty', 'door', 'empty'], $pair(['window', 'door', 'empty']), 'A window without a free neighbour is dropped.');
+        $this->assertSame(['empty', 'window', 'window', 'empty', 'empty', 'empty'], $pair(['empty', 'empty', 'window', 'empty', 'empty', 'empty'], 2), 'A window never crosses the seam between units.');
+    }
+
+    public function test_windows_and_doors_have_their_real_sizes(): void
+    {
+        $this->assertSame(['width' => 1.8, 'height' => 1.2, 'bottom' => 0.9, 'slots' => 2], UnitConfiguration::OPENING_SIZES['window']);
+        $this->assertSame(0.875, UnitConfiguration::OPENING_SIZES['door']['width']);
+        $this->assertSame(2.125, UnitConfiguration::OPENING_SIZES['door']['height']);
+        $this->assertSame(['width' => 0.811, 'height' => 2.093], UnitConfiguration::DOOR_CLEAR);
+
+        [$first, $second] = UnitConfiguration::openings(['empty', 'window', 'window', 'window', 'window', 'empty'], 6);
+        $this->assertEqualsWithDelta(['left' => 1.1, 'right' => 2.9], ['left' => $first['left'], 'right' => $first['right']], 0.001);
+        $this->assertEqualsWithDelta(['left' => 3.1, 'right' => 4.9], ['left' => $second['left'], 'right' => $second['right']], 0.001);
+
+        [$door] = UnitConfiguration::openings(['door', 'empty', 'empty'], 3);
+        $this->assertEqualsWithDelta(UnitConfiguration::POST_CLEARANCE, $door['left'], 0.001, 'A door in a corner slot keeps clear of the corner post.');
+        $this->assertEqualsWithDelta(2.275, $door['top'], 0.001);
     }
 
     public function test_only_white_anthracite_and_blue_are_available(): void
