@@ -6,7 +6,7 @@
             <h1>Pagina niet gevonden</h1>
             <p>De pagina die je zoekt bestaat niet (meer). Bekijk ons aanbod of neem contact met ons op.</p>
             <p>
-                <a class="mh-btn mh-btn--accent" href="{{ url('aanbod') }}/">Bekijk aanbod</a>
+                <a class="mh-btn mh-btn--accent" href="{{ url('modulaire-units') }}/">Bekijk aanbod</a>
                 <a class="mh-btn mh-btn--outline" href="{{ url('contact') }}/">Contact</a>
             </p>
         </div>

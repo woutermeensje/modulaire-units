@@ -225,7 +225,7 @@ class PublicSiteTest extends TestCase
     {
         Redirect::factory()->create(['from_path' => '/winkelwagen', 'to_path' => '/mijn-offerte/']);
 
-        $this->get('/winkelwagen/')->assertRedirect('/mijn-offerte/');
+        $this->get('/winkelwagen/')->assertRedirect(url('mijn-offerte').'/');
     }
 
     public function test_old_wordpress_upload_urls_redirect_to_storage(): void
@@ -279,10 +279,80 @@ class PublicSiteTest extends TestCase
 
         $this->assertSame('<div class="elementor">'.$about.'</div>', $home->refresh()->content);
         $this->assertSame('<div class="elementor"></div>', $offer->refresh()->content);
-        $this->get('/aanbod/')->assertRedirect('/modulaire-units/');
+        $this->get('/aanbod/')->assertRedirect(url('modulaire-units').'/');
 
         $migration->down();
 
+        $this->assertDatabaseEmpty('redirects');
+    }
+
+    public function test_redirects_keep_the_trailing_slash_so_there_is_no_second_redirect(): void
+    {
+        Redirect::factory()->create(['from_path' => '/aanbod', 'to_path' => '/modulaire-units/']);
+
+        $this->get('/aanbod/')->assertStatus(301)->assertHeader('Location', url('modulaire-units').'/');
+    }
+
+    public function test_pages_without_meta_description_fall_back_to_their_content(): void
+    {
+        Page::factory()->create([
+            'slug' => 'werkwijze',
+            'excerpt' => null,
+            'meta_description' => null,
+            'content' => '[work_steps]<h2>Onze werkwijze</h2><p>'.str_repeat('Wij plaatsen modulaire units door heel Nederland. ', 6).'</p>',
+        ]);
+
+        $response = $this->get('/werkwijze/')->assertOk();
+
+        preg_match('/<meta name="description" content="([^"]*)">/', $response->getContent(), $match);
+        $this->assertStringStartsWith('Onze werkwijze Wij plaatsen modulaire units', html_entity_decode($match[1]));
+        $this->assertLessThanOrEqual(160, mb_strlen(html_entity_decode($match[1])));
+        $this->assertStringEndsWith('…', html_entity_decode($match[1]));
+    }
+
+    public function test_unit_taxonomy_archives_have_a_title_and_description(): void
+    {
+        $unit = Unit::factory()->create();
+        $term = UnitTerm::factory()->create(['taxonomy' => UnitTerm::CONDITION, 'slug' => 'nieuw', 'name' => 'Nieuw', 'description' => null]);
+        $unit->terms()->attach($term);
+
+        $this->get('/conditie/nieuw/')
+            ->assertOk()
+            ->assertSee('<title>Nieuw - Modulaire units - ', false)
+            ->assertSee('<meta name="description" content="Bekijk alle modulaire units in de categorie Nieuw', false)
+            ->assertDontSee('Archieven');
+    }
+
+    public function test_unit_composer_has_a_canonical_url_and_is_in_the_sitemap(): void
+    {
+        $this->get('/unit-samensteller/?c=abc')->assertOk()->assertSee('<link rel="canonical" href="'.url('unit-samensteller').'/">', false);
+        $this->get('/sitemap.xml')->assertOk()->assertSee('<loc>'.url('unit-samensteller').'/</loc>', false);
+    }
+
+    public function test_seo_migration_fills_missing_meta_and_repairs_broken_links(): void
+    {
+        $rent = Page::factory()->create(['slug' => 'huren', 'title' => 'Huren']);
+        Page::factory()->create(['slug' => 'containers', 'parent_id' => $rent->id]);
+        $flexUnits = Page::factory()->create(['slug' => 'flex-units', 'parent_id' => $rent->id, 'meta_title' => 'Flex units', 'meta_description' => 'Met de schakelbare Flex-unit creëert u eenvoudig schaft-, kantoor-, sanitair- of vergaderruimte tot drie verdiepingen hoog.']);
+        $contact = Page::factory()->create(['slug' => 'contact', 'meta_description' => 'Eigen tekst uit het CMS']);
+        $storage = Page::factory()->create(['slug' => 'tijdelijke-opslag', 'content' => '<p>Bekijk onze <a href="/containers-huren/">containers</a>.</p>']);
+        $post = Post::factory()->create(['content' => '<p><a href="/koop/">kopen</a> of <a href="/huur/">huren</a></p>']);
+        $migration = require database_path('migrations/2026_10_30_111744_fill_missing_seo_meta_and_fix_broken_content_links.php');
+
+        $migration->up();
+        $migration->up();
+
+        $this->assertSame('Flex units huren - ModulaireHuisvesting.nl', $flexUnits->refresh()->meta_title);
+        $this->assertStringStartsWith('Flex units huren?', $flexUnits->meta_description);
+        $this->assertSame('Eigen tekst uit het CMS', $contact->refresh()->meta_description);
+        $this->assertSame('<p>Bekijk onze <a href="/huren/containers/">containers</a>.</p>', $storage->refresh()->content);
+        $this->assertSame('<p><a href="/kopen/">kopen</a> of <a href="/huren/">huren</a></p>', $post->refresh()->content);
+        $this->get('/containers-huren/')->assertStatus(301)->assertHeader('Location', url('huren/containers').'/');
+
+        $migration->down();
+
+        $this->assertSame('Flex units', $flexUnits->refresh()->meta_title);
+        $this->assertStringStartsWith('Met de schakelbare Flex-unit', $flexUnits->meta_description);
         $this->assertDatabaseEmpty('redirects');
     }
 

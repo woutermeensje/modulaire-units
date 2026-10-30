@@ -32,7 +32,7 @@ class BlogController extends Controller
             $category->posts()->getQuery(),
             (int) request('page', 1),
             $category->name,
-            Seo::make($category->name, $category->description, $category->url()),
+            Seo::make($category->name, $category->description ?: "Alle blogartikelen in de categorie {$category->name}: tips, regels en achtergronden over modulaire units en tijdelijke huisvesting.", $category->url()),
             'category/'.$category->slug,
         );
     }
@@ -45,7 +45,7 @@ class BlogController extends Controller
             $author->posts()->getQuery(),
             (int) request('page', 1),
             $author->name,
-            Seo::make($author->name.', auteur', $author->bio, $author->url()),
+            Seo::make($author->name.', auteur', $author->bio ?: "Lees alle blogartikelen van {$author->name} over modulaire units, tijdelijke huisvesting en de regels die daarbij horen.", $author->url()),
             'author/'.$author->slug,
         );
     }

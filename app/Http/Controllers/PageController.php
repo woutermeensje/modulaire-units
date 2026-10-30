@@ -39,7 +39,7 @@ class PageController extends Controller
         if ($redirect = $this->findRedirect($path)) {
             $redirect->increment('hits');
 
-            return redirect($redirect->to_path, $redirect->status_code);
+            return redirect($this->redirectTarget($request, $redirect), $redirect->status_code);
         }
 
         $page = Page::query()->where('path', $path)->first();
@@ -62,10 +62,12 @@ class PageController extends Controller
     private function renderPage(Page $page, Request $request): View
     {
         if (OfferLanding::appliesTo($page)) {
+            $landing = app(OfferLanding::class)->build($page);
+
             return view('pages.offer', [
                 'page' => $page,
-                'landing' => app(OfferLanding::class)->build($page),
-                'seo' => Seo::for($page, $page->excerpt),
+                'landing' => $landing,
+                'seo' => Seo::for($page, $page->excerpt ?: $landing['body']),
                 'composer' => $this->composer($request),
             ]);
         }
@@ -109,6 +111,18 @@ class PageController extends Controller
         return [
             'configuration' => UnitConfiguration::fromShareCode((string) $request->query(UnitConfiguration::SHARE_KEY, '')),
         ];
+    }
+
+    /**
+     * Absolute target URL: the URL generator would strip the trailing slash, causing a second redirect.
+     */
+    private function redirectTarget(Request $request, Redirect $redirect): string
+    {
+        if (str_starts_with($redirect->to_path, 'http://') || str_starts_with($redirect->to_path, 'https://')) {
+            return $redirect->to_path;
+        }
+
+        return $request->getSchemeAndHttpHost().$request->getBaseUrl().'/'.ltrim($redirect->to_path, '/');
     }
 
     private function findRedirect(string $path): ?Redirect

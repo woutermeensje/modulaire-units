@@ -163,10 +163,10 @@ class SiteContentTransferTest extends TestCase
         $this->artisan('site:import')->assertSuccessful();
 
         $this->get('/')->assertOk()->assertSee('menu-hoofdmenu', false)->assertSee('Huren');
-        $this->get('/aanbod/')->assertRedirect('/modulaire-units/');
+        $this->get('/aanbod/')->assertRedirect(url('modulaire-units').'/');
         $this->get('/kopen/')->assertOk()->assertSee('data-composer', false);
         $this->assertDatabaseCount('pages', 54);
-        $this->assertDatabaseCount('menu_items', 53);
+        $this->assertDatabaseCount('menu_items', 54);
         $this->assertDatabaseCount('units', 3);
         Http::assertNothingSent();
     }

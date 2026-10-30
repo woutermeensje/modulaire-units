@@ -17,7 +17,7 @@
                             </div>
                             <h3>Bedankt voor je aanvraag!</h3>
                             <p>{{ session('quote_success') }}</p>
-                            <a href="{{ url('aanbod') }}/">Bekijk onze units</a>
+                            <a href="{{ url('modulaire-units') }}/">Bekijk onze units</a>
                         </div>
                     </div>
                 @elseif ($items->isEmpty())
@@ -27,7 +27,7 @@
                         </div>
                         <h3>Je offerte is leeg</h3>
                         <p>Voeg units toe via de unitpagina's.</p>
-                        <a href="{{ url('aanbod') }}/">Bekijk onze units</a>
+                        <a href="{{ url('modulaire-units') }}/">Bekijk onze units</a>
                     </div>
                 @else
                     <form method="post" action="{{ route('quote.update') }}">
@@ -80,7 +80,7 @@
                             <div class="mh-qp__card-footer">
                                 <div class="mh-qp__footer-left">
                                     <button type="submit" class="mh-qp__btn mh-qp__btn--outline">Aantallen bijwerken</button>
-                                    <a href="{{ url('aanbod') }}/" class="mh-qp__btn mh-qp__btn--outline">+ Meer units toevoegen</a>
+                                    <a href="{{ url('modulaire-units') }}/" class="mh-qp__btn mh-qp__btn--outline">+ Meer units toevoegen</a>
                                 </div>
                             </div>
                         </div>

@@ -32,7 +32,11 @@ class UnitController extends Controller
         return view('units.index', [
             'units' => $term->units()->published()->with('terms')->orderBy('sort')->latest('published_at')->get(),
             'archiveTitle' => $term->name,
-            'seo' => Seo::make($term->name.' Archieven', $term->description, $term->url()),
+            'seo' => Seo::make(
+                $term->name.' - Modulaire units',
+                $term->description ?: "Bekijk alle modulaire units in de categorie {$term->name} van ModulaireHuisvesting.nl en vraag vrijblijvend informatie of een offerte aan.",
+                $term->url(),
+            ),
         ]);
     }
 
@@ -53,7 +57,7 @@ class UnitController extends Controller
             'content' => app(ShortcodeRenderer::class)->render($unit->content),
             'relatedUnits' => $relatedUnits,
             'viewer' => $this->viewer($unit),
-            'seo' => Seo::for($unit, $unit->summary(30)),
+            'seo' => Seo::for($unit, $unit->summary(30) ?: "Bekijk de {$unit->title} van ModulaireHuisvesting.nl: kopen of huren, met transport en plaatsing. Vraag vrijblijvend informatie aan."),
         ]);
     }
 

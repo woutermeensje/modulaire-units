@@ -17,7 +17,7 @@ class ProductController extends Controller
 
         return view('products.index', [
             'products' => Product::query()->published()->orderBy('sort')->orderBy('title')->get(),
-            'seo' => $shopPage ? Seo::for($shopPage) : Seo::make('Winkel', null, route('products.index', [], false)),
+            'seo' => $shopPage ? Seo::for($shopPage) : Seo::make('Winkel', 'Bekijk de containers en modulaire units in de winkel van ModulaireHuisvesting.nl en vraag direct een vrijblijvende offerte aan.', route('products.index', [], false)),
         ]);
     }
 
@@ -31,7 +31,7 @@ class ProductController extends Controller
             'product' => $product,
             'content' => app(ShortcodeRenderer::class)->render($product->content),
             'relatedProducts' => Product::query()->published()->whereKeyNot($product->id)->inRandomOrder()->limit(4)->get(),
-            'seo' => Seo::for($product, $product->short_description ?: $product->content),
+            'seo' => Seo::for($product, $product->short_description ?: $product->content ?: "Bekijk de {$product->title} van ModulaireHuisvesting.nl en vraag direct een vrijblijvende offerte aan."),
         ]);
     }
 }

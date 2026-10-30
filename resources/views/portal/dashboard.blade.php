@@ -31,7 +31,7 @@
                 <p class="sales-card__meta">Kopen, huren & gebruikt</p>
                 <h2 class="sales-card__title">Aanbod bekijken</h2>
                 <p class="sales-card__text">Bekijk alle modulaire units: kantoorunits, woonunits, sanitaire units, containers en meer.</p>
-                <a class="sales-card__link" href="{{ url('aanbod') }}/">
+                <a class="sales-card__link" href="{{ url('modulaire-units') }}/">
                     <span>Naar het aanbod</span>
                     <i class="ph ph-arrow-right"></i>
                 </a>

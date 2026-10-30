@@ -35,6 +35,7 @@ class SitemapController extends Controller
             ->each(fn (Post $post) => $urls->push($this->entry($post->url(), $post->updated_at)));
 
         $urls->push($this->entry(SiteUrl::path(route('units.index', [], false)), Unit::query()->max('updated_at')));
+        $urls->push($this->entry(SiteUrl::path(route('unit-composer.public', [], false)), null));
         Unit::query()->published()->where('noindex', false)->get()
             ->each(fn (Unit $unit) => $urls->push($this->entry($unit->url(), $unit->updated_at)));
 
