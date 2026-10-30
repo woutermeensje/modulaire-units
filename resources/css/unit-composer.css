@@ -122,6 +122,46 @@
   line-height: 1.2;
 }
 
+/*
+ * The website theme gives every <button> a pink background on hover and focus (01-reset.css). A clicked slot keeps
+ * focus, so without these rules a chosen window or door would turn pink instead of showing its own colour.
+ */
+.unit-composer .unit-slot:is(:hover, :focus) {
+  background: var(--color-bg-white);
+  color: var(--color-text-muted);
+}
+
+.unit-composer .unit-slot--window:is(:hover, :focus) {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+.unit-composer .unit-slot--door:is(:hover, :focus) {
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary-strong);
+}
+
+.unit-composer .unit-configurator__view:is(:hover, :focus) {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.unit-composer .unit-configurator__view.is-active:is(:hover, :focus) {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+.unit-composer .btn:is(:hover, :focus) {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.unit-composer button:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 @media (max-width: 640px) {
   .unit-composer__title {
     margin-top: 24px;
