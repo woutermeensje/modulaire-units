@@ -176,27 +176,29 @@
     </div>
 
     <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
-        @if ($quoteUrl ?? null)
-            {{-- Shown right away, so the starting unit can be asked for as it is. --}}
-            <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}">
-                <a href="{{ route('quote.show') }}/" class="unit-configurator__quote-link" data-configurator-quote-link hidden>Bekijk offerte</a>
-                <button type="button" class="unit-configurator__quote-button" data-configurator-quote-add>
-                    <i class="ph ph-shopping-bag"></i> <span>Toevoegen aan offerte</span>
+        <div class="unit-configurator__stage">
+            @if ($quoteUrl ?? null)
+                {{-- Shown right away, so the starting unit can be asked for as it is. --}}
+                <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}">
+                    <a href="{{ route('quote.show') }}/" class="unit-configurator__quote-link" data-configurator-quote-link hidden>Bekijk offerte</a>
+                    <button type="button" class="unit-configurator__quote-button" data-configurator-quote-add>
+                        <i class="ph ph-shopping-bag"></i> <span>Toevoegen aan offerte</span>
+                    </button>
+                </div>
+            @endif
+            <div class="unit-configurator__views">
+                <button type="button" @class(['unit-configurator__view', 'is-active' => ! $composer]) data-configurator-view="2d" aria-pressed="{{ $composer ? 'false' : 'true' }}">
+                    <i class="ph ph-ruler"></i> Plattegrond
+                </button>
+                <button type="button" @class(['unit-configurator__view', 'is-active' => $composer]) data-configurator-view="3d" aria-pressed="{{ $composer ? 'true' : 'false' }}">
+                    <i class="ph ph-cube"></i> 3D (prototype)
                 </button>
             </div>
-        @endif
-        <div class="unit-configurator__views">
-            <button type="button" @class(['unit-configurator__view', 'is-active' => ! $composer]) data-configurator-view="2d" aria-pressed="{{ $composer ? 'false' : 'true' }}">
-                <i class="ph ph-ruler"></i> Plattegrond
-            </button>
-            <button type="button" @class(['unit-configurator__view', 'is-active' => $composer]) data-configurator-view="3d" aria-pressed="{{ $composer ? 'true' : 'false' }}">
-                <i class="ph ph-cube"></i> 3D (prototype)
-            </button>
+            <div class="unit-configurator__preview" data-configurator-preview @if ($composer) hidden @endif>
+                {!! app(FloorPlanRenderer::class)->render($configuration) !!}
+            </div>
+            <div class="unit-configurator__viewer" data-configurator-viewer @unless ($composer) hidden @endunless></div>
         </div>
-        <div class="unit-configurator__preview" data-configurator-preview @if ($composer) hidden @endif>
-            {!! app(FloorPlanRenderer::class)->render($configuration) !!}
-        </div>
-        <div class="unit-configurator__viewer" data-configurator-viewer @unless ($composer) hidden @endunless></div>
         <p class="portal-help" data-configurator-viewer-help @unless ($composer) hidden @endunless>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>
         @if ($composer)
             <div class="unit-configurator__share">

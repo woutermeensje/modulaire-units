@@ -120,9 +120,58 @@ body main.site-main.unit-composer {
     top: auto;
   }
 
+  /*
+   * Stacked, the panel dissolves into the configurator grid so the share link can follow the settings: view, help
+   * text, settings, share link.
+   */
+  .unit-composer .unit-configurator__preview-panel:not([hidden]) {
+    display: contents;
+  }
+
+  .unit-composer .unit-configurator__stage {
+    order: 1;
+  }
+
+  .unit-composer .unit-configurator__preview-panel > .portal-help {
+    order: 2;
+  }
+
   .unit-composer .unit-configurator__controls {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: auto;
+    order: 3;
+  }
+
+  .unit-composer .unit-configurator__share {
+    order: 4;
+  }
+}
+
+/* On a phone the switch and the quote button do not fit next to each other on the view: the button goes below it. */
+@media (max-width: 640px) {
+  .unit-composer .unit-configurator__quote {
+    position: static;
+    order: 1;
+  }
+
+  .unit-composer .unit-configurator__quote-button,
+  .unit-composer .unit-configurator__quote-link {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .unit-composer .unit-configurator__views {
+    top: 8px;
+    left: 8px;
+  }
+
+  .unit-composer .unit-configurator__view {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .unit-composer .unit-configurator__share .btn {
+    flex: none;
   }
 }
 

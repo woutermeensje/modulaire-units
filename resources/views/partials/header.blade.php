@@ -2,6 +2,10 @@
     $mainMenu = \App\Models\MenuItem::tree('main');
     $currentPath = request()->path();
     $quoteCount = app(\App\Services\QuoteCart::class)->count();
+    // Once something is in the quote, the main call to action leads there instead of to the information form.
+    [$ctaUrl, $ctaLabel] = $quoteCount > 0
+        ? [route('quote.show').'/', 'Mijn offerte']
+        : [url('offerte-aanvragen').'/', 'Informatie aanvragen'];
 @endphp
 <header id="mh-header" class="mh-header" role="banner">
     <div class="mh-header__inner">
@@ -36,7 +40,7 @@
             @else
                 <a href="{{ route('login') }}" class="mh-header__login">Inloggen</a>
             @endauth
-            <a href="{{ url('offerte-aanvragen') }}/" class="mh-btn mh-btn--solid mh-btn--nav-contact">Informatie aanvragen</a>
+            <a href="{{ $ctaUrl }}" class="mh-btn mh-btn--solid mh-btn--nav-contact" data-quote-cta>{{ $ctaLabel }}</a>
         </div>
 
         <a href="{{ route('quote.show') }}/" class="mh-header__quote-icon mh-header__quote-icon--always" aria-label="Mijn offerte">
@@ -80,18 +84,17 @@
         </ul>
         <div class="mh-mobile-nav__divider"></div>
         <div class="mh-mobile-nav__ctas">
-            <a href="{{ route('quote.show') }}/" class="mh-btn mh-btn--outline mh-btn--has-badge mh-btn--nav-quote mh-mobile-nav__cta">
-                <span>Mijn offerte</span>
-                @if ($quoteCount > 0)
-                    <span class="mh-nav-badge">{{ $quoteCount }}</span>
-                @endif
-            </a>
+            @if ($quoteCount === 0)
+                <a href="{{ route('quote.show') }}/" class="mh-btn mh-btn--outline mh-btn--has-badge mh-btn--nav-quote mh-mobile-nav__cta">
+                    <span>Mijn offerte</span>
+                </a>
+            @endif
             @auth
                 <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">Inloggen</a>
             @endauth
-            <a href="{{ url('offerte-aanvragen') }}/" class="mh-btn mh-btn--solid mh-btn--nav-contact mh-mobile-nav__cta">Informatie aanvragen</a>
+            <a href="{{ $ctaUrl }}" class="mh-btn mh-btn--solid mh-btn--nav-contact mh-mobile-nav__cta" data-quote-cta>{{ $ctaLabel }}</a>
         </div>
     </div>
 </div>

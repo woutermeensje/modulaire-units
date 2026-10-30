@@ -136,17 +136,22 @@ function initConfigurator(root) {
     quoteLabel.textContent = 'Toevoegen aan offerte';
   };
 
-  const showQuoteCount = (count) => {
-    [['.mh-header__quote-icon', 'mh-header__quote-badge'], ['.mh-btn--nav-quote', 'mh-nav-badge']].forEach(([selector, badgeClass]) => {
-      document.querySelectorAll(selector).forEach((link) => {
-        let badge = link.querySelector(`.${badgeClass}`);
-        if (!badge) {
-          badge = document.createElement('span');
-          badge.className = badgeClass;
-          link.append(badge);
-        }
-        badge.textContent = count;
-      });
+  // Mirrors partials/header.blade.php: with items in the quote, the main call to action becomes "Mijn offerte".
+  const showQuoteCount = (count, quoteUrl) => {
+    document.querySelectorAll('[data-quote-cta]').forEach((cta) => {
+      cta.href = quoteUrl;
+      cta.textContent = 'Mijn offerte';
+    });
+    document.querySelectorAll('.mh-mobile-nav .mh-btn--nav-quote').forEach((link) => link.remove());
+
+    document.querySelectorAll('.mh-header__quote-icon').forEach((link) => {
+      let badge = link.querySelector('.mh-header__quote-badge');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'mh-header__quote-badge';
+        link.append(badge);
+      }
+      badge.textContent = count;
     });
   };
 
@@ -168,7 +173,7 @@ function initConfigurator(root) {
       const data = await response.json();
       quoteLabel.textContent = 'Toegevoegd aan offerte';
       quote.querySelector('[data-configurator-quote-link]').hidden = false;
-      showQuoteCount(data.count);
+      showQuoteCount(data.count, data.quote_url);
     } catch {
       quoteLabel.textContent = 'Mislukt, probeer opnieuw';
       quoteButton.disabled = false;

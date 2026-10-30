@@ -40,6 +40,22 @@ class QuoteFlowTest extends TestCase
         $this->get('/mijn-offerte/')->assertSee('Je offerte is leeg');
     }
 
+    public function test_header_call_to_action_leads_to_the_quote_once_it_has_items(): void
+    {
+        $unit = Unit::factory()->create();
+
+        $this->get('/mijn-offerte/')
+            ->assertSee('data-quote-cta>Informatie aanvragen</a>', false)
+            ->assertDontSee('data-quote-cta>Mijn offerte</a>', false);
+
+        $this->post(route('quote.add'), ['type' => 'unit', 'id' => $unit->id]);
+
+        $this->get('/mijn-offerte/')
+            ->assertSee('href="'.route('quote.show').'/" class="mh-btn mh-btn--solid mh-btn--nav-contact" data-quote-cta>Mijn offerte</a>', false)
+            ->assertDontSee('data-quote-cta>Informatie aanvragen</a>', false)
+            ->assertDontSee('mh-btn--nav-quote', false);
+    }
+
     public function test_quantities_can_be_updated_and_items_removed(): void
     {
         $unit = Unit::factory()->create();
@@ -77,7 +93,9 @@ class QuoteFlowTest extends TestCase
             ->assertSee('Eigen samenstelling: 2 gekoppelde units van 6 x 3 meter (6 x 6 meter)')
             ->assertSee('1 raam, 1 deur')
             ->assertSee('value="2"', false)
-            ->assertSee('samenstelling='.$share, false);
+            ->assertSee('samenstelling='.$share, false)
+            ->assertSee('class="mh-qp__thumb mh-qp__thumb--composition"', false)
+            ->assertSee('src="data:image/svg+xml;base64,', false);
 
         $this->post(route('quote.submit'), ['first_name' => 'Jan', 'last_name' => 'Jansen', 'email' => 'jan@example.com'])
             ->assertRedirect(route('quote.show'));

@@ -344,6 +344,13 @@
   gap: 10px;
 }
 
+/* The view with its switch and quote button on top; those are placed against this box. */
+.unit-configurator__stage {
+  position: relative;
+  display: grid;
+  gap: 10px;
+}
+
 /* "Toevoegen aan offerte" in the top right corner of the view. */
 .unit-configurator__quote {
   position: absolute;

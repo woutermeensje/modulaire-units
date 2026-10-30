@@ -43,8 +43,7 @@
                                         $model = $item['model'];
                                         $isComposition = $model instanceof \App\Support\ComposedUnit;
                                         $title = $isComposition ? $model->title() : $model->title;
-                                        $thumb = $isComposition ? null : \App\Support\SiteUrl::media(\App\Models\Media::variant($model->featured_image, 'thumbnail'));
-                                        $categories = match (true) {
+                                        $thumb = $isComposition ? $model->image() : \App\Support\SiteUrl::media(\App\Models\Media::variant($model->featured_image, 'thumbnail'));                                        $categories = match (true) {
                                             $isComposition => $model->summary(),
                                             $item['type'] === 'unit' => collect([$model->offerLabel(), $model->termsFor(\App\Models\UnitTerm::CONDITION)->first()?->name])->filter()->implode(' • '),
                                             default => 'Product',
@@ -52,11 +51,9 @@
                                     @endphp
                                     <div class="mh-qp__product-row">
                                         @if ($thumb)
-                                            <img width="64" height="64" src="{{ $thumb }}" class="mh-qp__thumb" alt="{{ $model->featured_image_alt ?: $title }}">
-                                        @elseif ($isComposition)
-                                            <span class="mh-qp__thumb-placeholder mh-qp__thumb-placeholder--composition" aria-hidden="true">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                                            </span>
+                                            <img width="64" height="64" src="{{ $thumb }}" class="mh-qp__thumb{{ $isComposition ? ' mh-qp__thumb--composition' : '' }}" alt="" loading="lazy" decoding="async">
+                                        @else
+                                            <span class="mh-qp__thumb-placeholder" aria-hidden="true"></span>
                                         @endif
                                         <div class="mh-qp__product-info">
                                             <a href="{{ $model->url() }}" class="mh-qp__product-name">{{ $title }}</a>
@@ -89,7 +86,7 @@
                         </div>
                     </form>
 
-                    <form method="post" action="{{ route('quote.submit') }}">
+                    <form class="mh-form mh-qp__form" method="post" action="{{ route('quote.submit') }}">
                         @csrf
                         <div class="mh-form__honeypot" aria-hidden="true">
                             <label for="mh_website">Website</label>
@@ -99,36 +96,38 @@
                             <div class="mh-qp__card-header">
                                 <h2 class="mh-qp__card-title">Jouw gegevens</h2>
                             </div>
-                            <div class="mh-qp__fields">
-                                <div class="mh-qp__field">
-                                    <label class="mh-qp__label" for="mh_firstname">Voornaam <abbr title="verplicht">*</abbr></label>
-                                    <input class="mh-qp__input" type="text" id="mh_firstname" name="first_name" value="{{ old('first_name') }}" required placeholder="Voornaam" autocomplete="given-name">
-                                    @error('first_name')<span class="mh-form__error">{{ $message }}</span>@enderror
+                            <div class="mh-qp__card-body mh-qp__card-body--form">
+                                <div class="mh-form__grid mh-form__grid--2">
+                                    <div class="mh-form__field">
+                                        <label class="mh-form__label" for="mh_firstname">Voornaam <span class="mh-form__req">*</span></label>
+                                        <input class="mh-form__input" type="text" id="mh_firstname" name="first_name" value="{{ old('first_name') }}" required placeholder="Voornaam" autocomplete="given-name">
+                                        @error('first_name')<span class="mh-form__error">{{ $message }}</span>@enderror
+                                    </div>
+                                    <div class="mh-form__field">
+                                        <label class="mh-form__label" for="mh_lastname">Achternaam <span class="mh-form__req">*</span></label>
+                                        <input class="mh-form__input" type="text" id="mh_lastname" name="last_name" value="{{ old('last_name') }}" required placeholder="Achternaam" autocomplete="family-name">
+                                        @error('last_name')<span class="mh-form__error">{{ $message }}</span>@enderror
+                                    </div>
+                                    <div class="mh-form__field">
+                                        <label class="mh-form__label" for="mh_email">E-mailadres <span class="mh-form__req">*</span></label>
+                                        <input class="mh-form__input" type="email" id="mh_email" name="email" value="{{ old('email') }}" required placeholder="naam@bedrijf.nl" autocomplete="email">
+                                        @error('email')<span class="mh-form__error">{{ $message }}</span>@enderror
+                                    </div>
+                                    <div class="mh-form__field">
+                                        <label class="mh-form__label" for="mh_phone">Telefoonnummer <span class="mh-form__opt">(optioneel)</span></label>
+                                        <input class="mh-form__input" type="tel" id="mh_phone" name="phone" value="{{ old('phone') }}" placeholder="06 – 12 34 56 78" autocomplete="tel">
+                                        @error('phone')<span class="mh-form__error">{{ $message }}</span>@enderror
+                                    </div>
+                                    <div class="mh-form__field mh-form__field--full">
+                                        <label class="mh-form__label" for="mh_message">Opmerkingen of vragen <span class="mh-form__opt">(optioneel)</span></label>
+                                        <textarea class="mh-form__input" id="mh_message" name="message" rows="5" placeholder="Bijv. leveringsadres, gewenste datum of specifieke wensen...">{{ old('message') }}</textarea>
+                                        @error('message')<span class="mh-form__error">{{ $message }}</span>@enderror
+                                    </div>
                                 </div>
-                                <div class="mh-qp__field">
-                                    <label class="mh-qp__label" for="mh_lastname">Achternaam <abbr title="verplicht">*</abbr></label>
-                                    <input class="mh-qp__input" type="text" id="mh_lastname" name="last_name" value="{{ old('last_name') }}" required placeholder="Achternaam" autocomplete="family-name">
-                                    @error('last_name')<span class="mh-form__error">{{ $message }}</span>@enderror
+                                <div class="mh-form__footer">
+                                    <button type="submit" class="mh-form__submit">Offerte aanvragen</button>
+                                    <p class="mh-form__footer-note">Je gegevens worden uitsluitend gebruikt voor het verwerken van je offerte aanvraag.</p>
                                 </div>
-                                <div class="mh-qp__field">
-                                    <label class="mh-qp__label" for="mh_email">E-mailadres <abbr title="verplicht">*</abbr></label>
-                                    <input class="mh-qp__input" type="email" id="mh_email" name="email" value="{{ old('email') }}" required placeholder="naam@bedrijf.nl" autocomplete="email">
-                                    @error('email')<span class="mh-form__error">{{ $message }}</span>@enderror
-                                </div>
-                                <div class="mh-qp__field">
-                                    <label class="mh-qp__label" for="mh_phone">Telefoonnummer</label>
-                                    <input class="mh-qp__input" type="tel" id="mh_phone" name="phone" value="{{ old('phone') }}" placeholder="06 – 12 34 56 78" autocomplete="tel">
-                                    @error('phone')<span class="mh-form__error">{{ $message }}</span>@enderror
-                                </div>
-                                <div class="mh-qp__field mh-qp__field--full">
-                                    <label class="mh-qp__label" for="mh_message">Opmerkingen of vragen</label>
-                                    <textarea class="mh-qp__textarea" id="mh_message" name="message" placeholder="Bijv. leveringsadres, gewenste datum of specifieke wensen...">{{ old('message') }}</textarea>
-                                    @error('message')<span class="mh-form__error">{{ $message }}</span>@enderror
-                                </div>
-                            </div>
-                            <div class="mh-qp__form-footer">
-                                <p class="mh-qp__disclaimer">Je gegevens worden uitsluitend gebruikt voor het verwerken van je offerte aanvraag.</p>
-                                <button type="submit" class="mh-qp__btn mh-qp__btn--primary mh-qp__btn--submit">Offerte aanvragen</button>
                             </div>
                         </div>
                     </form>

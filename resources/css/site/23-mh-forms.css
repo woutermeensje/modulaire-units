@@ -193,6 +193,304 @@
 .mh-form-notice strong { display: block; font-weight: 700; margin-bottom: 4px; }
 .mh-form-notice p { margin: 0; font-weight: 400; }
 
+/* ── Offertepagina (/mijn-offerte/) ──────────────────────────
+   Het gegevensformulier gebruikt de .mh-form-velden hierboven;
+   hieronder alleen de kaarten en de productlijst eromheen.
+──────────────────────────────────────────────────────────── */
+.mh-qp,
+.mh-qp *,
+.mh-qp *::before,
+.mh-qp *::after { box-sizing: border-box; }
+
+.mh-qp {
+    max-width: 860px;
+    margin: 0 auto;
+    font-family:var(--font-text);
+    color: var(--color-text, #333);
+}
+.mh-qp .mh-qp__form { max-width: none; }
+
+/* Lege staat en bevestiging */
+.mh-qp__empty {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--color-text-soft, #333);
+}
+.mh-qp__empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: var(--color-bg, #FBFAF8);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    color: var(--color-primary-text, #2B6E8F);
+}
+.mh-qp__empty h3 {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text, #333);
+    margin: 0 0 6px;
+}
+.mh-qp__empty p { margin: 0 0 20px; font-size: var(--text-sm); }
+.mh-qp__empty a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 24px;
+    background: var(--color-primary, #2B6E8F);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: background-color .15s ease;
+}
+.mh-qp__empty a:hover,
+.mh-qp__empty a:focus {
+    background: var(--color-secondary, #2B6E8F);
+    color: #fff;
+}
+
+/* Kaarten */
+.mh-qp__card {
+    background: #fff;
+    border: 1px solid var(--color-border, #dedede);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+.mh-qp__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--color-border, #dedede);
+    background: #fafaf9;
+}
+.mh-qp__card-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text, #333);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+}
+.mh-qp__item-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    background: var(--color-primary, #2B6E8F);
+    color: #fff;
+    border-radius: 999px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+}
+.mh-qp__card-body { padding: 0; }
+.mh-qp__card-body--form { padding: 24px; }
+
+/* Productrijen */
+.mh-qp__product-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--color-border, #dedede);
+    transition: background-color .1s ease;
+}
+.mh-qp__product-row:last-child { border-bottom: none; }
+.mh-qp__product-row:hover { background: #fafaf9; }
+
+.mh-qp__thumb,
+.mh-qp__thumb-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border, #dedede);
+    flex-shrink: 0;
+}
+.mh-qp__thumb {
+    object-fit: cover;
+    display: block;
+}
+.mh-qp__thumb-placeholder { background: #f5f5f5; }
+/* Een samenstelling uit de unit samensteller is een tekening in 3:2: helemaal tonen in plaats van bijsnijden. */
+.mh-qp__thumb--composition {
+    width: 96px;
+    object-fit: contain;
+    background: #f3f3f1;
+}
+
+.mh-qp__product-info {
+    flex: 1 1 0;
+    min-width: 0;
+}
+/* .mh-qp vooraan: wint van ".page-content a { text-decoration: underline }" uit het basisthema. */
+.mh-qp .mh-qp__product-name {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-text, #333);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    margin-bottom: 2px;
+}
+.mh-qp .mh-qp__product-name:hover,
+.mh-qp .mh-qp__product-name:focus-visible {
+    color: var(--color-primary-text, #2B6E8F);
+    text-decoration: underline;
+}
+.mh-qp__product-cat {
+    font-size: var(--text-xs);
+    color: #999;
+}
+
+.mh-qp__product-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Aantal-stepper */
+.mh-qp__stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border, #dedede);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    height: 38px;
+    flex-shrink: 0;
+}
+.mh-qp__qty-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 100%;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: #555;
+    cursor: pointer;
+    box-shadow: none;
+    flex-shrink: 0;
+    transition: background-color .15s ease, color .15s ease;
+}
+.mh-qp__qty-btn:hover,
+.mh-qp__qty-btn:focus {
+    background: var(--color-bg, #FBFAF8);
+    color: var(--color-primary-text, #2B6E8F);
+    outline: none;
+}
+.mh-qp__qty-btn svg { display: block; pointer-events: none; }
+/* .mh-qp__stepper vooraan: wint van de input[type=number]-regel uit 01-reset.css (breedte 100%, rand, padding). */
+.mh-qp__stepper .mh-qp__qty-input {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+    width: 42px;
+    height: 100%;
+    border: 0;
+    border-left: 1px solid var(--color-border, #dedede);
+    border-right: 1px solid var(--color-border, #dedede);
+    padding: 0;
+    font-family:var(--font-text);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text, #333);
+    background: #fff;
+    text-align: center;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    transition: none;
+}
+.mh-qp__stepper .mh-qp__qty-input:focus-visible {
+    background: var(--color-bg, #FBFAF8);
+    box-shadow: inset 0 0 0 2px var(--color-focus-ring, rgba(43, 110, 143, 0.22));
+}
+.mh-qp__qty-input::-webkit-inner-spin-button,
+.mh-qp__qty-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* Verwijderknop */
+.mh-qp__remove-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 34px;
+    padding: 0 12px;
+    background: #fff5f5;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    color: #dc2626;
+    font-family:var(--font-text);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+.mh-qp__remove-btn:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+}
+.mh-qp__remove-btn svg { display: block; pointer-events: none; flex-shrink: 0; }
+
+/* Kaartfooter met "Aantallen bijwerken" en "Meer units toevoegen" */
+.mh-qp__card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 24px;
+    background: #fafaf9;
+    border-top: 1px solid var(--color-border, #dedede);
+    flex-wrap: wrap;
+}
+.mh-qp__footer-left { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.mh-qp__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 20px;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
+    font-family:var(--font-text);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: none;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.mh-qp a.mh-qp__btn { text-decoration: none; }
+.mh-qp__btn--outline {
+    background: #fff;
+    color: var(--color-primary-text, #2B6E8F);
+    border-color: var(--color-border, #dedede);
+}
+.mh-qp__btn--outline:hover,
+.mh-qp__btn--outline:focus {
+    border-color: var(--color-primary, #2B6E8F);
+    color: var(--color-primary-text, #2B6E8F);
+}
+
 /* ── Gravity Forms reset (aanpassing aan huisstijl) ──────── */
 .gform_wrapper.gravity-theme .gform_fields {
     font-family:var(--font-text);
@@ -236,6 +534,77 @@
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 767px) {
+    .mh-qp__empty { padding: 44px 18px; }
+    .mh-qp__empty a { width: 100%; }
+    .mh-qp__card { margin-bottom: 18px; }
+    .mh-qp__card-header,
+    .mh-qp__card-footer { padding: 14px 16px; }
+    .mh-qp__card-body--form { padding: 16px; }
+
+    .mh-qp__product-row {
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px 16px;
+        align-items: start;
+    }
+    .mh-qp__thumb,
+    .mh-qp__thumb-placeholder {
+        width: 56px;
+        height: 56px;
+        border-radius: 6px;
+    }
+    .mh-qp__product-info { padding-top: 2px; }
+    .mh-qp__product-cat { display: block; line-height: 1.4; }
+    .mh-qp__product-actions {
+        grid-column: 1 / -1;
+        margin-left: 0;
+        flex-wrap: wrap;
+        width: 100%;
+        padding-top: 4px;
+    }
+    .mh-qp__stepper {
+        flex: 1 1 100%;
+        width: 100%;
+        height: 42px;
+        justify-content: center;
+    }
+    .mh-qp__qty-btn { width: 40px; }
+    .mh-qp__stepper .mh-qp__qty-input { width: 56px; }
+    .mh-qp__remove-btn {
+        flex: 1 1 100%;
+        width: 100%;
+        justify-content: center;
+        height: 40px;
+        font-size: var(--text-sm);
+    }
+    .mh-qp__footer-left {
+        width: 100%;
+        flex-direction: column;
+    }
+    .mh-qp__btn { width: 100%; }
+}
+
+@media (max-width: 420px) {
+    .mh-qp__card-header,
+    .mh-qp__card-footer,
+    .mh-qp__product-row,
+    .mh-qp__card-body--form {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+    .mh-qp__product-row {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 10px;
+    }
+    .mh-qp__thumb,
+    .mh-qp__thumb-placeholder {
+        width: 48px;
+        height: 48px;
+    }
+}
+
 @media (max-width: 640px) {
     .mh-form .mh-form__title { font-size: var(--text-xl); }
     .mh-form .mh-form__block { padding: 16px; }

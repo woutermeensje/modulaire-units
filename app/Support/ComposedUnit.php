@@ -59,6 +59,14 @@ final class ComposedUnit
     }
 
     /**
+     * A drawing of the front and right walls as an SVG data URI, so it can stand in for a unit photo in an <img>.
+     */
+    public function image(): string
+    {
+        return 'data:image/svg+xml;base64,'.base64_encode(app(UnitRenderer::class)->renderView($this->configuration, 'front'));
+    }
+
+    /**
      * The public unit composer, opened with this composition.
      */
     public function url(): string
