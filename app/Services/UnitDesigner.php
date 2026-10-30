@@ -40,7 +40,8 @@ class UnitDesigner
         Een verdieping heeft voor de trap minstens één deur nodig.
 
         Kleuren zijn hexcodes: cladding is de kleur van de wanden, frame die van de kozijnen en het stalen frame.
-        Er zijn drie kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet) en "#0e4c92" (blauw).
+        Er zijn vier kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw)
+        en "#4188aa" (logoblauw, het lichtere blauw uit het logo).
         Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
         Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 

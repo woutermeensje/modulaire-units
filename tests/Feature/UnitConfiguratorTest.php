@@ -474,9 +474,10 @@ class UnitConfiguratorTest extends TestCase
         $this->assertEqualsWithDelta(2.275, $door['top'], 0.001);
     }
 
-    public function test_only_white_anthracite_and_blue_are_available(): void
+    public function test_only_white_anthracite_blue_and_logo_blue_are_available(): void
     {
-        $this->assertSame(['Wit', 'Antraciet', 'Blauw'], array_values(UnitConfiguration::COLORS));
+        $this->assertSame(['Wit', 'Antraciet', 'Blauw', 'Logoblauw'], array_values(UnitConfiguration::COLORS));
+        $this->assertSame('#4188aa', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#4a8db0']])['colors']['cladding']);
 
         $configuration = UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#3d4a52', 'frame' => '#2255aa']]);
 

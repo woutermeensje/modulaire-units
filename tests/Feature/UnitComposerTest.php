@@ -62,6 +62,37 @@ class UnitComposerTest extends TestCase
             ->assertJson($design);
     }
 
+    public function test_anyone_can_compose_a_unit_on_the_public_page_without_ai(): void
+    {
+        $this->mock(UnitDesigner::class, fn (MockInterface $mock) => $mock->shouldNotReceive('design'));
+
+        $this->get('/unit-samensteller/')
+            ->assertOk()
+            ->assertSee('Unit samenstellen')
+            ->assertSee('data-composer', false)
+            ->assertSee('data-preview-url="'.route('unit-composer.public.preview').'"', false)
+            ->assertSee('Kopieer link')
+            ->assertDontSee('data-design-url', false)
+            ->assertDontSee('Bewerken met AI')
+            ->assertDontSee('data-configurator-generate', false);
+
+        $this->post(route('unit-composer.public.preview'), ['configuration' => ['size' => '3x3']])
+            ->assertOk()
+            ->assertHeader('Content-Type', 'image/svg+xml');
+
+        $this->postJson('/unit-samensteller/ontwerpen', ['description' => 'Maak de wanden blauw'])->assertStatus(405);
+        $this->postJson(route('unit-composer.design'), ['description' => 'Maak de wanden blauw'])->assertUnauthorized();
+    }
+
+    public function test_the_public_page_reads_a_shared_composition(): void
+    {
+        $encoded = strtr(base64_encode((string) json_encode(['size' => '3x3', 'floors' => 2])), '+/', '-_');
+
+        $this->get('/unit-samensteller/?'.UnitConfiguration::SHARE_KEY.'='.$encoded)
+            ->assertOk()
+            ->assertSee('<option value="2" selected>2 lagen (gestapeld)</option>', false);
+    }
+
     public function test_guests_are_sent_to_the_login_page(): void
     {
         $this->get(route('unit-composer'))->assertRedirect(route('login'));

@@ -167,15 +167,9 @@ function initConfigurator(root) {
     });
     markWindowPairs();
 
-    // Seen from outside, the right wall starts at the front unit and the left wall at the back one.
-    root.querySelectorAll('[data-configurator-group]').forEach((group) => {
-      const index = Number(group.dataset.group);
-      const label = group.querySelector('[data-configurator-group-label]');
-      group.hidden = SIDE_WALLS.includes(group.dataset.wall) && index >= modules();
-      if (label) {
-        label.hidden = modules() === 1;
-        label.textContent = `Unit ${group.dataset.wall === 'right' ? index + 1 : modules() - index}`;
-      }
+    root.querySelectorAll('[data-configurator-module]').forEach((module) => {
+      module.hidden = Number(module.dataset.configuratorModule) > modules();
+      module.querySelector('[data-configurator-module-label]').hidden = modules() === 1;
     });
   };
 
@@ -203,6 +197,9 @@ function initConfigurator(root) {
     return pairs;
   };
   const markWindowPairs = () => {
+    root.querySelectorAll('.unit-slot--pair-start, .unit-slot--pair-end').forEach((slot) => {
+      slot.classList.remove('unit-slot--pair-start', 'unit-slot--pair-end');
+    });
     const walls = new Set([...root.querySelectorAll('[data-configurator-slot]')].map((slot) => `${slot.dataset.level}|${slot.dataset.wall}`));
     walls.forEach((key) => {
       const [level, wall] = key.split('|');

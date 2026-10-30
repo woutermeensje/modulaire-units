@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UnitPreviewController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\PageController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\UnitComposerController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UsedListingController;
 use App\Http\Controllers\VacancyController;
@@ -50,6 +52,13 @@ Route::middleware('throttle:forms')->group(function (): void {
 
 /*
 |--------------------------------------------------------------------------
+| Public unit composer: only the free 2D preview, deliberately no AI endpoint
+|--------------------------------------------------------------------------
+*/
+Route::post('unit-samensteller/voorbeeld', UnitPreviewController::class)->middleware('throttle:60,1')->name('unit-composer.public.preview');
+
+/*
+|--------------------------------------------------------------------------
 | Public website — URLs are identical to the former WordPress site
 |--------------------------------------------------------------------------
 */
@@ -63,6 +72,8 @@ Route::middleware(EnsureTrailingSlash::class)->group(function (): void {
     Route::get('blog/page/{page}', [BlogController::class, 'index'])->whereNumber('page')->name('blog.page');
     Route::get('category/{slug}', [BlogController::class, 'category'])->name('blog.category');
     Route::get('author/{slug}', [BlogController::class, 'author'])->name('blog.author');
+
+    Route::get('unit-samensteller', UnitComposerController::class)->name('unit-composer.public');
 
     Route::get('units', [UnitController::class, 'index'])->name('units.index');
     Route::get('units/{slug}', [UnitController::class, 'show'])->name('units.show');

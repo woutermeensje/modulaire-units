@@ -5,13 +5,11 @@
 @php
     // In the composer test environment the configurator stands on its own: always configured, opened in 3D, no unit fields.
     $composer ??= false;
+    // Without AI (the public composer) neither the description box nor the design endpoint is offered.
+    $ai ??= true;
     $isConfigured = $composer || filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
     $maxSlots = fn (string $wall): int => max(array_map(fn (string $size): int => UnitConfiguration::slotCount($size, $wall, UnitConfiguration::MAX_MODULES), array_keys(UnitConfiguration::SIZES)));
-    $sideWalls = ['left', 'right'];
-    $slotsPerUnit = UnitConfiguration::SIZES[$configuration['size']]['depth'];
-    // Seen from outside, the right wall starts at the front unit and the left wall at the back one.
-    $groupUnit = fn (string $wall, int $group): int => $wall === 'right' ? $group + 1 : $configuration['modules'] - $group;
     $slotCounts = [];
     foreach (array_keys(UnitConfiguration::SIZES) as $size) {
         foreach (array_keys(UnitConfiguration::WALLS) as $wall) {
@@ -22,33 +20,35 @@
     $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
 @endphp
 <span class="portal-label">{{ $field->label }}</span>
-<div @class(['unit-configurator', 'unit-configurator--composer' => $composer]) data-unit-configurator data-preview-url="{{ $previewUrl ?? route('admin.units.preview') }}" data-design-url="{{ $designUrl ?? route('admin.units.design') }}"
+<div @class(['unit-configurator', 'unit-configurator--composer' => $composer]) data-unit-configurator data-preview-url="{{ $previewUrl ?? route('admin.units.preview') }}" @if ($ai) data-design-url="{{ $designUrl ?? route('admin.units.design') }}" @endif
      data-slot-labels='@json(UnitConfiguration::SLOTS)' data-slot-icons='@json($slotIcons)'
      data-slot-counts='@json($slotCounts)' data-backdrops='@json(UnitRenderer::BACKDROPS)'
      @if ($composer) data-composer data-share-param="{{ UnitConfiguration::SHARE_KEY }}" @endif>
-    <div class="unit-configurator__ai">
-        <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i>
-            {{ $composer ? 'Beschrijf wat je wilt aanpassen en laat Claude de unit bewerken' : 'Beschrijf de unit en laat Claude de configuratie invullen' }}
-        </label>
-        <textarea class="portal-textarea" id="configuration_description" rows="3" data-quill="off" data-configurator-description
-                  placeholder="{{ $composer ? 'Bijv. maak de wanden blauw, zet een raam in de linkerzijde en koppel er een tweede unit achter' : 'Bijv. 6x3 kantoorunit in lichtgrijs, deur in het midden van de voorkant met aan beide kanten twee ramen, één raam in elke kopgevel, op een bouwterrein' }}"></textarea>
-        <div class="unit-configurator__ai-actions">
-            @unless ($composer)
-                <label class="portal-checkbox">
-                    <input type="checkbox" data-configurator-texts checked>
-                    Ook titel en meta description invullen (alleen lege velden)
-                </label>
-            @endunless
-            <button type="button" class="btn btn-primary" data-configurator-generate @disabled(! UnitDesigner::isConfigured())>
-                <i class="ph ph-sparkle"></i> {{ $composer ? 'Bewerken met AI' : 'Genereer met AI' }}
-            </button>
+    @if ($ai)
+        <div class="unit-configurator__ai">
+            <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i>
+                {{ $composer ? 'Beschrijf wat je wilt aanpassen en laat Claude de unit bewerken' : 'Beschrijf de unit en laat Claude de configuratie invullen' }}
+            </label>
+            <textarea class="portal-textarea" id="configuration_description" rows="3" data-quill="off" data-configurator-description
+                      placeholder="{{ $composer ? 'Bijv. maak de wanden blauw, zet een raam in de linkerzijde en koppel er een tweede unit achter' : 'Bijv. 6x3 kantoorunit in lichtgrijs, deur in het midden van de voorkant met aan beide kanten twee ramen, één raam in elke kopgevel, op een bouwterrein' }}"></textarea>
+            <div class="unit-configurator__ai-actions">
+                @unless ($composer)
+                    <label class="portal-checkbox">
+                        <input type="checkbox" data-configurator-texts checked>
+                        Ook titel en meta description invullen (alleen lege velden)
+                    </label>
+                @endunless
+                <button type="button" class="btn btn-primary" data-configurator-generate @disabled(! UnitDesigner::isConfigured())>
+                    <i class="ph ph-sparkle"></i> {{ $composer ? 'Bewerken met AI' : 'Genereer met AI' }}
+                </button>
+            </div>
+            <p class="portal-help" role="status" data-configurator-status>
+                @unless (UnitDesigner::isConfigured())
+                    AI is uitgeschakeld: stel ANTHROPIC_API_KEY in op de server.
+                @endunless
+            </p>
         </div>
-        <p class="portal-help" role="status" data-configurator-status>
-            @unless (UnitDesigner::isConfigured())
-                AI is uitgeschakeld: stel ANTHROPIC_API_KEY in op de server.
-            @endunless
-        </p>
-    </div>
+    @endif
 
     <div class="unit-configurator__controls">
         <div class="unit-configurator__options">
@@ -120,38 +120,38 @@
                             <p class="portal-help">Bij elke deur op de verdieping komt een bordes met een trap naar beneden. Zet dus minstens één deur op de verdieping.</p>
                         </div>
                     @endunless
-                    <div class="unit-configurator__walls">
-                        @foreach (UnitConfiguration::WALLS as $wall => $wallLabel)
-                            <fieldset class="unit-configurator__wall">
-                                <legend class="portal-label">{{ $wallLabel }}</legend>
-                                <div @class(['unit-configurator__groups' => in_array($wall, $sideWalls, true)])>
-                                    @foreach (array_chunk(range(0, $maxSlots($wall) - 1), in_array($wall, $sideWalls, true) ? $slotsPerUnit : $maxSlots($wall)) as $group => $indexes)
-                                        <div class="unit-configurator__group" data-configurator-group data-wall="{{ $wall }}" data-group="{{ $group }}"
-                                             @if (in_array($wall, $sideWalls, true) && $group >= $configuration['modules']) hidden @endif>
-                                            @if (in_array($wall, $sideWalls, true))
-                                                <span class="unit-configurator__group-label" data-configurator-group-label @if ($configuration['modules'] === 1) hidden @endif>Unit {{ $groupUnit($wall, $group) }}</span>
-                                            @endif
-                                            <div class="unit-configurator__slots">
-                                                @foreach ($indexes as $index)
-                                                    @php($slot = $configuration[$level][$wall][$index] ?? UnitConfiguration::EMPTY)
-                                                    @php($inUse = $levelInUse && $index < UnitConfiguration::slotCount($configuration['size'], $wall, $configuration['modules']))
-                                                    <button type="button" class="unit-slot unit-slot--{{ $slot }}" data-configurator-slot data-level="{{ $level }}" data-wall="{{ $wall }}" data-index="{{ $index }}"
-                                                            title="{{ $levelLabel }}, {{ mb_strtolower($wallLabel) }}, vak {{ $index + 1 }}" @unless ($inUse) hidden @endunless>
-                                                        <i class="ph {{ $slotIcons[$slot] }}"></i>
-                                                        <span>{{ UnitConfiguration::SLOTS[$slot] }}</span>
-                                                        <input type="hidden" name="configuration[{{ $level }}][{{ $wall }}][]" value="{{ $slot }}" @disabled(! $inUse)>
-                                                    </button>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </fieldset>
+                    {{-- Top view: the floor in the middle with every wall's slots along its own side. Slots stay in their
+                         order as seen from outside the wall; the CSS turns each row or column to match the top view. --}}
+                    <div class="unit-plan">
+                        @foreach (['back', 'left', 'right', 'front'] as $wall)
+                            @php($wallLabel = UnitConfiguration::WALLS[$wall])
+                            <div class="unit-plan__wall unit-plan__wall--{{ $wall }}" role="group" aria-label="{{ $levelLabel }}, {{ mb_strtolower($wallLabel) }}">
+                                @for ($index = 0; $index < $maxSlots($wall); $index++)
+                                    @php($slot = $configuration[$level][$wall][$index] ?? UnitConfiguration::EMPTY)
+                                    @php($inUse = $levelInUse && $index < UnitConfiguration::slotCount($configuration['size'], $wall, $configuration['modules']))
+                                    <button type="button" class="unit-slot unit-slot--{{ $slot }}" data-configurator-slot data-level="{{ $level }}" data-wall="{{ $wall }}" data-index="{{ $index }}"
+                                            title="{{ $levelLabel }}, {{ mb_strtolower($wallLabel) }}, vak {{ $index + 1 }}" @unless ($inUse) hidden @endunless>
+                                        <i class="ph {{ $slotIcons[$slot] }}"></i>
+                                        <span>{{ UnitConfiguration::SLOTS[$slot] }}</span>
+                                        <input type="hidden" name="configuration[{{ $level }}][{{ $wall }}][]" value="{{ $slot }}" @disabled(! $inUse)>
+                                    </button>
+                                @endfor
+                            </div>
                         @endforeach
+                        <div class="unit-plan__floor">
+                            @for ($module = UnitConfiguration::MAX_MODULES; $module >= 1; $module--)
+                                <div class="unit-plan__module" data-configurator-module="{{ $module }}" @if ($module > $configuration['modules']) hidden @endif>
+                                    <span data-configurator-module-label @if ($configuration['modules'] === 1) hidden @endif>Unit {{ $module }}</span>
+                                </div>
+                            @endfor
+                            @foreach (UnitConfiguration::WALLS as $wall => $wallLabel)
+                                <span class="unit-plan__name unit-plan__name--{{ $wall }}">{{ $wallLabel }}</span>
+                            @endforeach
+                        </div>
                     </div>
                 </section>
             @endforeach
-            <p class="portal-help">Gevels gezien van buitenaf, van links naar rechts. Elk vak is 1 meter breed. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte: de voorzijde hoort bij unit 1, de achterzijde bij de achterste unit. Met twee lagen staat er op elke unit een tweede unit, met eigen ramen en deuren.</p>
+            <p class="portal-help">Bovenaanzicht van de unit: klik op een vak langs een gevel om te wisselen tussen dicht, raam en deur. Elk vak is 1 meter; een raam van 1,80 m beslaat twee vakken. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte, met unit 1 aan de voorzijde. Met twee lagen stel je de verdieping apart in.</p>
         </div>
     </div>
 
