@@ -5,8 +5,9 @@ import 'tom-select/dist/css/tom-select.css';
 const SEARCH_THRESHOLD = 8;
 
 /**
- * Turns every <select data-search-select> into a styled single select (Tom Select). The original select keeps its
- * name and value and still fires "change", so forms and scripts listening to it keep working.
+ * Turns every <select data-search-select> into a styled select (Tom Select); a multiple select always gets a search
+ * box and a remove button per choice. The original select keeps its name and value and still fires "change", so forms
+ * and scripts listening to it keep working.
  */
 export function initSearchSelects(root = document) {
   root.querySelectorAll('select[data-search-select]').forEach((select) => {
@@ -17,7 +18,8 @@ export function initSearchSelects(root = document) {
     new TomSelect(select, {
       allowEmptyOption: true,
       maxOptions: null,
-      controlInput: select.options.length > SEARCH_THRESHOLD ? undefined : null,
+      controlInput: select.multiple || select.options.length > SEARCH_THRESHOLD ? undefined : null,
+      plugins: select.multiple ? ['remove_button'] : [],
       render: {
         no_results: () => '<div class="no-results">Geen resultaten</div>',
       },

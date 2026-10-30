@@ -18,6 +18,8 @@ use Illuminate\Validation\Rule;
  * other windows and doors than the ground floor; without a second layer upper_walls is left out. With stairs,
  * every door on the second layer gets an outside staircase with a landing.
  *
+ * What the unit will be used for (usage) is only kept when something was chosen, so it is left out otherwise.
+ *
  * @phpstan-type Configuration array{
  *     size: string,
  *     modules: int,
@@ -27,6 +29,7 @@ use Illuminate\Validation\Rule;
  *     stairs: bool,
  *     colors: array{cladding: string, frame: string},
  *     background: string,
+ *     usage?: list<string>,
  * }
  */
 class UnitConfiguration
@@ -119,6 +122,24 @@ class UnitConfiguration
 
     public const COLOR_PATTERN = '/^#[0-9a-f]{6}$/i';
 
+    /**
+     * What the unit will be used for, as chosen in the public composer.
+     *
+     * @var array<string, string>
+     */
+    public const USAGES = [
+        'kantoor' => 'Kantoor',
+        'kantine' => 'Kantine',
+        'horeca' => 'Horeca',
+        'kleedkamers' => 'Kleedkamers',
+        'vergaderen' => 'Vergaderen',
+        'onderwijs' => 'Onderwijs',
+        'bouw' => 'Bouw',
+        'noodgebouw' => 'Noodgebouw',
+        'portiersloge' => 'Portiersloge',
+        'concierge' => 'Conciërge',
+    ];
+
     /** Query parameter that holds a composition in a share link. */
     public const SHARE_KEY = 'samenstelling';
 
@@ -160,6 +181,8 @@ class UnitConfiguration
             "{$key}.colors" => ['array'],
             "{$key}.colors.*" => ['nullable', 'string', Rule::in(array_keys(self::COLORS))],
             "{$key}.background" => ['nullable', Rule::in(array_keys(self::BACKGROUNDS))],
+            "{$key}.usage" => ['nullable', 'array'],
+            "{$key}.usage.*" => [Rule::in(array_keys(self::USAGES))],
         ];
     }
 
@@ -292,8 +315,9 @@ class UnitConfiguration
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
         $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $usage = array_values(array_intersect(array_keys(self::USAGES), (array) ($input['usage'] ?? [])));
 
-        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background];
+        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background, ...($usage ? ['usage' => $usage] : [])];
     }
 
     /**

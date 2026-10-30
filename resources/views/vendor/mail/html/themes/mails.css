@@ -1,0 +1,333 @@
+/**
+ * E-mailthema — styling 1-op-1 overgenomen van components/email-layout.blade.php in de inlogomgeving.
+ * Wordt door Laravel inline gezet in alle markdown-mails (config: mail.markdown.theme = 'mails').
+ * Media queries staan in html/layout.blade.php, omdat die niet inline gezet kunnen worden.
+ */
+
+/* Base */
+
+body,
+body *:not(html):not(style):not(br):not(tr):not(code) {
+    box-sizing: border-box;
+    font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    position: relative;
+}
+
+body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background-color: #FBFAF8;
+    color: #254F6E;
+    height: 100%;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+    width: 100% !important;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+img {
+    border: 0;
+    line-height: 100%;
+    outline: none;
+    text-decoration: none;
+    max-width: 100%;
+}
+
+p,
+ul,
+ol,
+blockquote {
+    line-height: 1.7;
+    text-align: left;
+}
+
+a {
+    color: #0a6b8d;
+    text-decoration: underline;
+}
+
+a img {
+    border: none;
+}
+
+/* Typography */
+
+h1 {
+    color: #254F6E;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin: 0 0 14px;
+    text-align: left;
+}
+
+h2 {
+    color: #254F6E;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin: 0 0 12px;
+    text-align: left;
+}
+
+h3 {
+    color: #2B6E8F;
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    text-align: left;
+}
+
+p {
+    color: #334155;
+    font-size: 14px;
+    margin: 0 0 14px;
+}
+
+p.sub {
+    font-size: 12px;
+}
+
+strong {
+    color: #2B6E8F;
+    font-weight: 800;
+}
+
+small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+hr {
+    background: rgba(43, 110, 143, 0.14);
+    border: 0;
+    height: 1px;
+    margin: 18px 0;
+}
+
+/* Layout */
+
+.wrapper {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    background-color: #FBFAF8;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.wrapper-cell {
+    padding: 40px 12px 32px;
+}
+
+.inner-body {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 600px;
+    background-color: #ffffff;
+    border: 1px solid #dedede;
+    border-collapse: separate;
+    border-radius: 5px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 0;
+    width: 600px;
+}
+
+/* Brand */
+
+.header {
+    background-color: #ffffff;
+    padding: 36px 26px 18px;
+    border-bottom: 1px solid rgba(43, 110, 143, 0.14);
+}
+
+.header a {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.brand-mark {
+    border-radius: 5px;
+    height: 34px;
+    vertical-align: middle;
+    width: 34px;
+}
+
+.brand-name {
+    color: #254F6E;
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 34px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Body */
+
+.content-cell {
+    background-color: #ffffff;
+    color: #334155;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 100vw;
+    padding: 26px;
+}
+
+/* Subcopy */
+
+.subcopy {
+    border-top: 1px solid rgba(43, 110, 143, 0.14);
+    margin-top: 18px;
+    padding-top: 18px;
+}
+
+.subcopy p {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Footer */
+
+.footer {
+    background-color: #F4F8F6;
+    border-top: 1px solid rgba(43, 110, 143, 0.12);
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 16px 26px;
+}
+
+.footer p {
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.footer a {
+    color: #6b7280;
+    text-decoration: underline;
+}
+
+/* Tables */
+
+.table table {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    border-top: 1px solid rgba(43, 110, 143, 0.12);
+    margin: 12px 0 18px;
+    width: 100%;
+}
+
+.table th {
+    border-bottom: 1px solid rgba(43, 110, 143, 0.12);
+    color: #2B6E8F;
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0;
+    padding: 11px 0;
+}
+
+.table td {
+    border-bottom: 1px solid rgba(43, 110, 143, 0.12);
+    color: #254F6E;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 11px 0;
+    vertical-align: top;
+}
+
+/* Buttons */
+
+.action {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    margin: 20px 0 16px;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+    float: unset;
+}
+
+.button {
+    border-radius: 5px;
+    color: #ffffff;
+    display: inline-block;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow: hidden;
+    padding: 12px 18px;
+    text-decoration: none;
+}
+
+.button-blue,
+.button-primary {
+    background-color: #0a6b8d;
+    border: 1px solid #0a6b8d;
+    color: #ffffff;
+}
+
+.button-ghost {
+    background-color: #ffffff;
+    border: 1px solid rgba(43, 110, 143, 0.24);
+    color: #254F6E;
+}
+
+.button-green,
+.button-success {
+    background-color: #1f8a5b;
+    border: 1px solid #1f8a5b;
+    color: #ffffff;
+}
+
+.button-red,
+.button-error {
+    background-color: #b42318;
+    border: 1px solid #b42318;
+    color: #ffffff;
+}
+
+/* Panels */
+
+.panel {
+    background-color: #F7FBF9;
+    border: 1px solid rgba(43, 110, 143, 0.18);
+    border-collapse: separate;
+    border-radius: 5px;
+    margin: 14px 0;
+}
+
+.panel-content {
+    color: #334155;
+    padding: 14px;
+}
+
+.panel-content p {
+    color: #334155;
+    white-space: pre-wrap;
+}
+
+.panel-item {
+    padding: 0;
+}
+
+.panel-item p:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Utilities */
+
+.break-all {
+    word-break: break-all;
+}

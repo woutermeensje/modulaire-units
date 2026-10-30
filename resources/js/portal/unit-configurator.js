@@ -4,6 +4,11 @@ import { setSelectValue } from './search-select';
 // Every configuration field that is part of the request; unchosen colour swatches are left out.
 const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:checked)):not([type="checkbox"]:not(:checked))';
 
+// A multiple select (the use of the unit) sends every chosen option, other fields their value.
+const appendFields = (root, body) => root.querySelectorAll(FIELDS).forEach((input) => {
+  (input.multiple ? [...input.selectedOptions].map((option) => option.value) : [input.value]).forEach((value) => body.append(input.name, value));
+});
+
 // The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
 const SIDE_WALLS = ['left', 'right'];
 
@@ -30,6 +35,7 @@ function initConfigurator(root) {
   const floors = () => Number(floorsSelect.value) || 1;
   const slotCount = (size, wall) => counts[size][wall] * (SIDE_WALLS.includes(wall) ? modules() : 1);
 
+  const usageSelect = root.querySelector('[data-configurator-usage]');
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
     const color = (part) => root.querySelector(`[name="configuration[colors][${part}]"]:checked`)?.value;
@@ -49,6 +55,7 @@ function initConfigurator(root) {
       stairs: floors() > 1 && stairsToggle.checked,
       colors: { cladding: color('cladding'), frame: color('frame') },
       background: field('background'),
+      ...(usageSelect?.selectedOptions.length ? { usage: [...usageSelect.selectedOptions].map((option) => option.value) } : {}),
     };
   };
 
@@ -146,7 +153,7 @@ function initConfigurator(root) {
   quoteButton?.addEventListener('click', async () => {
     quoteButton.disabled = true;
     const body = new FormData();
-    root.querySelectorAll(FIELDS).forEach((input) => body.append(input.name, input.value));
+    appendFields(root, body);
 
     try {
       const response = await fetch(quote.dataset.quoteUrl, {
@@ -182,7 +189,7 @@ function initConfigurator(root) {
       controller = new AbortController();
 
       const body = new FormData();
-      root.querySelectorAll(FIELDS).forEach((input) => body.append(input.name, input.value));
+      appendFields(root, body);
 
       try {
         const response = await fetch(root.dataset.previewUrl, {
@@ -367,7 +374,7 @@ function initConfigurator(root) {
     const body = new FormData();
     body.append('description', description.value);
     if (sizeSelect.value) {
-      root.querySelectorAll(FIELDS).forEach((input) => body.append(input.name, input.value));
+      appendFields(root, body);
     }
 
     generateButton.disabled = true;
@@ -448,6 +455,10 @@ function initConfigurator(root) {
   });
   root.querySelector('[name="configuration[background]"]').addEventListener('change', refreshPreview);
   stairsToggle.addEventListener('change', refreshPreview);
+  usageSelect?.addEventListener('change', () => {
+    updateShareUrl();
+    resetQuote();
+  });
   markWindowPairs();
 
   if (root.dataset.composer !== undefined) {

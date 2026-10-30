@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Page;
 use App\Models\User;
 use App\Services\UnitDesigner;
 use App\Support\UnitConfiguration;
@@ -133,5 +134,40 @@ class UnitComposerTest extends TestCase
 
         $this->assertSame(1, substr_count($response->getContent(), 'name="configuration[walls][right][]" value="door"'));
         $this->assertSame(4, substr_count($response->getContent(), 'name="configuration[walls][front][]" value="window"'), 'Two windows of two slots each.');
+    }
+
+    public function test_the_home_page_shows_the_public_composer_below_the_hero(): void
+    {
+        $this->mock(UnitDesigner::class, fn (MockInterface $mock) => $mock->shouldNotReceive('design'));
+        Page::factory()->create(['slug' => '', 'template' => 'landing', 'hero' => ['title' => 'Modulaire Units'], 'content' => '<p>Welkom bij de modulaire units</p>']);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSeeInOrder(['mh-home-hero__title', 'Stel je eigen unit samen', 'data-composer', 'Welkom bij de modulaire units'], false)
+            ->assertSee('data-preview-url="'.route('unit-composer.public.preview').'"', false)
+            ->assertSee('Type gebruik')
+            ->assertDontSee('Bewerken met AI');
+
+        Page::factory()->create(['slug' => 'contact']);
+        $this->get('/contact/')->assertOk()->assertDontSee('data-composer', false);
+    }
+
+    public function test_visitors_choose_what_the_unit_will_be_used_for(): void
+    {
+        $encoded = UnitConfiguration::toShareCode(UnitConfiguration::normalize(['size' => '3x3', 'usage' => ['kantine', 'kantoor', 'onbekend']]));
+
+        $this->assertSame(['kantoor', 'kantine'], UnitConfiguration::fromShareCode($encoded)['usage']);
+        $this->assertArrayNotHasKey('usage', UnitConfiguration::normalize(['size' => '3x3']));
+
+        $this->get('/unit-samensteller/?'.UnitConfiguration::SHARE_KEY.'='.$encoded)
+            ->assertOk()
+            ->assertSee('name="configuration[usage][]" multiple', false)
+            ->assertSee('<option value="kantoor" selected>Kantoor</option>', false)
+            ->assertSee('Conciërge</option>', false);
+
+        $this->postJson(route('unit-composer.quote'), ['configuration' => ['size' => '3x3', 'usage' => ['onbekend']]])->assertUnprocessable();
+        $this->postJson(route('unit-composer.quote'), ['configuration' => ['size' => '3x3', 'usage' => ['kantoor', 'kantine']]])->assertOk();
+
+        $this->get('/mijn-offerte/')->assertSee('gebruik: kantoor, kantine');
     }
 }

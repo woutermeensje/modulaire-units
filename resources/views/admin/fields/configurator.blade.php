@@ -64,6 +64,16 @@
                     @endforeach
                 </select>
             </div>
+            @if ($composer && ! $ai)
+                <div>
+                    <label class="portal-label" for="configuration_usage">Type gebruik</label>
+                    <select class="portal-input" id="configuration_usage" name="configuration[usage][]" multiple placeholder="Kies een of meer" data-configurator-usage data-search-select>
+                        @foreach (UnitConfiguration::USAGES as $usage => $usageLabel)
+                            <option value="{{ $usage }}" @selected(in_array($usage, $configuration['usage'] ?? [], true))>{{ $usageLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
             <div data-configurator-body @unless ($isConfigured) hidden @endunless>
                 <label class="portal-label" for="configuration_modules">Aantal units</label>
                 <select class="portal-input" id="configuration_modules" name="configuration[modules]" data-configurator-modules data-search-select>

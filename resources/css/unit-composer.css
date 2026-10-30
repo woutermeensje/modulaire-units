@@ -243,3 +243,9 @@ body main.site-main.unit-composer {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+/* On the home page the composer stands below the hero, outside the main column, so it brings its own side gutter. */
+.unit-composer--home {
+  max-width: 1256px;
+  padding: 0 16px;
+}

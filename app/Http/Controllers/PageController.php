@@ -10,6 +10,7 @@ use App\Services\Content\ServiceLanding;
 use App\Services\Content\ShortcodeRenderer;
 use App\Services\Content\UnitTypesOverview;
 use App\Support\Seo;
+use App\Support\UnitConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,7 @@ class PageController extends Controller
         $page = Page::query()->where('path', $path)->first();
 
         if ($page && ($page->isPublished() || Auth::check())) {
-            return $this->renderPage($page);
+            return $this->renderPage($page, $request);
         }
 
         if (! str_contains($path, '/') && $path !== '') {
@@ -58,7 +59,7 @@ class PageController extends Controller
         abort(404);
     }
 
-    private function renderPage(Page $page): View
+    private function renderPage(Page $page, Request $request): View
     {
         if (OfferLanding::appliesTo($page)) {
             return view('pages.offer', [
@@ -92,7 +93,21 @@ class PageController extends Controller
             'page' => $page,
             'content' => $this->shortcodes->render($page->content, $page),
             'seo' => Seo::for($page, $page->excerpt),
+            ...($page->path === '' ? ['composer' => $this->composer($request)] : []),
         ]);
+    }
+
+    /**
+     * The public unit composer below the home page hero; a shared composition is read from the link, as on /unit-samensteller/.
+     *
+     * @return array{configuration: array<string, mixed>, quoteReady: bool}
+     */
+    private function composer(Request $request): array
+    {
+        return [
+            'configuration' => UnitConfiguration::fromShareCode((string) $request->query(UnitConfiguration::SHARE_KEY, '')),
+            'quoteReady' => $request->filled(UnitConfiguration::SHARE_KEY),
+        ];
     }
 
     private function findRedirect(string $path): ?Redirect

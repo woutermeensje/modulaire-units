@@ -31,7 +31,7 @@ final class ComposedUnit
     }
 
     /**
-     * Colours and the number of windows and doors, e.g. "Wanden antraciet, frame antraciet, 2 ramen, 1 deur".
+     * Colours, the number of windows and doors and the use, e.g. "Wanden antraciet, frame antraciet, 2 ramen, 1 deur, gebruik: kantoor, kantine".
      */
     public function summary(): string
     {
@@ -54,6 +54,7 @@ final class ComposedUnit
             $windows === 1 ? '1 raam' : $windows.' ramen',
             $doors === 1 ? '1 deur' : $doors.' deuren',
             $this->configuration['stairs'] ? 'buitentrap' : null,
+            empty($this->configuration['usage']) ? null : 'gebruik: '.mb_strtolower(implode(', ', array_map(fn (string $usage): string => UnitConfiguration::USAGES[$usage], $this->configuration['usage']))),
         ]));
     }
 
