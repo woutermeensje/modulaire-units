@@ -458,6 +458,22 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame(['empty', 'window', 'window', 'empty', 'empty', 'empty'], $pair(['empty', 'empty', 'window', 'empty', 'empty', 'empty'], 2), 'A window never crosses the seam between units.');
     }
 
+    public function test_three_window_slots_make_one_window_in_the_middle(): void
+    {
+        [$window] = UnitConfiguration::openings(['window', 'window', 'window'], 3);
+        $this->assertEqualsWithDelta(0.6, $window['left'], 0.001);
+        $this->assertEqualsWithDelta(2.4, $window['right'], 0.001);
+
+        $this->assertSame([2, 3], UnitConfiguration::windowSpans(5));
+        $this->assertSame([2, 2], UnitConfiguration::windowSpans(4));
+        $this->assertCount(2, UnitConfiguration::openings(['window', 'window', 'window', 'window', 'window', 'empty'], 6));
+
+        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'walls' => ['left' => ['window', 'window', 'window']]]);
+        $this->assertSame(['window', 'window', 'window'], $configuration['walls']['left']);
+        $svg = (new UnitRenderer)->renderView($configuration, 'back');
+        $this->assertSame(1, substr_count($svg, 'fill="#9fbfd2"'));
+    }
+
     public function test_windows_and_doors_have_their_real_sizes(): void
     {
         $this->assertSame(['width' => 1.8, 'height' => 1.2, 'bottom' => 0.9, 'slots' => 2], UnitConfiguration::OPENING_SIZES['window']);

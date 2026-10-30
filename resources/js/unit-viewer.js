@@ -27,6 +27,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { windowSpans } from './window-spans';
 
 // Dimensions in metres, matching App\Support\UnitRenderer.
 const HEIGHT = 2.6;
@@ -48,24 +49,42 @@ const POST_CLEARANCE = 0.12;
 
 /**
  * Where the windows and doors of a wall are, in metres from its left end (seen from outside), each centred on its
- * slots but kept clear of the posts at wall ends and at seams between units every `segment` slots.
+ * slots but kept clear of the posts at wall ends and at seams between units every `segment` slots. Runs of window
+ * slots are split into windows by windowSpans().
  */
 function openings(slots, segment) {
   const result = [];
   let index = 0;
 
   while (index < slots.length) {
-    const size = OPENING_SIZES[slots[index]];
+    const type = slots[index];
+    const size = OPENING_SIZES[type];
     if (!size) {
       index++;
       continue;
     }
 
     const start = Math.floor(index / segment) * segment;
-    let left = index + (size.slots - size.width) / 2;
-    left = Math.min(Math.max(left, start + POST_CLEARANCE), start + segment - POST_CLEARANCE - size.width);
-    result.push({ type: slots[index], left, right: left + size.width, bottom: size.bottom, top: size.bottom + size.height });
-    index += size.slots;
+    let spans = [size.slots];
+
+    if (type === 'window') {
+      let end = index;
+      while (end < Math.min(slots.length, start + segment) && slots[end] === 'window') {
+        end++;
+      }
+      spans = windowSpans(end - index);
+      if (spans.length === 0) {
+        index = end;
+        continue;
+      }
+    }
+
+    spans.forEach((span) => {
+      let left = index + (span - size.width) / 2;
+      left = Math.min(Math.max(left, start + POST_CLEARANCE), start + segment - POST_CLEARANCE - size.width);
+      result.push({ type, left, right: left + size.width, bottom: size.bottom, top: size.bottom + size.height });
+      index += span;
+    });
   }
 
   return result;

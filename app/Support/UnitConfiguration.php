@@ -273,6 +273,9 @@ class UnitConfiguration
      * Where the windows and doors of a wall are, in metres from its left end (seen from outside) and from the bottom of
      * the wall. Each opening is centred on its slots, but kept clear of the posts at wall ends and seams.
      *
+     * Neighbouring window slots form windows of two slots, from left to right; when a run of window slots has an odd
+     * length its last window takes three slots, so a window of three slots sits centred on the middle one.
+     *
      * @param  list<string>  $slots  Normalized slots of one wall.
      * @param  int  $segment  Slots per unit along this wall, see slotCount() for a single unit.
      * @return list<array{type: string, left: float, right: float, bottom: float, top: float}>
@@ -293,18 +296,50 @@ class UnitConfiguration
             }
 
             $start = intdiv($index, $segment) * $segment;
-            $left = $index + ($size['slots'] - $size['width']) / 2;
-            $left = min(max($left, $start + self::POST_CLEARANCE), $start + $segment - self::POST_CLEARANCE - $size['width']);
-            $openings[] = ['type' => $type, 'left' => $left, 'right' => $left + $size['width'], 'bottom' => $size['bottom'], 'top' => $size['bottom'] + $size['height']];
-            $index += $size['slots'];
+            $spans = [$size['slots']];
+
+            if ($type === self::WINDOW) {
+                $end = $index;
+                while ($end < min(count($slots), $start + $segment) && $slots[$end] === self::WINDOW) {
+                    $end++;
+                }
+                $spans = self::windowSpans($end - $index);
+            }
+
+            foreach ($spans as $span) {
+                $left = $index + ($span - $size['width']) / 2;
+                $left = min(max($left, $start + self::POST_CLEARANCE), $start + $segment - self::POST_CLEARANCE - $size['width']);
+                $openings[] = ['type' => $type, 'left' => $left, 'right' => $left + $size['width'], 'bottom' => $size['bottom'], 'top' => $size['bottom'] + $size['height']];
+                $index += $span;
+            }
         }
 
         return $openings;
     }
 
     /**
-     * Make every window take two neighbouring slots within one unit: a lone window slot takes the next slot (or the
-     * previous one) when that is free, and is dropped when it can't.
+     * How a run of neighbouring window slots is split into windows: two slots each, the last one three when the run
+     * is odd, e.g. 3 => [3], 4 => [2, 2], 5 => [2, 3].
+     *
+     * @return list<int>
+     */
+    public static function windowSpans(int $length): array
+    {
+        if ($length < 2) {
+            return [];
+        }
+
+        $spans = array_fill(0, intdiv($length, 2), 2);
+        if ($length % 2 === 1) {
+            $spans[count($spans) - 1] = 3;
+        }
+
+        return $spans;
+    }
+
+    /**
+     * Make every window take at least two neighbouring slots within one unit: a lone window slot takes the next slot
+     * (or the previous one) when that is free, and is dropped when it can't. Runs of window slots stop at seams.
      *
      * @param  list<string>  $slots
      * @return list<string>
@@ -321,22 +356,27 @@ class UnitConfiguration
             }
 
             $segmentStart = intdiv($index, $segment) * $segment;
-            $next = $index + 1;
-            $previous = $index - 1;
-
-            if ($next < $segmentStart + $segment && $next < count($slots) && $slots[$next] !== self::DOOR) {
-                $slots[$next] = self::WINDOW;
-                $index += 2;
-
-                continue;
+            $segmentEnd = min(count($slots), $segmentStart + $segment);
+            $end = $index;
+            while ($end < $segmentEnd && $slots[$end] === self::WINDOW) {
+                $end++;
             }
 
-            if ($previous >= $segmentStart && $slots[$previous] === self::EMPTY) {
-                $slots[$previous] = self::WINDOW;
-            } else {
-                $slots[$index] = self::EMPTY;
+            if ($end - $index === 1) {
+                $next = $index + 1;
+                $previous = $index - 1;
+
+                if ($next < $segmentEnd && $slots[$next] === self::EMPTY) {
+                    $slots[$next] = self::WINDOW;
+                    $end = $next + 1;
+                } elseif ($previous >= $segmentStart && $slots[$previous] === self::EMPTY) {
+                    $slots[$previous] = self::WINDOW;
+                } else {
+                    $slots[$index] = self::EMPTY;
+                }
             }
-            $index++;
+
+            $index = $end;
         }
 
         return $slots;

@@ -1,3 +1,4 @@
+import { windowSpans } from '../window-spans';
 import { setSelectValue } from './search-select';
 
 // Every configuration field that is part of the request; unchosen colour swatches are left out.
@@ -180,33 +181,53 @@ function initConfigurator(root) {
     slot.querySelector('span').textContent = labels[value];
   };
 
-  // A window takes two neighbouring slots within one unit, as App\Support\UnitConfiguration pairs them: from left to
-  // right, every window slot forms a window together with the next one.
+  // A window takes two neighbouring slots within one unit, or three when it sits centred on the middle one; runs of
+  // window slots are split up the same way as App\Support\UnitConfiguration::openings() does.
   const slotValue = (slot) => slot.querySelector('input').value;
   const wallSlots = (slot) => [...root.querySelectorAll(`[data-configurator-slot][data-level="${slot.dataset.level}"][data-wall="${slot.dataset.wall}"]`)]
     .filter((candidate) => !candidate.querySelector('input').disabled);
-  const windowPairs = (slots) => {
-    const pairs = [];
-    for (let index = 0; index < slots.length; index++) {
-      if (slotValue(slots[index]) === 'window' && slots[index + 1]) {
-        pairs.push([slots[index], slots[index + 1]]);
+  const segmentOf = (slot) => counts[sizeSelect.value][slot.dataset.wall];
+  const windowGroups = (slots) => {
+    const groups = [];
+    const segment = slots.length ? segmentOf(slots[0]) : 1;
+    let index = 0;
+
+    while (index < slots.length) {
+      if (slotValue(slots[index]) !== 'window') {
         index++;
+        continue;
+      }
+
+      const segmentEnd = (Math.floor(index / segment) + 1) * segment;
+      let end = index;
+      while (end < Math.min(slots.length, segmentEnd) && slotValue(slots[end]) === 'window') {
+        end++;
+      }
+      const spans = windowSpans(end - index);
+      spans.forEach((span) => {
+        groups.push(slots.slice(index, index + span));
+        index += span;
+      });
+      if (spans.length === 0) {
+        index = end;
       }
     }
 
-    return pairs;
+    return groups;
   };
   const markWindowPairs = () => {
-    root.querySelectorAll('.unit-slot--pair-start, .unit-slot--pair-end').forEach((slot) => {
-      slot.classList.remove('unit-slot--pair-start', 'unit-slot--pair-end');
+    root.querySelectorAll('.unit-slot--pair-start, .unit-slot--pair-middle, .unit-slot--pair-end').forEach((slot) => {
+      slot.classList.remove('unit-slot--pair-start', 'unit-slot--pair-middle', 'unit-slot--pair-end');
     });
     const walls = new Set([...root.querySelectorAll('[data-configurator-slot]')].map((slot) => `${slot.dataset.level}|${slot.dataset.wall}`));
     walls.forEach((key) => {
       const [level, wall] = key.split('|');
       const first = root.querySelector(`[data-configurator-slot][data-level="${level}"][data-wall="${wall}"]`);
-      windowPairs(wallSlots(first)).forEach(([start, end]) => {
-        start.classList.add('unit-slot--pair-start');
-        end.classList.add('unit-slot--pair-end');
+      windowGroups(wallSlots(first)).forEach((group) => {
+        group.forEach((slot, position) => {
+          const part = position === 0 ? 'start' : (position === group.length - 1 ? 'end' : 'middle');
+          slot.classList.add(`unit-slot--pair-${part}`);
+        });
       });
     });
   };
@@ -217,16 +238,23 @@ function initConfigurator(root) {
     const current = slotValue(slot);
 
     if (current === 'window') {
-      const pair = windowPairs(slots).find((candidate) => candidate.includes(slot));
-      pair?.forEach((part) => setSlot(part, 'empty'));
+      const group = windowGroups(slots).find((candidate) => candidate.includes(slot));
+      group?.forEach((part) => setSlot(part, 'empty'));
       setSlot(slot, 'door');
     } else if (current === 'door') {
       setSlot(slot, 'empty');
     } else {
-      const segment = counts[sizeSelect.value][slot.dataset.wall];
-      const unitOf = (position) => Math.floor(position / segment);
-      const partner = [index + 1, index - 1].find((position) => slots[position] && unitOf(position) === unitOf(index) && slotValue(slots[position]) === 'empty');
-      if (partner === undefined) {
+      // Centre the window on the clicked slot when both neighbours are free and no other window touches them;
+      // otherwise it takes the free slot next to it.
+      const segment = segmentOf(slot);
+      const inUnit = (position) => slots[position] && Math.floor(position / segment) === Math.floor(index / segment);
+      const free = (position) => inUnit(position) && slotValue(slots[position]) === 'empty';
+      const noWindow = (position) => !inUnit(position) || slotValue(slots[position]) !== 'window';
+      const partner = [index + 1, index - 1].find(free);
+
+      if (free(index - 1) && free(index + 1) && noWindow(index - 2) && noWindow(index + 2)) {
+        [index - 1, index, index + 1].forEach((position) => setSlot(slots[position], 'window'));
+      } else if (partner === undefined) {
         setSlot(slot, 'door');
       } else {
         setSlot(slot, 'window');

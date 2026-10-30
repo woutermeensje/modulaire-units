@@ -25,7 +25,9 @@ class UnitDesigner
         bijv. 3 modules van 6x3 geeft een ruimte van 6 bij 9 meter. Gebruik 1 module tenzij de beschrijving om meer ruimte
         of gekoppelde units vraagt.
         Elke gevel is verdeeld in vakken van 1 meter. Een vak is "empty" (dichte wand), "window" (raam) of "door" (deur).
-        Een raam is 180 cm breed en beslaat altijd twee aangrenzende vakken binnen dezelfde unit: geef beide vakken "window".
+        Een raam is 180 cm breed en beslaat twee aangrenzende vakken binnen dezelfde unit: geef beide vakken "window".
+        Drie aangrenzende "window"-vakken zijn één raam precies in het midden ervan; zo zet je een raam midden in een
+        kopgevel van 3 meter: ["window", "window", "window"]. Laat tussen losse ramen minstens één vak "empty".
         Een deur (87,5 cm breed) beslaat één vak.
         - front (voorzijde) is de lange zijde van de voorste unit, back (achterzijde) die van de achterste unit:
           3 vakken bij 3x3, 6 vakken bij 6x3.
