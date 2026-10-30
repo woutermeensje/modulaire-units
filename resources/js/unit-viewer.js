@@ -373,6 +373,9 @@ const VIEW_DIRECTIONS = {
   back: [-0.32, 0.95, -1],
 };
 
+/** Viewer-only camera that shows the front and right walls about equally, so a door in either is in view. */
+const CORNER_DIRECTION = [0.8, 0.95, 1];
+
 function createRenderer(options = {}) {
   const renderer = new WebGLRenderer({ antialias: true, ...options });
   renderer.toneMapping = NeutralToneMapping;
@@ -473,7 +476,7 @@ function createStage(renderer, backdrops) {
 
 function aim(camera, target, { length, depth }, view, zoom) {
   const distance = ((length + depth) * 1.3 + 3) * zoom;
-  const direction = new Vector3(...VIEW_DIRECTIONS[view]).normalize().multiplyScalar(distance);
+  const direction = new Vector3(...(view === 'corner' ? CORNER_DIRECTION : VIEW_DIRECTIONS[view])).normalize().multiplyScalar(distance);
   camera.position.copy(direction);
   target.set(0, 1, 0);
   camera.lookAt(target);
@@ -484,10 +487,10 @@ function aim(camera, target, { length, depth }, view, zoom) {
  *
  * @param {HTMLElement} container
  * @param {Record<string, {sky: string, horizon: string, ground: string, groundFar: string}>} backdrops
- * @param {{zoom?: boolean, distance?: number}} options  Turn zooming off where the mouse wheel should keep scrolling
- *   the page; a distance below 1 frames the unit more tightly.
+ * @param {{zoom?: boolean, distance?: number, view?: string}} options  Turn zooming off where the mouse wheel should keep
+ *   scrolling the page; a distance below 1 frames the unit more tightly; view "corner" looks at the front and right walls alike.
  */
-export function createUnitViewer(container, backdrops, { zoom = true, distance = 1 } = {}) {
+export function createUnitViewer(container, backdrops, { zoom = true, distance = 1, view = 'front' } = {}) {
   const renderer = createRenderer();
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   container.appendChild(renderer.domElement);
@@ -531,7 +534,7 @@ export function createUnitViewer(container, backdrops, { zoom = true, distance =
 
       if (configuration.size !== currentSize) {
         currentSize = configuration.size;
-        aim(camera, controls.target, dimensions, 'front', distance);
+        aim(camera, controls.target, dimensions, view, distance);
         controls.update();
       }
 

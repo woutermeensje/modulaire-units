@@ -19,6 +19,8 @@ class UnitComposerTest extends TestCase
             ->assertSee('Unit samenstellen (test)')
             ->assertSee('data-composer', false)
             ->assertSee('Kopieer link')
+            ->assertSee('Bewerken met AI')
+            ->assertDontSee('Genereer met AI')
             ->assertDontSee('Geen configuratie')
             ->assertDontSee('name="photos_3d_enabled"', false);
 
@@ -39,13 +41,18 @@ class UnitComposerTest extends TestCase
             ->assertSee('3 gekoppelde units van 3 x 3 meter (3 x 9 meter)');
     }
 
-    public function test_an_unreadable_link_starts_from_the_default_unit(): void
+    public function test_customers_start_from_an_anthracite_6x3_with_two_windows_and_a_door_on_the_right(): void
     {
-        $default = UnitConfiguration::defaults();
+        $this->assertSame(['empty', 'window', 'empty', 'empty', 'window', 'empty'], UnitConfiguration::normalize(UnitComposerController::STARTER_UNIT)['walls']['front']);
 
-        $this->actingAs(User::factory()->admin()->create())
+        $response = $this->actingAs(User::factory()->admin()->create())
             ->get(route('admin.unit-composer', [UnitComposerController::QUERY_KEY => 'geen-geldige-samenstelling']))
             ->assertOk()
-            ->assertSee('<option value="'.$default['size'].'" selected>', false);
+            ->assertSee('<option value="6x3" selected>', false)
+            ->assertSee('name="configuration[colors][cladding]" value="#383e42" checked', false)
+            ->assertSee('name="configuration[colors][frame]" value="#383e42" checked', false);
+
+        $this->assertSame(1, substr_count($response->getContent(), 'name="configuration[walls][right][]" value="door"'));
+        $this->assertSame(2, substr_count($response->getContent(), 'name="configuration[walls][front][]" value="window"'));
     }
 }

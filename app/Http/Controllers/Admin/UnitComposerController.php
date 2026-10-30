@@ -15,6 +15,22 @@ class UnitComposerController extends Controller
 {
     public const QUERY_KEY = 'samenstelling';
 
+    /**
+     * What a customer starts from: an anthracite 6x3 with two windows in the long front wall and a door on the right.
+     *
+     * @var array<string, mixed>
+     */
+    public const STARTER_UNIT = [
+        'size' => '6x3',
+        'modules' => 1,
+        'walls' => [
+            'front' => ['empty', 'window', 'empty', 'empty', 'window', 'empty'],
+            'right' => ['empty', 'door', 'empty'],
+        ],
+        'colors' => ['cladding' => '#383e42', 'frame' => '#383e42'],
+        'background' => 'industrial',
+    ];
+
     public function __invoke(Request $request): View
     {
         return view('admin.unit-composer', [
@@ -32,8 +48,6 @@ class UnitComposerController extends Controller
         $json = base64_decode(strtr($encoded, '-_', '+/'), true);
         $input = $json === false ? null : json_decode($json, true);
 
-        return is_array($input) && filled($input['size'] ?? null)
-            ? UnitConfiguration::normalize($input)
-            : UnitConfiguration::defaults();
+        return UnitConfiguration::normalize(is_array($input) && filled($input['size'] ?? null) ? $input : self::STARTER_UNIT);
     }
 }

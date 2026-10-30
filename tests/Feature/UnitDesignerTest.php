@@ -53,7 +53,7 @@ class UnitDesignerTest extends TestCase
         $design = app(UnitDesigner::class)->design('6x3 kantoor, lichtgrijs', UnitConfiguration::defaults('3x3'));
 
         $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $design['configuration']['walls']['front']);
-        $this->assertSame('#c9cdcf', $design['configuration']['colors']['cladding']);
+        $this->assertSame('#f2f0e8', $design['configuration']['colors']['cladding']);
         $this->assertSame(UnitConfiguration::DEFAULT_COLORS['frame'], $design['configuration']['colors']['frame']);
         $this->assertSame('Kantoorunit 6x3', $design['title']);
         $this->assertSame(160, mb_strlen($design['meta_description']));

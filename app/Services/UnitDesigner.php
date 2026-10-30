@@ -32,12 +32,13 @@ class UnitDesigner
           De rechterzijde begint dus bij de voorste unit, de linkerzijde bij de achterste unit.
         - Geef per gevel precies zoveel vakken als die gevel heeft.
 
-        Kleuren zijn hexcodes (#rrggbb): cladding is de gevelbekleding, frame zijn de kozijnen, hoekprofielen en het dak.
-        Vertaal kleurnamen naar een passende, ingetogen hexcode (bijv. antraciet #3d4a52, wit #f2f2ee, lichtgrijs #c9cdcf, zwart #1f2326).
+        Kleuren zijn hexcodes: cladding is de kleur van de wanden, frame die van de kozijnen en het stalen frame.
+        Er zijn drie kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet) en "#0e4c92" (blauw).
+        Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
         Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 
         Volg de beschrijving zo letterlijk mogelijk. Wat niet genoemd wordt, kies je zelf op een logische manier:
-        een unit heeft minstens één deur; ramen verdeel je symmetrisch; zonder kleurwens gebruik je antraciet met zwarte kozijnen; zonder achtergrondwens "industrial".
+        een unit heeft minstens één deur; ramen verdeel je symmetrisch; zonder kleurwens gebruik je witte wanden met een antraciet frame; zonder achtergrondwens "industrial".
         Als er een huidige configuratie is meegegeven en de beschrijving klinkt als een wijziging ("maak", "voeg toe", "verplaats"), pas dan alleen aan wat gevraagd wordt.
 
         Schrijf daarnaast in het Nederlands, zakelijk en zonder overdrijving:
@@ -118,7 +119,7 @@ class UnitDesigner
     private function schema(): array
     {
         $slots = ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::SLOTS)]];
-        $color = ['type' => 'string', 'description' => 'Hexcode, bijv. #3d4a52'];
+        $color = ['type' => 'string', 'enum' => array_keys(UnitConfiguration::COLORS)];
 
         return [
             'type' => 'object',

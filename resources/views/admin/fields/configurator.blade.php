@@ -23,14 +23,16 @@
     $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
 @endphp
 <span class="portal-label">{{ $field->label }}</span>
-<div class="unit-configurator" data-unit-configurator data-preview-url="{{ route('admin.units.preview') }}" data-design-url="{{ route('admin.units.design') }}"
+<div @class(['unit-configurator', 'unit-configurator--composer' => $composer]) data-unit-configurator data-preview-url="{{ route('admin.units.preview') }}" data-design-url="{{ route('admin.units.design') }}"
      data-slot-labels='@json(UnitConfiguration::SLOTS)' data-slot-icons='@json($slotIcons)'
      data-slot-counts='@json($slotCounts)' data-backdrops='@json(UnitRenderer::BACKDROPS)'
      @if ($composer) data-composer data-share-param="{{ UnitComposerController::QUERY_KEY }}" @endif>
     <div class="unit-configurator__ai">
-        <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i> Beschrijf de unit en laat Claude de configuratie invullen</label>
+        <label class="portal-label" for="configuration_description"><i class="ph ph-sparkle"></i>
+            {{ $composer ? 'Beschrijf wat je wilt aanpassen en laat Claude de unit bewerken' : 'Beschrijf de unit en laat Claude de configuratie invullen' }}
+        </label>
         <textarea class="portal-textarea" id="configuration_description" rows="3" data-quill="off" data-configurator-description
-                  placeholder="Bijv. 6x3 kantoorunit in lichtgrijs, deur in het midden van de voorkant met aan beide kanten twee ramen, één raam in elke kopgevel, op een bouwterrein"></textarea>
+                  placeholder="{{ $composer ? 'Bijv. maak de wanden blauw, zet een raam in de linkerzijde en koppel er een tweede unit achter' : 'Bijv. 6x3 kantoorunit in lichtgrijs, deur in het midden van de voorkant met aan beide kanten twee ramen, één raam in elke kopgevel, op een bouwterrein' }}"></textarea>
         <div class="unit-configurator__ai-actions">
             @unless ($composer)
                 <label class="portal-checkbox">
@@ -39,7 +41,7 @@
                 </label>
             @endunless
             <button type="button" class="btn btn-primary" data-configurator-generate @disabled(! UnitDesigner::isConfigured())>
-                <i class="ph ph-sparkle"></i> Genereer met AI
+                <i class="ph ph-sparkle"></i> {{ $composer ? 'Bewerken met AI' : 'Genereer met AI' }}
             </button>
         </div>
         <p class="portal-help" role="status" data-configurator-status>
@@ -79,14 +81,20 @@
                 </select>
             </div>
             <div class="unit-configurator__colors" data-configurator-body @unless ($isConfigured) hidden @endunless>
-                <label class="unit-configurator__color">
-                    <input type="color" name="configuration[colors][cladding]" value="{{ $configuration['colors']['cladding'] }}">
-                    Gevel
-                </label>
-                <label class="unit-configurator__color">
-                    <input type="color" name="configuration[colors][frame]" value="{{ $configuration['colors']['frame'] }}">
-                    Kozijnen en frame
-                </label>
+                @foreach (['cladding' => 'Wanden', 'frame' => 'Kozijnen en frame'] as $part => $partLabel)
+                    <fieldset class="unit-configurator__palette">
+                        <legend class="portal-label">{{ $partLabel }}</legend>
+                        <div class="unit-configurator__swatches">
+                            @foreach (UnitConfiguration::COLORS as $hex => $colorLabel)
+                                <label class="unit-swatch">
+                                    <input type="radio" name="configuration[colors][{{ $part }}]" value="{{ $hex }}" @checked($configuration['colors'][$part] === $hex)>
+                                    <span class="unit-swatch__color" style="background: {{ $hex }}"></span>
+                                    <span class="unit-swatch__label">{{ $colorLabel }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
+                @endforeach
             </div>
         </div>
 

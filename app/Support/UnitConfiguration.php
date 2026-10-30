@@ -61,8 +61,19 @@ class UnitConfiguration
         'plain' => 'Neutraal',
     ];
 
+    /**
+     * The colours the walls and the frame can have: hex code => name (white RAL 9010, anthracite RAL 7016, blue RAL 5010).
+     *
+     * @var array<string, string>
+     */
+    public const COLORS = [
+        '#f2f0e8' => 'Wit',
+        '#383e42' => 'Antraciet',
+        '#0e4c92' => 'Blauw',
+    ];
+
     /** @var array{cladding: string, frame: string} */
-    public const DEFAULT_COLORS = ['cladding' => '#3d4a52', 'frame' => '#1f2326'];
+    public const DEFAULT_COLORS = ['cladding' => '#f2f0e8', 'frame' => '#383e42'];
 
     public const COLOR_PATTERN = '/^#[0-9a-f]{6}$/i';
 
@@ -81,7 +92,7 @@ class UnitConfiguration
             "{$key}.walls.*" => ['array'],
             "{$key}.walls.*.*" => [Rule::in(array_keys(self::SLOTS))],
             "{$key}.colors" => ['array'],
-            "{$key}.colors.*" => ['nullable', 'string', 'regex:'.self::COLOR_PATTERN],
+            "{$key}.colors.*" => ['nullable', 'string', Rule::in(array_keys(self::COLORS))],
             "{$key}.background" => ['nullable', Rule::in(array_keys(self::BACKGROUNDS))],
         ];
     }
@@ -163,12 +174,25 @@ class UnitConfiguration
         $colors = [];
         foreach (self::DEFAULT_COLORS as $name => $default) {
             $color = $input['colors'][$name] ?? null;
-            $colors[$name] = is_string($color) && preg_match(self::COLOR_PATTERN, $color) ? strtolower($color) : $default;
+            $colors[$name] = is_string($color) && preg_match(self::COLOR_PATTERN, $color) ? self::nearestColor($color) : $default;
         }
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
 
         return ['size' => $size, 'modules' => $modules, 'walls' => $walls, 'colors' => $colors, 'background' => $background];
+    }
+
+    /**
+     * The available colour closest to the given hex code, so older configurations and AI suggestions fit the range.
+     */
+    private static function nearestColor(string $hex): string
+    {
+        $channels = fn (string $hex): array => array_map('hexdec', str_split(ltrim($hex, '#'), 2));
+        $target = $channels($hex);
+
+        return collect(array_keys(self::COLORS))
+            ->sortBy(fn (string $color): int => array_sum(array_map(fn (int $a, int $b): int => ($a - $b) ** 2, $channels($color), $target)))
+            ->first();
     }
 
     /**

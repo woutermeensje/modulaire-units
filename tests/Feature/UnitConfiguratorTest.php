@@ -40,7 +40,7 @@ class UnitConfiguratorTest extends TestCase
                     'left' => ['empty', 'window', 'empty'],
                     'right' => ['empty', 'empty', 'empty'],
                 ],
-                'colors' => ['cladding' => '#AABBCC', 'frame' => '#111111'],
+                'colors' => ['cladding' => '#0e4c92', 'frame' => '#f2f0e8'],
                 'background' => 'site',
             ],
         ])->assertSessionHasNoErrors();
@@ -49,7 +49,8 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame('6x3', $unit->configuration['size']);
         $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $unit->configuration['walls']['front']);
         $this->assertSame(['empty', 'window', 'empty'], $unit->configuration['walls']['left']);
-        $this->assertSame('#aabbcc', $unit->configuration['colors']['cladding']);
+        $this->assertSame('#0e4c92', $unit->configuration['colors']['cladding']);
+        $this->assertSame('#f2f0e8', $unit->configuration['colors']['frame']);
         $this->assertSame('site', $unit->configuration['background']);
 
         $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
@@ -89,7 +90,7 @@ class UnitConfiguratorTest extends TestCase
             'configuration' => [
                 'size' => '12x3',
                 'walls' => ['front' => ['garage']],
-                'colors' => ['cladding' => 'red'],
+                'colors' => ['cladding' => '#aabbcc'],
             ],
         ])->assertSessionHasErrors(['configuration.size', 'configuration.walls.front.0', 'configuration.colors.cladding']);
     }
@@ -369,6 +370,16 @@ class UnitConfiguratorTest extends TestCase
 
         $this->assertStringContainsString('aria-label="2 gekoppelde units van 3 x 3 meter (3 x 6 meter)"', $svg);
         $this->assertSame(2, substr_count($svg, 'fill="#9fbfd2"'));
+    }
+
+    public function test_only_white_anthracite_and_blue_are_available(): void
+    {
+        $this->assertSame(['Wit', 'Antraciet', 'Blauw'], array_values(UnitConfiguration::COLORS));
+
+        $configuration = UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#3d4a52', 'frame' => '#2255aa']]);
+
+        $this->assertSame('#383e42', $configuration['colors']['cladding']);
+        $this->assertSame('#0e4c92', $configuration['colors']['frame']);
     }
 
     public function test_new_configurations_stand_on_an_industrial_estate(): void

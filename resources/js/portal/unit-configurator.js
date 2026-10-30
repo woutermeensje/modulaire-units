@@ -2,6 +2,9 @@ import { setSelectValue } from './search-select';
 
 const SLOT_ORDER = ['empty', 'window', 'door'];
 
+// Every configuration field that is part of the request; unchosen colour swatches are left out.
+const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:checked))';
+
 // The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
 const SIDE_WALLS = ['left', 'right'];
 
@@ -24,6 +27,7 @@ function initConfigurator(root) {
 
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
+    const color = (part) => root.querySelector(`[name="configuration[colors][${part}]"]:checked`)?.value;
     const walls = {};
     Object.keys(counts[sizeSelect.value]).forEach((wall) => {
       walls[wall] = [...root.querySelectorAll(`[name="configuration[walls][${wall}][]"]:not(:disabled)`)].map((input) => input.value);
@@ -33,7 +37,7 @@ function initConfigurator(root) {
       size: sizeSelect.value,
       modules: modules(),
       walls,
-      colors: { cladding: field('colors][cladding'), frame: field('colors][frame') },
+      colors: { cladding: color('cladding'), frame: color('frame') },
       background: field('background'),
     };
   };
@@ -67,7 +71,7 @@ function initConfigurator(root) {
 
     if (view === '3d' && !viewer) {
       const { createUnitViewer } = await loadViewerModule();
-      viewer ??= createUnitViewer(viewerElement, backdrops);
+      viewer ??= createUnitViewer(viewerElement, backdrops, root.dataset.composer !== undefined ? { view: 'corner' } : {});
     }
     updateViewer();
   };
@@ -114,7 +118,7 @@ function initConfigurator(root) {
       controller = new AbortController();
 
       const body = new FormData();
-      root.querySelectorAll('[name^="configuration"]:not(:disabled)').forEach((input) => body.append(input.name, input.value));
+      root.querySelectorAll(FIELDS).forEach((input) => body.append(input.name, input.value));
 
       try {
         const response = await fetch(root.dataset.previewUrl, {
@@ -183,8 +187,11 @@ function initConfigurator(root) {
     root.querySelectorAll('[data-configurator-slot]').forEach((slot) => {
       setSlot(slot, configuration.walls[slot.dataset.wall][Number(slot.dataset.index)] ?? 'empty');
     });
-    Object.entries(configuration.colors).forEach(([name, color]) => {
-      root.querySelector(`[name="configuration[colors][${name}]"]`).value = color;
+    Object.entries(configuration.colors).forEach(([part, color]) => {
+      const swatch = root.querySelector(`[name="configuration[colors][${part}]"][value="${color}"]`);
+      if (swatch) {
+        swatch.checked = true;
+      }
     });
     setSelectValue(root.querySelector('[name="configuration[background]"]'), configuration.background);
   };
@@ -211,7 +218,7 @@ function initConfigurator(root) {
     const body = new FormData();
     body.append('description', description.value);
     if (sizeSelect.value) {
-      root.querySelectorAll('[name^="configuration"]:not(:disabled)').forEach((input) => body.append(input.name, input.value));
+      root.querySelectorAll(FIELDS).forEach((input) => body.append(input.name, input.value));
     }
 
     generateButton.disabled = true;
@@ -285,8 +292,8 @@ function initConfigurator(root) {
     refreshPreview();
   });
 
-  root.querySelectorAll('input[type="color"]').forEach((input) => {
-    input.addEventListener('input', refreshPreview);
+  root.querySelectorAll('[name^="configuration[colors]"]').forEach((input) => {
+    input.addEventListener('change', refreshPreview);
   });
   root.querySelector('[name="configuration[background]"]').addEventListener('change', refreshPreview);
 
