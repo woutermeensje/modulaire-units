@@ -78,7 +78,12 @@ class UnitComposerTest extends TestCase
             ->assertDontSee('data-configurator-generate', false)
             ->assertSee('aria-label="Legenda"', false)
             ->assertSee('Raam (180 cm)')
-            ->assertSee('Deur (87,5 cm)');
+            ->assertSee('Deur (87,5 cm)')
+            ->assertSee('name="configuration[interior][]" value="airco"', false)
+            ->assertSee('name="configuration[interior][]" value="toilet"', false)
+            ->assertSee('name="configuration[interior][]" value="kitchen"', false)
+            ->assertSee('data-configurator-view="interior"', false)
+            ->assertDontSee('id="configuration_background"', false);
 
         $this->get('/unit-samensteller/')->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'">', false);
 
@@ -116,7 +121,7 @@ class UnitComposerTest extends TestCase
             ->assertOk()
             ->assertSee('<option value="3x3" selected>', false)
             ->assertSee('<option value="3" selected>3 units gekoppeld</option>', false)
-            ->assertSee('<option value="site" selected>', false)
+            ->assertSee('<input type="hidden" name="configuration[background]" value="site">', false)
             ->assertSee('3 gekoppelde units van 3 x 3 meter (3 x 9 meter)');
     }
 

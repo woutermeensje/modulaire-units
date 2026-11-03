@@ -98,6 +98,22 @@
   border-radius: 50%;
 }
 
+.unit-swatch__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+}
+
+.unit-configurator__interior {
+  grid-column: 1 / -1;
+}
+
+.unit-configurator__interior .portal-help {
+  margin: 8px 0 0;
+}
+
 .unit-swatch:has(input:checked) {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
@@ -433,6 +449,12 @@
   border-radius: var(--radius-default);
   overflow: hidden;
   cursor: grab;
+}
+
+.unit-configurator__viewer-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
 }
 
 .unit-configurator__viewer canvas {

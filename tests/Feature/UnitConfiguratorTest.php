@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Models\Unit;
 use App\Models\User;
 use App\Support\FloorPlanRenderer;
+use App\Support\InteriorLayout;
 use App\Support\UnitConfiguration;
 use App\Support\UnitRenderer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -525,6 +526,84 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame('industrial', UnitConfiguration::defaults()['background']);
         $this->assertArrayHasKey('industrial', UnitRenderer::BACKDROPS);
         $this->assertSame('meadow', UnitConfiguration::normalize(['size' => '3x3', 'background' => 'meadow'])['background']);
+    }
+
+    public function test_interior_is_only_kept_when_something_is_chosen(): void
+    {
+        $this->assertArrayNotHasKey('interior', UnitConfiguration::normalize(['size' => '6x3']));
+        $this->assertArrayNotHasKey('interior', UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['jacuzzi']]));
+        $this->assertSame(['airco', 'kitchen'], UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['kitchen', 'airco']])['interior']);
+    }
+
+    public function test_every_floor_plan_shows_the_ceiling_lights(): void
+    {
+        $layout = InteriorLayout::for(UnitConfiguration::normalize(['size' => '6x3', 'modules' => 2]), 'walls');
+
+        $this->assertCount(4, $layout['lights']);
+        $this->assertSame([], $layout['items']);
+        $this->assertCount(1, InteriorLayout::for(UnitConfiguration::normalize(['size' => '3x3']), 'walls')['lights']);
+        $this->assertStringContainsString('>Verlichting<', (new FloorPlanRenderer)->render(['size' => '3x3']));
+    }
+
+    public function test_toilet_and_kitchen_stay_clear_of_doors(): void
+    {
+        // A door at the right end of the back wall as seen from above: its first slot as seen from outside.
+        $configuration = UnitConfiguration::normalize([
+            'size' => '6x3',
+            'walls' => ['back' => ['door', 'empty', 'empty', 'empty', 'empty', 'empty']],
+            'interior' => ['toilet', 'kitchen'],
+        ]);
+
+        [$toilet, $kitchen] = InteriorLayout::for($configuration, 'walls')['items'];
+
+        $this->assertSame(['back', 'left'], [$toilet['wall'], $toilet['side']]);
+        $this->assertSame('kitchen', $kitchen['type']);
+        $this->assertSame('front', $kitchen['wall'], 'The door takes the right of the back wall and the toilet the left, so the kitchenette goes to the front.');
+        $this->assertEqualsWithDelta(5.9, $kitchen['x2'], 0.001);
+    }
+
+    public function test_toilet_moves_to_a_corner_without_a_door(): void
+    {
+        $configuration = UnitConfiguration::normalize([
+            'size' => '3x3',
+            'walls' => ['left' => ['door', 'empty', 'empty']],
+            'interior' => ['toilet'],
+        ]);
+
+        [$toilet] = InteriorLayout::for($configuration, 'walls')['items'];
+
+        $this->assertSame(['back', 'right'], [$toilet['wall'], $toilet['side']]);
+    }
+
+    public function test_every_unit_on_every_layer_gets_an_airco_clear_of_windows(): void
+    {
+        $configuration = UnitConfiguration::normalize([
+            'size' => '6x3',
+            'modules' => 2,
+            'floors' => 2,
+            'walls' => ['right' => ['empty', 'window', 'window', 'empty', 'empty', 'empty']],
+            'interior' => ['airco', 'toilet', 'kitchen'],
+        ]);
+
+        $ground = InteriorLayout::for($configuration, 'walls')['items'];
+        $upper = InteriorLayout::for($configuration, 'upper_walls')['items'];
+        $aircos = array_values(array_filter($ground, fn (array $item): bool => $item['type'] === 'airco'));
+
+        $this->assertCount(4, $ground);
+        $this->assertSame(['airco', 'airco'], array_column($upper, 'type'), 'The toilet and kitchenette stay on the ground floor.');
+        $this->assertSame('right', $aircos[0]['wall'], 'In the back unit the toilet takes the left wall.');
+        $this->assertSame('left', $aircos[1]['wall'], 'The window in the right wall of the front unit sends its airco to the left wall.');
+    }
+
+    public function test_the_floor_plan_draws_the_chosen_interior(): void
+    {
+        $plan = (new FloorPlanRenderer)->render(['size' => '6x3', 'interior' => ['airco', 'toilet', 'kitchen']]);
+
+        $this->assertStringContainsString('>WC<', $plan);
+        $this->assertStringContainsString('>Keuken<', $plan);
+        $this->assertStringContainsString('>AC<', $plan);
+        $this->assertStringContainsString('>Airco (aan de wand, hoog)<', $plan);
+        $this->assertStringNotContainsString('>WC<', (new FloorPlanRenderer)->render(['size' => '6x3']));
     }
 
     /**

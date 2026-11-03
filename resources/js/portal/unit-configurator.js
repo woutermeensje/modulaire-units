@@ -30,14 +30,17 @@ function initConfigurator(root) {
   let timer = null;
   let controller = null;
   let viewer = null;
+  let currentView = null;
 
   const modules = () => Number(modulesSelect.value) || 1;
   const floors = () => Number(floorsSelect.value) || 1;
   const slotCount = (size, wall) => counts[size][wall] * (SIDE_WALLS.includes(wall) ? modules() : 1);
 
   const usageSelect = root.querySelector('[data-configurator-usage]');
+  const interiorInputs = [...root.querySelectorAll('[name="configuration[interior][]"]')];
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
+    const interior = interiorInputs.filter((input) => input.checked).map((input) => input.value);
     const color = (part) => root.querySelector(`[name="configuration[colors][${part}]"]:checked`)?.value;
     const levels = {};
     LEVELS.slice(0, floors()).forEach((level) => {
@@ -55,6 +58,7 @@ function initConfigurator(root) {
       stairs: floors() > 1 && stairsToggle.checked,
       colors: { cladding: color('cladding'), frame: color('frame') },
       background: field('background'),
+      ...(interior.length ? { interior } : {}),
       ...(usageSelect?.selectedOptions.length ? { usage: [...usageSelect.selectedOptions].map((option) => option.value) } : {}),
     };
   };
@@ -73,20 +77,24 @@ function initConfigurator(root) {
       return;
     }
 
-    viewer.update(readConfiguration(), dimensions());
+    viewer.update(readConfiguration(), dimensions(), { interior: currentView === 'interior' });
   };
 
+  // "3d" shows the unit from outside, "interior" looks down into the ground floor; both use the same 3D viewer.
+  const interiorNote = root.querySelector('[data-configurator-interior-note]');
   const showView = async (view) => {
+    currentView = view;
     root.querySelectorAll('[data-configurator-view]').forEach((button) => {
       const isActive = button.dataset.configuratorView === view;
       button.classList.toggle('is-active', isActive);
       button.setAttribute('aria-pressed', String(isActive));
     });
     preview.hidden = view !== '2d';
-    viewerElement.hidden = view !== '3d';
-    viewerHelp.hidden = view !== '3d';
+    viewerElement.hidden = view === '2d';
+    viewerHelp.hidden = view === '2d';
+    interiorNote.hidden = view !== 'interior' || floors() === 1;
 
-    if (view === '3d' && !viewer) {
+    if (view !== '2d' && !viewer) {
       const { createUnitViewer } = await loadViewerModule();
       viewer ??= createUnitViewer(viewerElement, backdrops, root.dataset.composer !== undefined ? { view: 'corner' } : {});
     }
@@ -354,7 +362,8 @@ function initConfigurator(root) {
         swatch.checked = true;
       }
     });
-    setSelectValue(root.querySelector('[name="configuration[background]"]'), configuration.background);
+    root.querySelector('[name="configuration[background]"]').value = configuration.background;
+    interiorInputs.forEach((input) => { input.checked = (configuration.interior ?? []).includes(input.value); });
   };
 
   const fillIfEmpty = (id, value) => {
@@ -451,6 +460,7 @@ function initConfigurator(root) {
   [modulesSelect, floorsSelect].forEach((select) => {
     select.addEventListener('change', () => {
       applySize();
+      interiorNote.hidden = currentView !== 'interior' || floors() === 1;
       refreshPreview();
     });
   });
@@ -458,7 +468,7 @@ function initConfigurator(root) {
   root.querySelectorAll('[name^="configuration[colors]"]').forEach((input) => {
     input.addEventListener('change', refreshPreview);
   });
-  root.querySelector('[name="configuration[background]"]').addEventListener('change', refreshPreview);
+  interiorInputs.forEach((input) => input.addEventListener('change', refreshPreview));
   stairsToggle.addEventListener('change', refreshPreview);
   usageSelect?.addEventListener('change', () => {
     updateShareUrl();

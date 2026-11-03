@@ -18,7 +18,8 @@ use Illuminate\Validation\Rule;
  * other windows and doors than the ground floor; without a second layer upper_walls is left out. With stairs,
  * every door on the second layer gets an outside staircase with a landing.
  *
- * What the unit will be used for (usage) is only kept when something was chosen, so it is left out otherwise.
+ * What the unit will be used for (usage) and what is fitted inside (interior) are only kept when something was chosen,
+ * so they are left out otherwise. Lighting is always fitted, so it is not an option; see InteriorLayout.
  *
  * @phpstan-type Configuration array{
  *     size: string,
@@ -141,6 +142,17 @@ class UnitConfiguration
         'overige' => 'Overige',
     ];
 
+    /**
+     * What can be fitted inside the unit; InteriorLayout works out where each item goes.
+     *
+     * @var array<string, string>
+     */
+    public const INTERIOR = [
+        'airco' => 'Airco',
+        'toilet' => 'Sanitair',
+        'kitchen' => 'Keukentje',
+    ];
+
     /** Query parameter that holds a composition in a share link. */
     public const SHARE_KEY = 'samenstelling';
 
@@ -182,6 +194,8 @@ class UnitConfiguration
             "{$key}.colors" => ['array'],
             "{$key}.colors.*" => ['nullable', 'string', Rule::in(array_keys(self::COLORS))],
             "{$key}.background" => ['nullable', Rule::in(array_keys(self::BACKGROUNDS))],
+            "{$key}.interior" => ['nullable', 'array'],
+            "{$key}.interior.*" => [Rule::in(array_keys(self::INTERIOR))],
             "{$key}.usage" => ['nullable', 'array'],
             "{$key}.usage.*" => [Rule::in(array_keys(self::USAGES))],
         ];
@@ -316,9 +330,10 @@ class UnitConfiguration
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
         $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $interior = array_values(array_intersect(array_keys(self::INTERIOR), (array) ($input['interior'] ?? [])));
         $usage = array_values(array_intersect(array_keys(self::USAGES), (array) ($input['usage'] ?? [])));
 
-        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background, ...($usage ? ['usage' => $usage] : [])];
+        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background, ...($interior ? ['interior' => $interior] : []), ...($usage ? ['usage' => $usage] : [])];
     }
 
     /**

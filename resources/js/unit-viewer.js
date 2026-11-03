@@ -28,6 +28,7 @@ import {
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { windowSpans } from './window-spans';
+import { interiorLayout } from './interior-layout';
 
 // Dimensions in metres, matching App\Support\UnitRenderer.
 const HEIGHT = 2.6;
@@ -241,6 +242,11 @@ function createMaterials(colors, ribs) {
     floor: new MeshStandardMaterial({ color: '#d6d5d0', roughness: 0.9 }),
     concrete: new MeshStandardMaterial({ color: '#a3a19b', roughness: 0.95 }),
     steel: new MeshStandardMaterial({ color: '#a7adb1', roughness: 0.45, metalness: 0.6 }),
+    ceramic: new MeshStandardMaterial({ color: '#fbfbf8', roughness: 0.2, metalness: 0.05 }),
+    partition: new MeshStandardMaterial({ color: '#e4e3de', roughness: 0.8 }),
+    cabinet: new MeshStandardMaterial({ color: '#f4f3ef', roughness: 0.6 }),
+    worktop: new MeshStandardMaterial({ color: '#6b6760', roughness: 0.5 }),
+    hob: new MeshStandardMaterial({ color: '#1d1f21', roughness: 0.25, metalness: 0.4 }),
   };
 }
 
@@ -438,6 +444,107 @@ function buildStairs(doorCenter, wallWidth, sill, ground, materials) {
   return group;
 }
 
+const PARTITION_HEIGHT = 2.1;
+const PARTITION_THICKNESS = 0.05;
+const WORKTOP_HEIGHT = 0.9;
+
+/**
+ * A toilet cubicle in its corner, built with u along the outside wall and v along the side wall, both pointing into
+ * the unit from the corner: partitions with a door on the room sides, the toilet against the outside wall and a hand
+ * basin against the side wall.
+ */
+function buildToilet({ wall, side, x1, y1, x2, y2 }, { length, depth }, materials) {
+  const group = new Group();
+  const signU = side === 'left' ? 1 : -1;
+  const signV = wall === 'back' ? 1 : -1;
+  const originX = (side === 'left' ? x1 : x2) - length / 2;
+  const originZ = (wall === 'back' ? y1 : y2) - depth / 2;
+  const width = x2 - x1;
+  const cubicleDepth = y2 - y1;
+  const place = (sizeU, height, sizeV, u, y, v, material) => box(sizeU, height, sizeV, originX + signU * u, BOTTOM_RAIL + y, originZ + signV * v, material);
+  const doorFrom = 0.15;
+  const doorTo = Math.min(width - PARTITION_THICKNESS, doorFrom + 0.7);
+  const front = cubicleDepth - PARTITION_THICKNESS / 2;
+
+  group.add(
+    place(PARTITION_THICKNESS, PARTITION_HEIGHT, cubicleDepth, width - PARTITION_THICKNESS / 2, PARTITION_HEIGHT / 2, cubicleDepth / 2, materials.partition),
+    place(doorFrom, PARTITION_HEIGHT, PARTITION_THICKNESS, doorFrom / 2, PARTITION_HEIGHT / 2, front, materials.partition),
+    place(doorTo - doorFrom, PARTITION_HEIGHT - 0.1, 0.035, (doorFrom + doorTo) / 2, (PARTITION_HEIGHT - 0.1) / 2, front, materials.cabinet),
+    place(doorTo - doorFrom, 0.1, PARTITION_THICKNESS, (doorFrom + doorTo) / 2, PARTITION_HEIGHT - 0.05, front, materials.partition),
+    place(0.04, 0.02, 0.06, doorTo - 0.08, 1.0, front + 0.04, materials.handle),
+    // Toilet: cistern against the outside wall, bowl and seat in front of it.
+    place(0.4, 0.4, 0.18, width / 2, 0.6, 0.09, materials.ceramic),
+    place(0.36, 0.4, 0.46, width / 2, 0.2, 0.41, materials.ceramic),
+    place(0.38, 0.03, 0.44, width / 2, 0.415, 0.42, materials.cabinet),
+    // Hand basin with its tap against the side wall.
+    place(0.22, 0.12, 0.35, 0.11, 0.8, cubicleDepth - 0.475, materials.ceramic),
+    place(0.03, 0.12, 0.03, 0.03, 0.92, cubicleDepth - 0.475, materials.steel),
+  );
+
+  if (doorTo < width - PARTITION_THICKNESS) {
+    group.add(place(width - PARTITION_THICKNESS - doorTo, PARTITION_HEIGHT, PARTITION_THICKNESS, (doorTo + width - PARTITION_THICKNESS) / 2, PARTITION_HEIGHT / 2, front, materials.partition));
+  }
+
+  return group;
+}
+
+/**
+ * A kitchenette: base cabinets with a worktop, a sink with tap at the left end and a hob at the right end.
+ */
+function buildKitchen({ wall, x1, y1, x2, y2 }, { length, depth }, materials) {
+  const group = new Group();
+  const centerZ = (y1 + y2) / 2 - depth / 2;
+  const kitchenLength = x2 - x1;
+  const kitchenDepth = y2 - y1;
+  const left = x1 - length / 2;
+  const toWall = wall === 'back' ? -1 : 1;
+  const floor = BOTTOM_RAIL;
+
+  group.add(
+    box(kitchenLength, WORKTOP_HEIGHT - 0.04, kitchenDepth - 0.02, left + kitchenLength / 2, floor + (WORKTOP_HEIGHT - 0.04) / 2, centerZ, materials.cabinet),
+    box(kitchenLength, 0.04, kitchenDepth, left + kitchenLength / 2, floor + WORKTOP_HEIGHT - 0.02, centerZ, materials.worktop),
+    box(0.5, 0.01, 0.36, left + 0.4, floor + WORKTOP_HEIGHT + 0.002, centerZ, materials.steel),
+    box(0.03, 0.25, 0.03, left + 0.4, floor + WORKTOP_HEIGHT + 0.125, centerZ + toWall * 0.24, materials.steel),
+    box(0.03, 0.03, 0.15, left + 0.4, floor + WORKTOP_HEIGHT + 0.24, centerZ + toWall * 0.17, materials.steel),
+    box(0.55, 0.012, 0.45, left + kitchenLength - 0.385, floor + WORKTOP_HEIGHT + 0.004, centerZ, materials.hob),
+  );
+
+  // Cabinet doors, shown by their handles on the room side.
+  for (let door = 0.3; door < kitchenLength; door += 0.6) {
+    group.add(box(0.12, 0.02, 0.02, left + door, floor + WORKTOP_HEIGHT - 0.12, centerZ - toWall * (kitchenDepth / 2 + 0.005), materials.handle));
+  }
+
+  return group;
+}
+
+/**
+ * The indoor unit of an airco, high on the wall with its air outlet at the bottom.
+ */
+function buildAirco({ wall, x1, y1, x2, y2 }, { length, depth }, materials) {
+  const centerX = (x1 + x2) / 2 - length / 2;
+  const centerZ = (y1 + y2) / 2 - depth / 2;
+  const alongX = wall === 'front' || wall === 'back';
+  const toRoom = { left: 1, right: -1, back: 1, front: -1 }[wall];
+  const outlet = alongX ? [x2 - x1 - 0.1, 0.03, 0.02] : [0.02, 0.03, y2 - y1 - 0.1];
+  const offset = (y2 - y1 > x2 - x1 ? x2 - x1 : y2 - y1) / 2;
+
+  const group = new Group();
+  group.add(
+    box(x2 - x1, 0.3, y2 - y1, centerX, 2.15, centerZ, materials.ceramic),
+    box(...outlet, alongX ? centerX : centerX + toRoom * offset, 2.04, alongX ? centerZ + toRoom * offset : centerZ, materials.hob),
+  );
+
+  return group;
+}
+
+function buildInterior(configuration, dimensions, level, materials) {
+  const group = new Group();
+  const builders = { toilet: buildToilet, kitchen: buildKitchen, airco: buildAirco };
+  interiorLayout(configuration, dimensions, level).items.forEach((item) => group.add(builders[item.type](item, dimensions, materials)));
+
+  return group;
+}
+
 /** The sets of walls per layer, from the ground up, as in App\Support\UnitConfiguration::LEVELS. */
 const LEVELS = ['walls', 'upper_walls'];
 
@@ -472,6 +579,7 @@ function buildUnit(configuration, dimensions, materials) {
     });
 
     body.add(buildFrame(length, depth, seams, materials));
+    body.add(buildInterior(configuration, dimensions, level, materials));
     body.add(box(length - 2 * wallThickness, 0.03, depth - 2 * wallThickness, 0, BOTTOM_RAIL - 0.015, 0, materials.floor));
     unit.add(body);
   });
@@ -505,8 +613,14 @@ const VIEW_DIRECTIONS = {
   back: [-0.32, 0.95, -1],
 };
 
-/** Viewer-only camera that shows the front and right walls about equally, so a door in either is in view. */
-const CORNER_DIRECTION = [0.8, 0.95, 1];
+/**
+ * Viewer-only cameras: "corner" shows the front and right walls about equally, so a door in either is in view;
+ * "interior" looks steeply down into the open unit, so what is fitted inside is in view.
+ */
+const VIEWER_DIRECTIONS = {
+  corner: [0.8, 0.95, 1],
+  interior: [0.35, 2.4, 0.9],
+};
 
 function createRenderer(options = {}) {
   const renderer = new WebGLRenderer({ antialias: true, ...options });
@@ -591,6 +705,13 @@ function createStage(renderer, backdrops) {
      * Put the sun over the shoulder of the camera of the given view, so the walls in view are lit.
      */
     light(view) {
+      if (view === 'interior') {
+        // High overhead, so the walls cast as little shadow into the unit as possible.
+        sun.position.set(-1.5, 12, 2.5);
+
+        return;
+      }
+
       const [x, , z] = VIEW_DIRECTIONS[view];
       sun.position.set(-Math.sign(x) * 5, 9, Math.sign(z) * 8);
     },
@@ -618,8 +739,8 @@ function createStage(renderer, backdrops) {
 function aim(camera, target, bounds, view, zoom) {
   const size = bounds.getSize(new Vector3());
   const center = bounds.getCenter(new Vector3());
-  const distance = ((size.x + size.z) * 1.3 + 3 + Math.max(0, size.y - 3) * 1.5) * zoom;
-  const direction = new Vector3(...(view === 'corner' ? CORNER_DIRECTION : VIEW_DIRECTIONS[view])).normalize().multiplyScalar(distance);
+  const distance = ((size.x + size.z) * 1.3 + 3 + Math.max(0, size.y - 3) * 1.5) * zoom * (view === 'interior' ? 0.8 : 1);
+  const direction = new Vector3(...(VIEWER_DIRECTIONS[view] ?? VIEW_DIRECTIONS[view])).normalize().multiplyScalar(distance);
   target.set(center.x, Math.min(1, size.y / 2) + Math.max(0, size.y - 3) * 0.6, center.z);
   camera.position.copy(target).add(direction);
   camera.lookAt(target);
@@ -669,17 +790,21 @@ export function createUnitViewer(container, backdrops, { zoom = true, distance =
 
   return {
     /**
+     * Inside, only the ground floor is shown, so the layer above does not hide what is fitted in it.
+     *
      * @param {{size: string, walls: Record<string, string[]>, colors: {cladding: string, frame: string}, background: string}} configuration
      * @param {{length: number, depth: number}} dimensions
+     * @param {{interior?: boolean}} options
      */
-    update(configuration, dimensions) {
-      stage.show(configuration, dimensions);
+    update(configuration, dimensions, { interior = false } = {}) {
+      stage.show(interior ? { ...configuration, floors: 1, stairs: false } : configuration, dimensions);
+      stage.light(interior ? 'interior' : 'front');
 
-      // Reframe the camera when the building changes size; otherwise keep the angle the user turned to.
-      const footprint = `${configuration.size}-${configuration.modules ?? 1}-${configuration.floors ?? 1}-${configuration.stairs ?? false}`;
+      // Reframe the camera when the building changes size or the view switches; otherwise keep the angle the user turned to.
+      const footprint = `${configuration.size}-${configuration.modules ?? 1}-${configuration.floors ?? 1}-${configuration.stairs ?? false}-${interior}`;
       if (footprint !== currentFootprint) {
         currentFootprint = footprint;
-        aim(camera, controls.target, stage.bounds(), view, distance);
+        aim(camera, controls.target, stage.bounds(), interior ? 'interior' : view, distance);
         controls.update();
       }
 

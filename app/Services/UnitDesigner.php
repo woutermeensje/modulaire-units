@@ -45,6 +45,9 @@ class UnitDesigner
         Er zijn vier kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw)
         en "#4188aa" (logoblauw, het lichtere blauw uit het logo).
         Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
+        interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "toilet"
+        (toiletruimte met fonteintje) en "kitchen" (keukentje). Verlichting zit er altijd in. Kies alleen wat gevraagd wordt
+        of duidelijk bij het gebruik hoort; anders een lege lijst. Waar het komt te staan wordt automatisch bepaald.
         Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 
         Volg de beschrijving zo letterlijk mogelijk. Wat niet genoemd wordt, kies je zelf op een logische manier:
@@ -158,10 +161,11 @@ class UnitDesigner
                     'additionalProperties' => false,
                 ],
                 'background' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::BACKGROUNDS)],
+                'interior' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::INTERIOR)], 'description' => 'Inrichting; verlichting zit er altijd in'],
                 'title' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'title', 'meta_description'],
+            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'title', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

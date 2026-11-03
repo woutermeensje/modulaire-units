@@ -18,6 +18,11 @@
         }
     }
     $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::DOOR => 'ph-door'];
+    $interiorOptions = [
+        'airco' => ['icon' => 'ph-snowflake', 'help' => 'Airco-unit aan de wand, voor koelen en verwarmen'],
+        'toilet' => ['icon' => 'ph-toilet', 'help' => 'Toiletruimte met fonteintje'],
+        'kitchen' => ['icon' => 'ph-cooking-pot', 'help' => 'Keukenblok met spoelbak en kookplaat'],
+    ];
     $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
 @endphp
 <span class="portal-label">{{ $field->label }}</span>
@@ -90,14 +95,8 @@
                     @endfor
                 </select>
             </div>
-            <div data-configurator-body @unless ($isConfigured) hidden @endunless>
-                <label class="portal-label" for="configuration_background">Achtergrond</label>
-                <select class="portal-input" id="configuration_background" name="configuration[background]" data-search-select>
-                    @foreach (UnitConfiguration::BACKGROUNDS as $background => $label)
-                        <option value="{{ $background }}" @selected($configuration['background'] === $background)>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
+            {{-- Not offered as a choice: units stand on an industrial estate, unless the AI or an older configuration says otherwise. --}}
+            <input type="hidden" name="configuration[background]" value="{{ $configuration['background'] }}">
             <div class="unit-configurator__colors" data-configurator-body @unless ($isConfigured) hidden @endunless>
                 @foreach (['cladding' => 'Wanden', 'frame' => 'Kozijnen en frame'] as $part => $partLabel)
                     <fieldset class="unit-configurator__palette">
@@ -114,6 +113,19 @@
                     </fieldset>
                 @endforeach
             </div>
+            <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>
+                <legend class="portal-label">Inrichting</legend>
+                <div class="unit-configurator__swatches">
+                    @foreach (UnitConfiguration::INTERIOR as $item => $itemLabel)
+                        <label class="unit-swatch" title="{{ $interiorOptions[$item]['help'] }}">
+                            <input type="checkbox" name="configuration[interior][]" value="{{ $item }}" @checked(in_array($item, $configuration['interior'] ?? [], true))>
+                            <span class="unit-swatch__icon"><i class="ph {{ $interiorOptions[$item]['icon'] }}"></i></span>
+                            <span class="unit-swatch__label">{{ $itemLabel }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <p class="portal-help">Verlichting zit er altijd in. Een airco koelt en verwarmt; er komt er één per unit, hoog aan de wand. Het toilet en het keukentje staan op de begane grond, op een plek zonder deur.</p>
+            </fieldset>
         </div>
 
         <div class="unit-configurator__levels" data-configurator-body @unless ($isConfigured) hidden @endunless>
@@ -193,11 +205,15 @@
                 <button type="button" @class(['unit-configurator__view', 'is-active' => $composer]) data-configurator-view="3d" aria-pressed="{{ $composer ? 'true' : 'false' }}">
                     <i class="ph ph-cube"></i> 3D (prototype)
                 </button>
+                <button type="button" class="unit-configurator__view" data-configurator-view="interior" aria-pressed="false">
+                    <i class="ph ph-armchair"></i> Binnenkant
+                </button>
             </div>
             <div class="unit-configurator__preview" data-configurator-preview @if ($composer) hidden @endif>
                 {!! app(FloorPlanRenderer::class)->render($configuration) !!}
             </div>
             <div class="unit-configurator__viewer" data-configurator-viewer @unless ($composer) hidden @endunless></div>
+            <p class="unit-configurator__viewer-note" data-configurator-interior-note hidden>Je ziet de binnenkant van de begane grond; de verdieping is hier weggelaten.</p>
         </div>
         <p class="portal-help" data-configurator-viewer-help @unless ($composer) hidden @endunless>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>
         @if ($composer)

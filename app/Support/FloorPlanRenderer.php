@@ -7,6 +7,9 @@ namespace App\Support;
  * windows and doors in their openings and all dimensions in millimetres. The front wall is at the bottom, as in the
  * configurator. With two layers both floors are drawn side by side.
  *
+ * The interior is drawn with the usual symbols: ceiling lights (always fitted) as a crossed circle, the toilet cubicle,
+ * the kitchenette and every airco, which hangs high on the wall and is therefore dashed. See InteriorLayout.
+ *
  * Drawing units are millimetres; the SVG scales to its container through the viewBox.
  *
  * @phpstan-import-type Configuration from UnitConfiguration
@@ -60,6 +63,7 @@ class FloorPlanRenderer
             .'<title>'.e($label).'</title>'
             .'<rect width="'.$width.'" height="'.$height.'" fill="#ffffff"/>'
             .$body
+            .$this->legend($height - 200, in_array('airco', $configuration['interior'] ?? [], true))
             .$this->text($width - 200, $height - 200, 'Maten in mm', 'font-size="130" text-anchor="end" fill="#555555"')
             .'</svg>';
     }
@@ -71,7 +75,7 @@ class FloorPlanRenderer
      */
     private function plan(array $configuration, string $level, int $length, int $depth): string
     {
-        $svg = $this->seams($configuration, $length, $depth);
+        $svg = $this->seams($configuration, $length, $depth).$this->interior($configuration, $level, $length, $depth);
         $size = UnitConfiguration::SIZES[$configuration['size']];
 
         foreach (array_keys(UnitConfiguration::WALLS) as $wall) {
@@ -227,7 +231,148 @@ class FloorPlanRenderer
                 $y = $depth - $module * $unitDepth;
                 $svg .= '<line x1="'.self::WALL.'" y1="'.$this->number($y).'" x2="'.($length - self::WALL).'" y2="'.$this->number($y).'" stroke="#777777" stroke-width="8" stroke-dasharray="60 50"/>';
             }
-            $svg .= $this->text($length / 2, $depth - ($module - 0.5) * $unitDepth + 55, 'Unit '.$module, 'fill="#777777"');
+            // Below the middle of the unit, where its ceiling lights hang.
+            $svg .= $this->text($length / 2, $depth - ($module - 0.5) * $unitDepth + 455, 'Unit '.$module, 'fill="#777777"');
+        }
+
+        return $svg;
+    }
+
+    /**
+     * The lights and the chosen interior of one floor, scaled from nominal metres to the real size in millimetres.
+     *
+     * @param  Configuration  $configuration
+     */
+    private function interior(array $configuration, string $level, int $length, int $depth): string
+    {
+        $size = UnitConfiguration::SIZES[$configuration['size']];
+        $scaleX = $length / $size['length'];
+        $scaleY = $depth / ($size['depth'] * $configuration['modules']);
+        $layout = InteriorLayout::for($configuration, $level);
+
+        $svg = '';
+        foreach ($layout['items'] as $item) {
+            $rect = ['x1' => $item['x1'] * $scaleX, 'y1' => $item['y1'] * $scaleY, 'x2' => $item['x2'] * $scaleX, 'y2' => $item['y2'] * $scaleY];
+            $svg .= match ($item['type']) {
+                'toilet' => $this->toilet($item, $rect),
+                'kitchen' => $this->kitchen($item, $rect),
+                'airco' => $this->airco($item, $rect),
+            };
+        }
+
+        foreach ($layout['lights'] as $light) {
+            $svg .= $this->light($light['x'] * $scaleX, $light['y'] * $scaleY);
+        }
+
+        return $svg;
+    }
+
+    /**
+     * A ceiling light: a circle with a cross.
+     */
+    private function light(float $x, float $y, float $radius = 160): string
+    {
+        $arm = $radius * M_SQRT1_2;
+
+        return '<circle cx="'.$this->number($x).'" cy="'.$this->number($y).'" r="'.$this->number($radius).'" fill="#ffffff" stroke="'.self::INK.'" stroke-width="8"/>'
+            .$this->line($x - $arm, $y - $arm, $x + $arm, $y + $arm, 8)
+            .$this->line($x - $arm, $y + $arm, $x + $arm, $y - $arm, 8);
+    }
+
+    /**
+     * The toilet cubicle in its corner: partitions on the two sides facing the room, a door opening outwards towards
+     * the middle of the unit, the toilet against the outside wall and a hand basin against the side wall.
+     *
+     * It is drawn in a frame with its origin in the corner, x along the outside wall and y along the side wall, both
+     * pointing into the unit, which is then mirrored into place.
+     *
+     * @param  array{wall: string, side?: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function toilet(array $item, array $rect): string
+    {
+        $isLeft = ($item['side'] ?? 'left') === 'left';
+        $isBack = $item['wall'] === 'back';
+        $width = $rect['x2'] - $rect['x1'];
+        $depth = $rect['y2'] - $rect['y1'];
+        $transform = 'matrix('.($isLeft ? 1 : -1).' 0 0 '.($isBack ? 1 : -1).' '.$this->number($isLeft ? $rect['x1'] : $rect['x2']).' '.$this->number($isBack ? $rect['y1'] : $rect['y2']).')';
+
+        $partition = 50;
+        $doorFrom = 150;
+        $doorTo = min($width - $partition, $doorFrom + 700);
+        $leaf = $doorTo - $doorFrom;
+        $stroke = 'stroke="'.self::INK.'" stroke-width="8"';
+
+        $svg = '<rect width="'.$this->number($width).'" height="'.$this->number($depth).'" fill="#ffffff"/>'
+            .'<rect x="'.$this->number($width - $partition).'" width="'.$partition.'" height="'.$this->number($depth).'" fill="'.self::WALL_FILL.'" '.$stroke.'/>'
+            .'<rect y="'.$this->number($depth - $partition).'" width="'.$doorFrom.'" height="'.$partition.'" fill="'.self::WALL_FILL.'" '.$stroke.'/>'
+            .'<rect x="'.$this->number($doorTo).'" y="'.$this->number($depth - $partition).'" width="'.$this->number($width - $partition - $doorTo).'" height="'.$partition.'" fill="'.self::WALL_FILL.'" '.$stroke.'/>'
+            .$this->line($doorFrom, $depth, $doorFrom, $depth + $leaf, 10)
+            .'<path d="M '.$doorFrom.' '.$this->number($depth + $leaf).' A '.$this->number($leaf).' '.$this->number($leaf).' 0 0 0 '.$this->number($doorTo).' '.$this->number($depth).'" fill="none" stroke="'.self::INK.'" stroke-width="6"/>'
+            // Toilet: cistern against the outside wall and the bowl in front of it.
+            .'<rect x="'.$this->number($width / 2 - 200).'" y="0" width="400" height="180" fill="#ffffff" '.$stroke.'/>'
+            .'<ellipse cx="'.$this->number($width / 2).'" cy="430" rx="180" ry="250" fill="#ffffff" '.$stroke.'/>'
+            // Hand basin against the side wall.
+            .'<rect x="0" y="'.$this->number($depth - 650).'" width="220" height="350" rx="40" fill="#ffffff" '.$stroke.'/>'
+            .'<circle cx="80" cy="'.$this->number($depth - 475).'" r="25" fill="none" '.$stroke.'/>';
+
+        return '<g transform="'.$transform.'">'.$svg.'</g>'
+            .$this->text(($rect['x1'] + $rect['x2']) / 2 + ($isLeft ? 120 : -120), ($rect['y1'] + $rect['y2']) / 2 + ($isBack ? 250 : -150), 'WC', 'font-weight="bold"');
+    }
+
+    /**
+     * The kitchenette against its wall: the worktop with a sink at one end and a two-burner hob at the other, and its
+     * name in the room in front of it.
+     *
+     * @param  array{wall: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function kitchen(array $item, array $rect): string
+    {
+        $stroke = 'stroke="'.self::INK.'" stroke-width="8"';
+        $isBack = $item['wall'] === 'back';
+        $middle = ($rect['y1'] + $rect['y2']) / 2;
+
+        $svg = '<rect x="'.$this->number($rect['x1']).'" y="'.$this->number($rect['y1']).'" width="'.$this->number($rect['x2'] - $rect['x1']).'" height="'.$this->number($rect['y2'] - $rect['y1']).'" fill="#ffffff" '.$stroke.'/>'
+            .'<rect x="'.$this->number($rect['x1'] + 150).'" y="'.$this->number($middle - 180).'" width="500" height="360" rx="50" fill="#ffffff" '.$stroke.'/>'
+            .'<circle cx="'.$this->number($rect['x1'] + 400).'" cy="'.$this->number($middle).'" r="30" fill="none" '.$stroke.'/>';
+
+        foreach ([$rect['x2'] - 520, $rect['x2'] - 250] as $burner) {
+            $svg .= '<circle cx="'.$this->number($burner).'" cy="'.$this->number($middle).'" r="100" fill="none" '.$stroke.'/>';
+        }
+
+        $labelY = $isBack ? $rect['y2'] + 230 : $rect['y1'] - 130;
+
+        return $svg.$this->text(($rect['x1'] + $rect['x2']) / 2, $labelY, 'Keuken', 'font-weight="bold"');
+    }
+
+    /**
+     * An airco hanging high on its wall: dashed, as everything above the cutting height of a floor plan.
+     *
+     * @param  array{wall: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function airco(array $item, array $rect): string
+    {
+        $centerX = ($rect['x1'] + $rect['x2']) / 2;
+        $centerY = ($rect['y1'] + $rect['y2']) / 2;
+        $rotate = in_array($item['wall'], ['left', 'right'], true) ? ' transform="rotate(-90 '.$this->number($centerX).' '.$this->number($centerY).')"' : '';
+
+        return '<rect x="'.$this->number($rect['x1']).'" y="'.$this->number($rect['y1']).'" width="'.$this->number($rect['x2'] - $rect['x1']).'" height="'.$this->number($rect['y2'] - $rect['y1']).'" fill="#ffffff" stroke="'.self::INK.'" stroke-width="8" stroke-dasharray="40 30"/>'
+            .'<text x="'.$this->number($centerX).'" y="'.$this->number($centerY + 42).'" font-family="'.self::FONT.'" font-size="120" font-weight="bold" text-anchor="middle" fill="'.self::INK.'"'.$rotate.'>AC</text>';
+    }
+
+    /**
+     * What the symbols mean, in the bottom left corner: the lights always, the airco when there is one.
+     */
+    private function legend(float $baseline, bool $hasAirco): string
+    {
+        $svg = $this->light(280, $baseline - 45, 80).$this->text(420, $baseline, 'Verlichting', 'font-size="130" text-anchor="start" fill="#555555"');
+
+        if ($hasAirco) {
+            $svg .= '<rect x="1250" y="'.$this->number($baseline - 110).'" width="260" height="130" fill="#ffffff" stroke="'.self::INK.'" stroke-width="8" stroke-dasharray="40 30"/>'
+                .$this->text(1380, $baseline - 10, 'AC', 'font-size="90" font-weight="bold"')
+                .$this->text(1570, $baseline, 'Airco (aan de wand, hoog)', 'font-size="130" text-anchor="start" fill="#555555"');
         }
 
         return $svg;
