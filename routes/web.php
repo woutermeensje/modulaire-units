@@ -41,13 +41,6 @@ Route::get('wp-content/uploads/{path}', fn (string $path) => redirect(SiteUrl::m
 
 /*
 |--------------------------------------------------------------------------
-| Public unit composer: only the free 2D preview, deliberately no AI endpoint
-|--------------------------------------------------------------------------
-*/
-Route::post('unit-samensteller/voorbeeld', UnitPreviewController::class)->middleware('throttle:60,1')->name('unit-composer.public.preview');
-
-/*
-|--------------------------------------------------------------------------
 | Public website
 |--------------------------------------------------------------------------
 |
@@ -67,6 +60,9 @@ $publicRoutes = function (string $locale): void {
         Route::post($segment('vacature/{slug}/solliciteren', 'vacancy/{slug}/apply'), [VacancyController::class, 'apply'])->name('vacancies.apply');
         Route::post($segment('gebruikt/aanbod/{slug}/reageren', 'used/listing/{slug}/respond'), [UsedListingController::class, 'respond'])->name('used-listings.respond');
     });
+
+    // Public unit composer: only the free 2D preview, deliberately no AI endpoint.
+    Route::post($segment('unit-samensteller/voorbeeld', 'unit-composer/preview'), UnitPreviewController::class)->middleware('throttle:60,1')->name('unit-composer.public.preview');
 
     Route::middleware(EnsureTrailingSlash::class)->group(function () use ($locale, $segment): void {
         Route::get('/', [PageController::class, 'home'])->name('home');

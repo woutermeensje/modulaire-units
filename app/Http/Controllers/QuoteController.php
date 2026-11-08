@@ -6,6 +6,7 @@ use App\Http\Requests\QuoteSubmitRequest;
 use App\Services\QuoteCart;
 use App\Services\SubmissionRecorder;
 use App\Support\ComposedUnit;
+use App\Support\Locale;
 use App\Support\Seo;
 use App\Support\SiteUrl;
 use App\Support\UnitConfiguration;
@@ -99,7 +100,8 @@ class QuoteController extends Controller
                 'email' => $request->input('email'),
                 'phone' => $request->input('phone'),
                 'message' => $request->input('message'),
-                'items' => $items->map(fn (array $item): array => $item['model'] instanceof ComposedUnit
+                // The admin is Dutch, so a quote from the English site is stored with the Dutch titles.
+                'items' => Locale::using(Locale::SOURCE, fn (): array => $items->map(fn (array $item): array => $item['model'] instanceof ComposedUnit
                     ? [
                         'type' => $item['type'],
                         'id' => $item['model']->key(),
@@ -113,7 +115,7 @@ class QuoteController extends Controller
                         'title' => $item['model']->title,
                         'url' => SiteUrl::absolute($item['model']->url()),
                         'quantity' => $item['quantity'],
-                    ])->all(),
+                    ])->all()),
                 'source_url' => SiteUrl::absolute(SiteUrl::route('quote.show')),
             ], $request);
         }

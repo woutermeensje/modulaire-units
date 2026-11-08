@@ -64,7 +64,7 @@ class FloorPlanRenderer
             .'<rect width="'.$width.'" height="'.$height.'" fill="#ffffff"/>'
             .$body
             .$this->legend($height - 200, in_array('airco', $configuration['interior'] ?? [], true))
-            .$this->text($width - 200, $height - 200, 'Maten in mm', 'font-size="130" text-anchor="end" fill="#555555"')
+            .$this->text($width - 200, $height - 200, __('Maten in mm'), 'font-size="130" text-anchor="end" fill="#555555"')
             .'</svg>';
     }
 
@@ -343,7 +343,7 @@ class FloorPlanRenderer
 
         $labelY = $isBack ? $rect['y2'] + 230 : $rect['y1'] - 130;
 
-        return $svg.$this->text(($rect['x1'] + $rect['x2']) / 2, $labelY, 'Keuken', 'font-weight="bold"');
+        return $svg.$this->text(($rect['x1'] + $rect['x2']) / 2, $labelY, __('Keuken'), 'font-weight="bold"');
     }
 
     /**
@@ -367,12 +367,12 @@ class FloorPlanRenderer
      */
     private function legend(float $baseline, bool $hasAirco): string
     {
-        $svg = $this->light(280, $baseline - 45, 80).$this->text(420, $baseline, 'Verlichting', 'font-size="130" text-anchor="start" fill="#555555"');
+        $svg = $this->light(280, $baseline - 45, 80).$this->text(420, $baseline, __('Verlichting'), 'font-size="130" text-anchor="start" fill="#555555"');
 
         if ($hasAirco) {
             $svg .= '<rect x="1250" y="'.$this->number($baseline - 110).'" width="260" height="130" fill="#ffffff" stroke="'.self::INK.'" stroke-width="8" stroke-dasharray="40 30"/>'
                 .$this->text(1380, $baseline - 10, 'AC', 'font-size="90" font-weight="bold"')
-                .$this->text(1570, $baseline, 'Airco (aan de wand, hoog)', 'font-size="130" text-anchor="start" fill="#555555"');
+                .$this->text(1570, $baseline, __('Airco (aan de wand, hoog)'), 'font-size="130" text-anchor="start" fill="#555555"');
         }
 
         return $svg;

@@ -69,7 +69,7 @@ class UnitComposerTest extends TestCase
             ->assertOk()
             ->assertSee('Unit samenstellen')
             ->assertSee('data-composer', false)
-            ->assertSee('data-preview-url="'.route('unit-composer.public.preview').'"', false)
+            ->assertSee('data-preview-url="/unit-samensteller/voorbeeld"', false)
             ->assertSee('Kopieer link')
             ->assertDontSee('data-design-url', false)
             ->assertDontSee('Bewerken met AI')
@@ -83,7 +83,7 @@ class UnitComposerTest extends TestCase
             ->assertSee('data-configurator-view="interior"', false)
             ->assertDontSee('id="configuration_background"', false);
 
-        $this->get('/unit-samensteller/')->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'">', false);
+        $this->get('/unit-samensteller/')->assertSee('data-configurator-quote data-quote-url="/unit-samensteller/offerte">', false);
 
         $this->post(route('unit-composer.public.preview'), ['configuration' => ['size' => '3x3']])
             ->assertOk()
@@ -99,7 +99,7 @@ class UnitComposerTest extends TestCase
         $this->get('/unit-samensteller/?'.UnitConfiguration::SHARE_KEY.'='.$encoded)
             ->assertOk()
             ->assertSee('<option value="2" selected>2 lagen (gestapeld)</option>', false)
-            ->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'">', false);
+            ->assertSee('data-configurator-quote data-quote-url="/unit-samensteller/offerte">', false);
     }
 
     public function test_guests_are_sent_to_the_login_page(): void
@@ -145,7 +145,7 @@ class UnitComposerTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSeeInOrder(['mh-home-hero__title', 'Stel je eigen unit samen', 'data-composer', 'Welkom bij de modulaire units'], false)
-            ->assertSee('data-preview-url="'.route('unit-composer.public.preview').'"', false)
+            ->assertSee('data-preview-url="/unit-samensteller/voorbeeld"', false)
             ->assertSee('Type gebruik')
             ->assertDontSee('Bewerken met AI');
 

@@ -239,28 +239,31 @@ class UnitConfiguration
 
     /**
      * A description such as "Modulaire unit van 6 x 3 meter", "2 gekoppelde units van 6 x 3 meter (6 x 6 meter)" or
-     * "8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)".
+     * "8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)", in the language of the page.
      *
      * @param  Configuration  $configuration
      */
     public static function label(array $configuration): string
     {
-        $size = self::SIZES[$configuration['size']]['label'];
+        $size = __(self::SIZES[$configuration['size']]['label']);
 
         $dimensions = self::dimensions($configuration);
-        $footprint = "{$dimensions['length']} x {$dimensions['depth']} meter";
+        $footprint = __(':length x :depth meter', ['length' => $dimensions['length'], 'depth' => $dimensions['depth']]);
 
         if ($configuration['floors'] > 1) {
-            $units = $configuration['modules'] * $configuration['floors'];
-
-            return "{$units} units van {$size} in {$configuration['floors']} lagen ({$footprint})";
+            return __(':units units van :size in :floors lagen (:footprint)', [
+                'units' => $configuration['modules'] * $configuration['floors'],
+                'size' => $size,
+                'floors' => $configuration['floors'],
+                'footprint' => $footprint,
+            ]);
         }
 
         if ($configuration['modules'] === 1) {
-            return 'Modulaire unit van '.$size;
+            return __('Modulaire unit van :size', ['size' => $size]);
         }
 
-        return "{$configuration['modules']} gekoppelde units van {$size} ({$footprint})";
+        return __(':modules gekoppelde units van :size (:footprint)', ['modules' => $configuration['modules'], 'size' => $size, 'footprint' => $footprint]);
     }
 
     /**

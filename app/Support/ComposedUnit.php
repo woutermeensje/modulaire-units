@@ -27,11 +27,11 @@ final class ComposedUnit
 
     public function title(): string
     {
-        return 'Eigen samenstelling: '.UnitConfiguration::label($this->configuration);
+        return __('Eigen samenstelling: :label', ['label' => UnitConfiguration::label($this->configuration)]);
     }
 
     /**
-     * Colours, the number of windows and doors, the interior and the use, e.g.
+     * Colours, the number of windows and doors, the interior and the use in the language of the page, e.g.
      * "Wanden antraciet, frame antraciet, 2 ramen, 1 deur, inrichting: airco, keukentje, gebruik: kantoor, kantine".
      */
     public function summary(): string
@@ -47,16 +47,17 @@ final class ComposedUnit
             }
         }
 
-        $colour = fn (string $part): string => mb_strtolower(UnitConfiguration::COLORS[$this->configuration['colors'][$part]]);
+        $names = fn (array $keys, array $labels): string => mb_strtolower(implode(', ', array_map(fn (string $key): string => __($labels[$key]), $keys)));
+        $colour = fn (string $part): string => mb_strtolower(__(UnitConfiguration::COLORS[$this->configuration['colors'][$part]]));
 
         return implode(', ', array_filter([
-            'Wanden '.$colour('cladding'),
-            'frame '.$colour('frame'),
-            $windows === 1 ? '1 raam' : $windows.' ramen',
-            $doors === 1 ? '1 deur' : $doors.' deuren',
-            $this->configuration['stairs'] ? 'buitentrap' : null,
-            empty($this->configuration['interior']) ? null : 'inrichting: '.mb_strtolower(implode(', ', array_map(fn (string $item): string => UnitConfiguration::INTERIOR[$item], $this->configuration['interior']))),
-            empty($this->configuration['usage']) ? null : 'gebruik: '.mb_strtolower(implode(', ', array_map(fn (string $usage): string => UnitConfiguration::USAGES[$usage], $this->configuration['usage']))),
+            __('Wanden :colour', ['colour' => $colour('cladding')]),
+            __('frame :colour', ['colour' => $colour('frame')]),
+            trans_choice(':count raam|:count ramen', $windows),
+            trans_choice(':count deur|:count deuren', $doors),
+            $this->configuration['stairs'] ? __('buitentrap') : null,
+            empty($this->configuration['interior']) ? null : __('inrichting: :items', ['items' => $names($this->configuration['interior'], UnitConfiguration::INTERIOR)]),
+            empty($this->configuration['usage']) ? null : __('gebruik: :items', ['items' => $names($this->configuration['usage'], UnitConfiguration::USAGES)]),
         ]));
     }
 

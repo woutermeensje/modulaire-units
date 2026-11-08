@@ -32,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
         // The admin, the customer portal and the Dutch site are in Dutch; the English site switches with SetLocale.
         Locale::activate(Locale::SOURCE);
 
+        // Translation keys are the Dutch texts, so a text without translation falls back to the Dutch key, never to another language.
+        $this->app['translator']->setFallback(Locale::SOURCE);
+
         Paginator::defaultView('partials.paginering');
 
         Password::defaults(fn () => Password::min(8));
