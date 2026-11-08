@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Keeps the rendered images of a unit's configuration in the media library in step with the configuration.
  *
- * A unit without a photo of its own gets the front view as its featured image, so cards, related units
- * and the quote show it too. Otherwise the renders are appended to the gallery by Unit::images().
+ * A configured unit gets the front view as its featured image, so cards, related units and the quote show it
+ * too; on the website a configured unit only shows these renders (see Unit::images()).
  *
  * The renders are 2D drawings made by UnitRenderer, or 3D photos made in the admin's browser. The server
  * cannot make 3D photos itself, so they are kept for as long as the configuration they show is unchanged.
@@ -59,7 +59,7 @@ class UnitConfigurationImages
             $this->delete($path);
         }
 
-        if (blank($unit->featured_image) || in_array($unit->featured_image, $previous, true)) {
+        if ($current !== [] || in_array($unit->featured_image, $previous, true)) {
             $unit->featured_image = $current[0] ?? null;
         }
 

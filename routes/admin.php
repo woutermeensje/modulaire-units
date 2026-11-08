@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\AccountController;
+use App\Http\Controllers\Portal\ComposedUnitController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\UnitComposerController as PortalUnitComposerController;
 use App\Http\Controllers\Portal\UsedListingController;
@@ -47,7 +48,8 @@ Route::middleware('auth')->group(function (): void {
     Route::post('account/units', [UsedListingController::class, 'store'])->middleware('throttle:forms')->name('my-used-listings.store');
     Route::get('account/unit-samenstellen', PortalUnitComposerController::class)->name('unit-composer');
     Route::post('account/unit-samenstellen/voorbeeld', UnitPreviewController::class)->middleware('throttle:120,1')->name('unit-composer.preview');
-    Route::post('account/unit-samenstellen/ontwerpen', UnitDesignController::class)->middleware('throttle:10,1')->name('unit-composer.design');
+    Route::post('account/unit-samenstellen', [ComposedUnitController::class, 'store'])->middleware(EnsureUserIsAdmin::class)->name('unit-composer.store');
+    Route::patch('account/units/{unit}/status', [ComposedUnitController::class, 'updateStatus'])->middleware(EnsureUserIsAdmin::class)->name('composed-units.status');
 });
 
 /*

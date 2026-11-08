@@ -77,7 +77,6 @@ class PageController extends Controller
                 'page' => $page,
                 'overview' => app(UnitTypesOverview::class)->build($page),
                 'seo' => Seo::for($page, $page->excerpt),
-                'composer' => $this->composer($request),
             ]);
         }
 
@@ -102,7 +101,7 @@ class PageController extends Controller
     }
 
     /**
-     * The public unit composer on the home page, /modulaire-units/ and the huur- en koopagina's; a shared composition is read from the link, as on /unit-samensteller/.
+     * The public unit composer on the home page and the huur- en koopagina's; a shared composition is read from the link, as on /unit-samensteller/.
      *
      * @return array{configuration: array<string, mixed>}
      */

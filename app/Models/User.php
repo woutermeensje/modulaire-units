@@ -40,6 +40,16 @@ class User extends Authenticatable
         return $this->hasMany(UsedListing::class);
     }
 
+    /**
+     * Units an admin composed in the account's unit composer and added to the products.
+     *
+     * @return HasMany<Unit, $this>
+     */
+    public function units(): HasMany
+    {
+        return $this->hasMany(Unit::class);
+    }
+
     public function isAdmin(): bool
     {
         return (bool) $this->is_admin;

@@ -10,6 +10,7 @@ use App\Models\Redirect;
 use App\Models\Setting;
 use App\Models\Unit;
 use App\Models\UnitTerm;
+use App\Models\User;
 use App\Support\UnitConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -175,22 +176,36 @@ class PublicSiteTest extends TestCase
             ->assertSee('Vragen over transport &amp; plaatsing?', false);
     }
 
-    public function test_modulaire_units_page_offers_the_unit_composer_instead_of_the_unit_types(): void
+    public function test_modulaire_units_page_shows_the_published_composed_units_instead_of_the_composer(): void
     {
         $rent = Page::factory()->create(['slug' => 'huren', 'title' => 'Huren']);
         Page::factory()->create(['slug' => 'bouwunits', 'title' => 'Bouwunits huren', 'parent_id' => $rent->id]);
         Page::factory()->create(['slug' => 'modulaire-units', 'title' => 'Modulaire units', 'excerpt' => 'Het complete aanbod.', 'content' => '']);
+        $admin = User::factory()->admin()->create();
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Portiersloge', 'slug' => 'portiersloge', 'price_rent' => 'Vanaf € 250,- per maand', 'configuration' => UnitConfiguration::normalize(['size' => '3x3'])]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Kantoorunit in concept', 'status' => 'draft']);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Kantoorunit offline', 'status' => 'offline']);
+        Unit::factory()->create(['title' => 'Geimporteerde unit']);
 
         $this->get('/modulaire-units/')
             ->assertOk()
             ->assertSee('<h1 id="mh-unit-types-title">Modulaire units</h1>', false)
             ->assertSee('mh-offer-hero__panel', false)
             ->assertSee('Het complete aanbod.')
-            ->assertSee('<a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">Units samenstellen</a>', false)
-            ->assertSee('Stel je eigen unit samen')
-            ->assertSee('id="unit-samensteller"', false)
-            ->assertSee('data-composer', false)
-            ->assertDontSee('Alle typen modulaire units')
+            ->assertSee('<a class="mh-offer-btn mh-offer-btn--dark" href="#units">Bekijk de units</a>', false)
+            ->assertSee('Portiersloge')
+            ->assertSee('href="/units/portiersloge/"', false)
+            ->assertSeeInOrder(['<dt>Huurprijs</dt>', '<dd>Vanaf € 250,- per maand</dd>', '<dt>Aanschafprijs</dt>', '<dd>Op aanvraag</dd>'], false)
+            ->assertSee('Unit bekijken')
+            ->assertSee('data-unit-card-viewer=\'{"configuration":{"size":"3x3"', false)
+            ->assertSee('Draaibare 3D-weergave van Portiersloge')
+            ->assertSee('Plattegrond van Portiersloge')
+            ->assertSee('data-unit-card-view="interior"', false)
+            ->assertDontSee('Kantoorunit in concept')
+            ->assertDontSee('Kantoorunit offline')
+            ->assertDontSee('Geimporteerde unit')
+            ->assertDontSee('id="unit-samensteller"', false)
+            ->assertDontSee('data-composer', false)
             ->assertDontSee('href="/huren/bouwunits/"', false);
     }
 
@@ -200,7 +215,7 @@ class PublicSiteTest extends TestCase
         $unit = Unit::factory()->create(['title' => '20ft Modulaire Unit', 'slug' => '20ft-modulaire-unit', 'price_buy' => 'Prijs op aanvraag.']);
         $unit->terms()->attach($term);
 
-        $this->get('/units/20ft-modulaire-unit/')->assertOk()->assertSee('20ft Modulaire Unit')->assertSee('Prijs op aanvraag.');
+        $this->get('/units/20ft-modulaire-unit/')->assertOk()->assertSee('20ft Modulaire Unit')->assertSee('Op aanvraag')->assertDontSee('Prijs op aanvraag.');
         $this->get('/conditie/nieuw/')->assertOk()->assertSee('20ft Modulaire Unit');
     }
 

@@ -62,21 +62,23 @@ class UnitResource extends Resource
                     ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Bij opslaan komen de afbeeldingen op de website: als hoofdfoto als de unit nog geen foto heeft, anders achteraan in de galerij. Kies of dat de 2D-tekeningen of de 3D-beelden zijn.'),
             ],
             'Prijzen' => [
-                Field::make('price_rent', 'Prijsindicatie huren')->half()->placeholder('Bijv. Vanaf € 250,- per maand'),
-                Field::make('price_buy', 'Prijsindicatie kopen')->half()->placeholder('Bijv. Prijs op aanvraag.'),
-            ],
-            "Foto's" => [
-                Field::make('featured_image', 'Hoofdfoto', 'image')->half(),
-                Field::make('featured_image_alt', 'Alt-tekst hoofdfoto')->half(),
-                Field::make('gallery', "Extra foto's", 'gallery'),
+                Field::make('price_rent_week', 'Huurprijs per week')->half()->placeholder('Bijv. 75')->help('Op de website staat dit als "€ 75 per week". De aanschafprijs staat altijd op aanvraag.'),
             ],
             'Publicatie' => [
                 Field::make('status', 'Status', 'select')->options($this->statusOptions())->half(),
                 Field::make('sort', 'Volgorde', 'number')->half(),
                 Field::make('published_at', 'Publicatiedatum', 'datetime')->half(),
             ],
-            'SEO' => $this->seoFields(),
+            'SEO' => array_values(array_filter($this->seoFields(), fn (Field $field): bool => $field->name !== 'noindex')),
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function statusOptions(): array
+    {
+        return ['published' => 'Gepubliceerd', 'draft' => 'Concept', 'offline' => 'Offline'];
     }
 
     public function rules(?Model $record): array
@@ -85,11 +87,7 @@ class UnitResource extends Resource
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:190', Rule::unique('units', 'slug')->ignore($record?->id)],
             'content' => ['nullable', 'string'],
-            'price_rent' => ['nullable', 'string', 'max:190'],
-            'price_buy' => ['nullable', 'string', 'max:190'],
-            'featured_image_upload' => ['nullable', 'image', 'max:10240'],
-            'featured_image_alt' => ['nullable', 'string', 'max:255'],
-            'gallery_upload.*' => ['image', 'max:10240'],
+            'price_rent_week' => ['nullable', 'string', 'max:190'],
             'terms' => ['array'],
             'terms.*' => ['nullable', 'integer', Rule::exists('unit_terms', 'id')],
             'status' => ['required', Rule::in(array_keys($this->statusOptions()))],

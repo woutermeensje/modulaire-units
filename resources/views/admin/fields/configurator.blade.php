@@ -6,8 +6,13 @@
 @php
     // In the composer test environment the configurator stands on its own: always configured, opened in 3D, no unit fields.
     $composer ??= false;
-    // Without AI (the public composer) neither the description box nor the design endpoint is offered.
-    $ai ??= true;
+    // AI is only offered in the composer test environment in the admin (Admin\UnitComposerController passes it).
+    // Without AI neither the description box nor the design endpoint is offered.
+    $ai ??= false;
+    // The use of the unit is asked in the public composer only.
+    $usage ??= $composer && ! $ai;
+    // Admins add a composition from their account to the products instead of to the quote; see Portal\UnitComposerController.
+    $storeUrl ??= null;
     $isConfigured = $composer || filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
     $maxSlots = fn (string $wall): int => max(array_map(fn (string $size): int => UnitConfiguration::slotCount($size, $wall, UnitConfiguration::MAX_MODULES), array_keys(UnitConfiguration::SIZES)));
@@ -69,7 +74,7 @@
                     @endforeach
                 </select>
             </div>
-            @if ($composer && ! $ai)
+            @if ($usage)
                 <div class="unit-configurator__usage">
                     <label class="portal-label" for="configuration_usage">Type gebruik</label>
                     <select class="portal-input" id="configuration_usage" name="configuration[usage][]" multiple placeholder="Wat voor gebruik?" data-configurator-usage data-search-select>
@@ -189,7 +194,13 @@
 
     <div class="unit-configurator__preview-panel" data-configurator-body @unless ($isConfigured) hidden @endunless>
         <div class="unit-configurator__stage">
-            @if ($quoteUrl ?? null)
+            @if ($storeUrl)
+                <div class="unit-configurator__quote">
+                    <button type="submit" class="unit-configurator__quote-button">
+                        <i class="ph ph-plus-circle"></i> <span>Unit toevoegen aan producten</span>
+                    </button>
+                </div>
+            @elseif ($quoteUrl ?? null)
                 {{-- Shown right away, so the starting unit can be asked for as it is. --}}
                 <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}">
                     <a href="{{ route('quote.show') }}/" class="unit-configurator__quote-link" data-configurator-quote-link hidden>Bekijk offerte</a>
@@ -216,7 +227,7 @@
             <p class="unit-configurator__viewer-note" data-configurator-interior-note hidden>Je ziet de binnenkant van de begane grond; de verdieping is hier weggelaten.</p>
         </div>
         <p class="portal-help" data-configurator-viewer-help @unless ($composer) hidden @endunless>Sleep om de unit te draaien, scroll om in of uit te zoomen.</p>
-        @if ($composer)
+        @if ($composer && ! $storeUrl)
             <div class="unit-configurator__share">
                 <input class="portal-input" readonly value="{{ request()->fullUrl() }}" aria-label="Link naar deze samenstelling" data-configurator-share-url>
                 <button type="button" class="btn btn-secondary" data-configurator-share-copy><i class="ph ph-link"></i> Kopieer link</button>

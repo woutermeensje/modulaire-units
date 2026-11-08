@@ -41,26 +41,24 @@ class UnitComposerTest extends TestCase
             ->assertSee('Unit samenstellen')
             ->assertDontSee('Unit samenstellen (test)')
             ->assertSee('data-preview-url="'.route('unit-composer.preview').'"', false)
-            ->assertSee('data-design-url="'.route('unit-composer.design').'"', false)
-            ->assertSee('Bewerken met AI');
+            ->assertSee('data-configurator-quote data-quote-url="'.route('unit-composer.quote').'">', false)
+            ->assertSee('data-configurator-share-copy', false)
+            ->assertDontSee('data-design-url', false)
+            ->assertDontSee('Bewerken met AI')
+            ->assertDontSee('Unit toevoegen aan producten');
 
         $this->actingAs($customer)->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3']])
             ->assertOk()
             ->assertHeader('Content-Type', 'image/svg+xml');
     }
 
-    public function test_customers_can_edit_their_composition_with_ai(): void
+    public function test_the_account_composer_has_no_ai(): void
     {
-        config(['services.anthropic.key' => 'test-key']);
-        $design = ['configuration' => UnitConfiguration::normalize(UnitConfiguration::STARTER), 'title' => 'Unit', 'meta_description' => 'Meta'];
-        $this->mock(UnitDesigner::class, function (MockInterface $mock) use ($design): void {
-            $mock->shouldReceive('design')->once()->andReturn($design);
-        });
+        $this->mock(UnitDesigner::class, fn (MockInterface $mock) => $mock->shouldNotReceive('design'));
 
         $this->actingAs(User::factory()->create())
-            ->postJson(route('unit-composer.design'), ['description' => 'Maak de wanden blauw', 'configuration' => UnitConfiguration::STARTER])
-            ->assertOk()
-            ->assertJson($design);
+            ->postJson('/account/unit-samenstellen/ontwerpen', ['description' => 'Maak de wanden blauw'])
+            ->assertStatus(405);
     }
 
     public function test_anyone_can_compose_a_unit_on_the_public_page_without_ai(): void
@@ -92,7 +90,6 @@ class UnitComposerTest extends TestCase
             ->assertHeader('Content-Type', 'image/svg+xml');
 
         $this->postJson('/unit-samensteller/ontwerpen', ['description' => 'Maak de wanden blauw'])->assertStatus(405);
-        $this->postJson(route('unit-composer.design'), ['description' => 'Maak de wanden blauw'])->assertUnauthorized();
     }
 
     public function test_the_public_page_reads_a_shared_composition(): void

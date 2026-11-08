@@ -58,7 +58,9 @@ class UnitConfiguratorTest extends TestCase
         $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
             ->assertOk()
             ->assertSee('data-unit-configurator', false)
-            ->assertSee('<svg', false);
+            ->assertSee('<svg', false)
+            ->assertDontSee('data-design-url', false)
+            ->assertDontSee('Genereer met AI');
     }
 
     public function test_unit_without_size_has_no_configuration(): void
@@ -151,22 +153,20 @@ class UnitConfiguratorTest extends TestCase
             ->assertDontSee('og:image', false);
     }
 
-    public function test_renders_are_added_after_the_photos_of_a_unit_with_photo(): void
+    public function test_a_configured_unit_only_shows_the_renders_of_the_configurator(): void
     {
-        $this->actingAs($this->admin)->post(route('admin.units.store'), [
+        $unit = Unit::factory()->create(['title' => 'Unit met foto', 'featured_image' => 'media/oud.jpg', 'gallery' => ['media/extra.jpg']]);
+
+        $this->actingAs($this->admin)->put(route('admin.units.update', $unit), [
             'title' => 'Unit met foto',
             'status' => 'published',
-            'featured_image_upload' => UploadedFile::fake()->image('unit.jpg', 1600, 1000),
             'configuration' => ['size' => '3x3'],
         ])->assertSessionHasNoErrors();
 
-        $unit = Unit::query()->where('slug', 'unit-met-foto')->sole();
+        $unit->refresh();
 
-        $this->assertStringEndsWith('.jpg', $unit->featured_image);
-        $this->assertSame(
-            [$unit->featured_image, ...$unit->configuration_images],
-            array_column($unit->images(), 'path'),
-        );
+        $this->assertSame($unit->configuration_images[0], $unit->featured_image);
+        $this->assertSame($unit->configuration_images, array_column($unit->images(), 'path'));
     }
 
     public function test_changing_or_removing_the_configuration_replaces_the_renders(): void

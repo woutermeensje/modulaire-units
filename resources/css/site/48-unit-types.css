@@ -1,19 +1,333 @@
 /* ==========================================================================
    Overzichtspagina van de modulaire units (/modulaire-units/).
-   De hero en knoppen komen uit 45-offer-landing.css (.mh-offer), de samensteller uit unit-composer.css.
+   De hero en knoppen komen uit 45-offer-landing.css (.mh-offer); daaronder de
+   gepubliceerde units die in het account zijn samengesteld.
    ========================================================================== */
 
-.mh-unit-types__content {
+.mh-unit-types__content,
+.mh-unit-types__units {
   width: min(1200px, calc(100% - 2rem));
   margin: 56px auto 0;
 }
 
-.mh-unit-types .unit-composer--section {
-  margin-top: 56px;
+.mh-unit-types__units {
+  scroll-margin-top: 120px;
+}
+
+.mh-unit-types__units-title {
+  margin: 0 0 24px;
+  color: #1F2A33;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+}
+
+.mh-unit-types__list {
+  display: grid;
+  gap: 24px;
+}
+
+/* ── Unitkaart: full width, links 1/3 de 3D-foto, rechts titel, omschrijving en prijs ── */
+.mh-unit-tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  overflow: hidden;
+  border: 1px solid #DCE5EB;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(23, 44, 66, 0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.mh-unit-tile:hover,
+.mh-unit-tile:focus-within {
+  box-shadow: 0 12px 28px rgba(23, 44, 66, 0.12);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 720px) {
+  .mh-unit-tile {
+    grid-template-columns: 1fr;
+  }
+
+  .mh-unit-tile__body {
+    padding: 20px;
+  }
+}
+
+.mh-unit-tile__image {
+  display: block;
+  aspect-ratio: 3 / 2;
+  align-self: stretch;
+  overflow: hidden;
+  background: #EEF4F7;
+}
+
+.mh-unit-tile__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.mh-unit-tile:hover .mh-unit-tile__image img {
+  transform: scale(1.03);
+}
+
+/* Kaart met 3D-prototype: wissel tussen plattegrond, 3D en binnenkant, linksboven op het beeld. */
+.mh-unit-tile__media {
+  position: relative;
+  display: grid;
+  align-self: stretch;
+}
+
+.mh-unit-tile__media .mh-unit-tile__image {
+  height: 100%;
+}
+
+.mh-unit-tile__image[hidden] {
+  display: none;
+}
+
+.mh-unit-tile__plan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 16px 16px;
+  background: #fff;
+}
+
+.mh-unit-tile__plan svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mh-unit-tile__views {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #DCE5EB;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(23, 44, 66, 0.08);
+}
+
+.mh-unit-tile__view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #5B6B78;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+/* Overrides the pink button:hover/focus from 01-reset.css. */
+.mh-unit-tile__views .mh-unit-tile__view:hover,
+.mh-unit-tile__views .mh-unit-tile__view:focus {
+  background: #F0F5F8;
+  color: #1F2A33;
+}
+
+.mh-unit-tile__views .mh-unit-tile__view:focus-visible {
+  outline: 2px solid #1F4E6B;
+  outline-offset: 1px;
+}
+
+.mh-unit-tile__views .mh-unit-tile__view.is-active,
+.mh-unit-tile__views .mh-unit-tile__view.is-active:hover,
+.mh-unit-tile__views .mh-unit-tile__view.is-active:focus {
+  background: #E1EEF4;
+  color: #1F4E6B;
+}
+
+.mh-unit-tile__viewer {
+  position: relative;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.mh-unit-tile__viewer:active {
+  cursor: grabbing;
+}
+
+.mh-unit-tile__viewer canvas {
+  display: block;
+}
+
+.mh-unit-tile__viewer .mh-unit-tile__viewer-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+  min-height: 28px;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 2px rgba(23, 44, 66, 0.12);
+  color: #1F2A33;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mh-unit-tile__viewer.is-ready .mh-unit-tile__viewer-hint {
+  opacity: 1;
+}
+
+.mh-unit-tile__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px 32px;
+}
+
+.mh-unit-tile__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+}
+
+.mh-unit-tile__title a,
+.mh-unit-tile__title a:visited {
+  color: #1F2A33;
+  text-decoration: none;
+}
+
+.mh-unit-tile__title a:hover {
+  color: #2B6E8F;
+}
+
+.mh-unit-tile__text {
+  margin: 0;
+  color: #4A5763;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+/* Prijzen en knop onderaan de kaart, gescheiden van de omschrijving door een lijn. */
+.mh-unit-tile__footer {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 16px 20px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #E6EDF2;
+}
+
+.mh-unit-tile__prices {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px 40px;
+  margin: 0;
+}
+
+.mh-unit-tile__price {
+  display: grid;
+  gap: 4px;
+  padding: 0;
+}
+
+.mh-unit-tile__price dt {
+  margin: 0;
+  color: #6B7884;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.mh-unit-tile__price dd {
+  margin: 0;
+  color: #1F2A33;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.mh-unit-tile__price dd small {
+  color: #6B7884;
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+/* Scoped to .mh-unit-types so the Elementor kit link colours (.elementor-kit-6 a, a:hover) do not win. */
+.mh-unit-types .mh-unit-tile__button,
+.mh-unit-types .mh-unit-tile__button:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 46px;
+  margin-left: auto;
+  padding: 0 22px;
+  border-radius: 8px;
+  background: #2B6E8F;
+  color: #fff;
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.mh-unit-types .mh-unit-tile__button:hover,
+.mh-unit-types .mh-unit-tile__button:focus {
+  background: #1F5670;
+  color: #fff;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.mh-unit-tile__button span {
+  transition: transform 0.15s ease;
+}
+
+.mh-unit-tile__button:hover span {
+  transform: translateX(3px);
+}
+
+/* Te smal voor prijzen en knop op één regel: de knop komt eronder. */
+@media (max-width: 1080px) {
+  .mh-unit-tile__footer,
+  .mh-unit-tile__prices {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 540px) {
-  .mh-unit-types__content {
+  .mh-unit-types__content,
+  .mh-unit-types__units {
     width: min(100% - 1.5rem, 1200px);
+  }
+
+  .mh-unit-types__units {
+    margin-top: 40px;
   }
 }

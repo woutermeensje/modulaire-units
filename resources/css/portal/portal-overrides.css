@@ -45,6 +45,21 @@
   border: 1px solid var(--color-border);
 }
 
+/* A table with dropdowns: the list of a dropdown in the last row must not be cut off by the frame. */
+.table-wrap--dropdowns {
+  overflow: visible;
+}
+
+.table-wrap--dropdowns .ts-dropdown {
+  z-index: 20;
+}
+
+/* Status dropdown per unit in the list on /account/units/; saves on change. */
+.portal-status-form {
+  min-width: 160px;
+  margin: 0;
+}
+
 .portal-gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));

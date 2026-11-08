@@ -14,13 +14,17 @@ use Illuminate\View\View;
 
 /**
  * Organisations offer their used units from their account. New listings are published after approval in the admin.
+ * Admins see the units they composed for /modulaire-units/ here instead, see ComposedUnitController.
  */
 class UsedListingController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = $request->user();
+
         return view('portal.used-listings.index', [
-            'listings' => $request->user()->usedListings()->latest()->get(),
+            'listings' => $user->isAdmin() ? collect() : $user->usedListings()->latest()->get(),
+            'units' => $user->isAdmin() ? $user->units()->latest()->get() : collect(),
         ]);
     }
 

@@ -158,23 +158,30 @@ class AdminCmsTest extends TestCase
         $this->get('/huren/containers-huren/')->assertOk()->assertSee('Nieuwe pagina', false);
     }
 
-    public function test_admin_can_create_a_unit_with_terms_and_photo(): void
+    public function test_admin_can_create_a_unit_with_terms_and_week_price(): void
     {
         Storage::fake('public');
         $term = UnitTerm::factory()->create();
+
+        $this->actingAs($this->admin)->get(route('admin.units.create'))
+            ->assertOk()
+            ->assertSee('name="price_rent_week"', false)
+            ->assertDontSee('name="price_buy"', false)
+            ->assertDontSee('name="featured_image_upload"', false)
+            ->assertDontSee('name="gallery_upload[]"', false)
+            ->assertSee('name="og_image_upload"', false)
+            ->assertDontSee('name="noindex"', false);
 
         $this->actingAs($this->admin)->post(route('admin.units.store'), [
             'title' => 'Sanitaire unit 10ft',
             'status' => 'published',
             'terms' => [$term->id],
-            'price_buy' => 'Vanaf € 4.950,-',
-            'featured_image_upload' => UploadedFile::fake()->image('unit.jpg', 1600, 1000),
+            'price_rent_week' => '75',
         ])->assertSessionHasNoErrors();
 
         $unit = Unit::query()->where('slug', 'sanitaire-unit-10ft')->sole();
         $this->assertTrue($unit->terms->contains($term));
-        Storage::disk('public')->assertExists($unit->featured_image);
-        $this->get($unit->url())->assertOk()->assertSee('Vanaf € 4.950,-');
+        $this->get($unit->url())->assertOk()->assertSee('€ 75 per week')->assertSee('Op aanvraag');
     }
 
     public function test_unit_terms_are_one_select_per_group_and_may_be_left_empty(): void

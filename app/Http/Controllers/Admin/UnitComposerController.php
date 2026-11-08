@@ -20,6 +20,7 @@ class UnitComposerController extends Controller
             'subtitle' => 'Testomgeving voor het samenstellen van units zoals klanten dat in hun account doen. Er wordt niets opgeslagen of op de website gezet: de samenstelling staat in de link.',
             'configuration' => UnitConfiguration::fromShareCode((string) $request->query(UnitConfiguration::SHARE_KEY, '')),
             'previewUrl' => route('admin.units.preview'),
+            'ai' => true,
             'designUrl' => route('admin.units.design'),
         ]);
     }

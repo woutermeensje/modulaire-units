@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.querySelector('[data-backend-toggle]');
     toggle?.addEventListener('click', () => shell?.classList.toggle('is-sidebar-open'));
 
+    // A select that saves on its own, e.g. the status of a unit in the list on /account/units/.
+    document.querySelectorAll('select[data-submit-on-change]').forEach((select) => {
+        select.addEventListener('change', () => select.form?.requestSubmit());
+    });
+
     document.querySelectorAll('[data-confirm]').forEach((element) => {
         element.addEventListener('click', (event) => {
             if (!window.confirm(element.dataset.confirm)) {
