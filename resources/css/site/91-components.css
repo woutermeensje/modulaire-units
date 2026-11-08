@@ -400,10 +400,10 @@
   }
 }
 
-/* Knop in de blog-sidebar: de Elementor-kit geeft alle links de primaire kleur. */
+/* Knop in de blog-sidebar (wit op het blauwe blok): de Elementor-kit geeft alle links de primaire kleur. */
 .mh-blog__sidebar a.mh-sidebar-newsletter__btn,
 .mh-blog__sidebar a.mh-sidebar-newsletter__btn:hover {
-  color: #fff;
+  color: #1F5670;
 }
 
 /* ── Geen box-shadows op het platform. Focus-ringen (:focus-visible) blijven staan voor toetsenbordgebruikers. ── */

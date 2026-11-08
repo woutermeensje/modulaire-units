@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Services\UnitConfigurationImages;
 use App\Support\SiteUrl;
@@ -17,13 +18,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'wp_id', 'user_id', 'title', 'slug', 'excerpt', 'content', 'featured_image', 'featured_image_alt', 'gallery', 'configuration', 'price_rent', 'price_buy', 'price_rent_week', 'price_buy_min', 'price_buy_max',
+    'translations', 'wp_id', 'user_id', 'title', 'slug', 'excerpt', 'content', 'featured_image', 'featured_image_alt', 'gallery', 'configuration', 'price_rent', 'price_buy', 'price_rent_week', 'price_buy_min', 'price_buy_max',
     'meta_title', 'meta_description', 'og_image', 'noindex', 'status', 'sort', 'published_at',
 ])]
 class Unit extends Model
 {
     /** @use HasFactory<UnitFactory> */
-    use HasFactory, Publishable;
+    use HasFactory, HasTranslations, Publishable;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['title', 'slug', 'excerpt', 'content', 'featured_image_alt', 'price_rent', 'meta_title', 'meta_description'];
 
     /**
      * The statuses an admin picks from, with the label of the choice in the dropdown.

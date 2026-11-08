@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Support\SiteUrl;
 use Database\Factories\UnitTermFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,11 +12,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['wp_id', 'taxonomy', 'name', 'slug', 'description', 'sort'])]
+#[Fillable(['translations', 'wp_id', 'taxonomy', 'name', 'slug', 'description', 'sort'])]
 class UnitTerm extends Model
 {
     /** @use HasFactory<UnitTermFactory> */
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['name', 'slug', 'description'];
 
     public const TYPE = 'type';
 

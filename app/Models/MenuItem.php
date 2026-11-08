@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Database\Factories\MenuItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,11 +11,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['menu', 'parent_id', 'label', 'url', 'sort'])]
+#[Fillable(['translations', 'menu', 'parent_id', 'label', 'url', 'sort'])]
 class MenuItem extends Model
 {
     /** @use HasFactory<MenuItemFactory> */
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['label', 'url'];
 
     /**
      * Menus used by the layout. Footer menus are rendered as columns, child items as links.

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Support\SiteUrl;
 use Database\Factories\PostFactory;
@@ -12,13 +13,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'wp_id', 'author_id', 'category_id', 'title', 'slug', 'excerpt', 'content', 'featured_image', 'featured_image_alt',
+    'translations', 'wp_id', 'author_id', 'category_id', 'title', 'slug', 'excerpt', 'content', 'featured_image', 'featured_image_alt',
     'meta_title', 'meta_description', 'og_image', 'noindex', 'status', 'published_at',
 ])]
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, Publishable;
+    use HasFactory, HasTranslations, Publishable;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['title', 'slug', 'excerpt', 'content', 'featured_image_alt', 'meta_title', 'meta_description'];
 
     /**
      * @return array<string, string>

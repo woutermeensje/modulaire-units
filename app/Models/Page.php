@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Support\SiteUrl;
 use Database\Factories\PageFactory;
@@ -12,13 +13,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'wp_id', 'parent_id', 'title', 'slug', 'path', 'template', 'show_title', 'hero', 'content', 'custom_css',
+    'translations', 'wp_id', 'parent_id', 'title', 'slug', 'path', 'template', 'show_title', 'hero', 'content', 'custom_css',
     'excerpt', 'featured_image', 'meta_title', 'meta_description', 'og_image', 'noindex', 'status', 'menu_order', 'published_at',
 ])]
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
-    use HasFactory, Publishable;
+    use HasFactory, HasTranslations, Publishable;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['title', 'slug', 'path', 'hero', 'content', 'excerpt', 'meta_title', 'meta_description'];
 
     public const TEMPLATES = [
         'default' => 'Standaard',

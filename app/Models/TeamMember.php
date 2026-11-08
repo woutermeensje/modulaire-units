@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Database\Factories\TeamMemberFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,14 @@ use Illuminate\Support\Str;
 class TeamMember extends Model
 {
     /** @use HasFactory<TeamMemberFactory> */
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['role'];
 
     /**
      * @return array<string, string>

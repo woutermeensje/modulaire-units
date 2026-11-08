@@ -31,16 +31,21 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     color: #1f3d57;
 }
 
+/* De uitgelichte artikelen bovenaan vullen op desktop het scherm van links tot rechts. */
 .mh-blog__heroes {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
-    max-width: 1200px;
-    margin: 48px auto;
-    background: #2B6E8F;
-    border-radius: 5px;
-    border: 1px solid #DEDEDE;
+    width: 100%;
+    height: clamp(440px, 62vh, 680px);
+    margin: 0 0 56px;
+    background: #fff;
     overflow: hidden;
+}
+
+/* Maar één uitgelicht artikel: dat neemt de hele breedte. */
+.mh-blog__heroes:not(:has(.mh-blog__heroes-side)) {
+    grid-template-columns: 1fr;
 }
 
 .mh-blog__hero {
@@ -53,13 +58,14 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__hero--main {
-    aspect-ratio: 4 / 3;
+    min-height: 0;
 }
 
 .mh-blog__heroes-side {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-height: 0;
 }
 
 .mh-blog__hero--side {
@@ -111,13 +117,22 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 40px 5vw;
+    padding: 40px clamp(24px, 3vw, 56px);
     max-width: 860px;
+}
+
+.mh-blog__hero--side .mh-blog__hero-body {
+    padding-block: 28px;
+}
+
+.mh-blog__hero--side .mh-blog__hero-title.mh-blog__heading {
+    font-size: var(--text-2xl);
+    margin-bottom: 8px;
 }
 
 .mh-blog__hero-cat {
     display: inline-block;
-    background: #2B6E8F;
+    background: rgba(255, 255, 255, 0.92);
     color: #1F5670;
     font-family:var(--font-text);
     font-size: var(--text-xs);
@@ -149,7 +164,7 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 }
 
 .mh-blog__hero-author {
-    color: #2B6E8F;
+    color: #fff;
     font-weight: 600;
 }
 
@@ -163,7 +178,11 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     gap: 48px;
     max-width: 1260px;
     margin: 0 auto;
-    padding: 0 24px 80px;
+    padding: 48px 24px 80px;
+}
+
+.mh-blog__heroes + .mh-blog__lower {
+    padding-top: 0;
 }
 
 .mh-blog__main {
@@ -356,15 +375,15 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     font-weight: 600;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: #1F5670;
+    color: rgba(255, 255, 255, 0.8);
     margin: 0 0 8px;
 }
 
-.mh-sidebar-newsletter__title {
+.mh-sidebar-newsletter .mh-sidebar-newsletter__title {
     font-family:var(--font-text);
     font-size: var(--text-xl);
     font-weight: 700;
-    color: #1F5670;
+    color: #fff;
     line-height: 1.25;
     margin: 0 0 20px;
 }
@@ -374,12 +393,12 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: #2B6E8F;
+    background: #fff;
     border-radius: 4px;
     font-family:var(--font-text);
     font-size: var(--text-base);
     font-weight: 600;
-    color: #ffffff;
+    color: #1F5670;
     text-decoration: none;
     transition: background 0.15s ease;
 }
@@ -388,13 +407,13 @@ body:not([class*=elementor-page-]) .mh-blog-page {
     width: 15px;
     height: 15px;
     flex-shrink: 0;
-    color: #ffffff;
-    fill: #ffffff;
+    color: currentColor;
+    fill: currentColor;
 }
 
 .mh-sidebar-newsletter__btn:hover {
-    background: #2B6E8F;
-    color: #ffffff;
+    background: #E1EEF4;
+    color: #1F5670;
 }
 
 .mh-sidebar-links {
@@ -486,11 +505,16 @@ body:not([class*=elementor-page-]) .mh-blog-page {
 @media (max-width: 960px) {
     .mh-blog__heroes {
         grid-template-columns: 1fr;
-        margin: 32px 16px 0;
+        height: auto;
+        margin: 0;
     }
 
     .mh-blog__hero--main {
         aspect-ratio: 16 / 9;
+    }
+
+    .mh-blog__heroes + .mh-blog__lower {
+        padding-top: 40px;
     }
 
     .mh-blog__hero--side {

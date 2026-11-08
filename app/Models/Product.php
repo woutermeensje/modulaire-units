@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Support\SiteUrl;
 use Database\Factories\ProductFactory;
@@ -10,13 +11,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
-    'wp_id', 'title', 'slug', 'short_description', 'content', 'featured_image', 'featured_image_alt', 'gallery', 'price',
+    'translations', 'wp_id', 'title', 'slug', 'short_description', 'content', 'featured_image', 'featured_image_alt', 'gallery', 'price',
     'meta_title', 'meta_description', 'og_image', 'noindex', 'status', 'sort', 'published_at',
 ])]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
-    use HasFactory, Publishable;
+    use HasFactory, HasTranslations, Publishable;
+
+    /**
+     * Attributes translated for the other languages of the website; the first one decides whether a record is translated.
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['title', 'slug', 'short_description', 'content', 'featured_image_alt', 'price', 'meta_title', 'meta_description'];
 
     /**
      * @return array<string, string>
