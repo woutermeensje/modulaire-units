@@ -33,6 +33,6 @@ class Category extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(route('blog.category', $this->slug, false));
+        return SiteUrl::route('blog.category', $this->slug, $this->urlLocale());
     }
 }

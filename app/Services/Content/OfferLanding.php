@@ -32,7 +32,7 @@ class OfferLanding
      */
     public static function section(Page $page): ?string
     {
-        $section = explode('/', (string) $page->path)[0];
+        $section = explode('/', (string) $page->source('path'))[0];
 
         return in_array($section, self::SECTIONS, true) ? $section : null;
     }
@@ -52,7 +52,7 @@ class OfferLanding
         }
 
         $section = (string) static::section($page);
-        $isOverview = $page->path === $section;
+        $isOverview = $page->source('path') === $section;
         $otherSection = $section === 'huren' ? 'kopen' : 'huren';
 
         return [
@@ -65,7 +65,7 @@ class OfferLanding
             ))),
             'image' => $this->heroImage($page),
             'counterpart' => Page::query()->published()
-                ->where('path', $isOverview ? $otherSection : $otherSection.'/'.$page->slug)
+                ->where('path', $isOverview ? $otherSection : $otherSection.'/'.$page->source('slug'))
                 ->first(),
         ];
     }

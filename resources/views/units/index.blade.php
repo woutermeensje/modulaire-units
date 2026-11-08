@@ -6,7 +6,7 @@
     @include('partials.archive', [
         'items' => $units,
         'archiveTitle' => $archiveTitle,
-        'listTitle' => 'Alle units',
+        'listTitle' => __('Alle units'),
         'card' => fn (\App\Models\Unit $unit): array => [
             'url' => $unit->url(),
             'title' => $unit->title,

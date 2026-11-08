@@ -19,7 +19,7 @@
     @if ($cards->isEmpty())
         <div class="mh-blog__lower">
             <div class="mh-blog__main">
-                <p class="mh-blog__empty">Er zijn hier nog geen items gepubliceerd.</p>
+                <p class="mh-blog__empty">{{ __('Er zijn hier nog geen items gepubliceerd.') }}</p>
             </div>
             @include('partials.archive-sidebar')
         </div>
@@ -61,7 +61,7 @@
         <div class="mh-blog__lower">
             <div class="mh-blog__main">
                 @if ($rows->isNotEmpty())
-                    <h2 class="mh-blog__list-title">{{ $listTitle ?? 'Alle artikelen' }}</h2>
+                    <h2 class="mh-blog__list-title">{{ $listTitle ?? __('Alle artikelen') }}</h2>
                     <div class="mh-blog__list">
                         @foreach ($rows as $row)
                             <a href="{{ $row['url'] }}" class="mh-blog__row">
@@ -94,13 +94,13 @@
                 @endif
 
                 @if ($items instanceof \Illuminate\Contracts\Pagination\Paginator && $items->hasPages())
-                    <nav class="mh-blog__pagination" aria-label="Paginering">
+                    <nav class="mh-blog__pagination" aria-label="{{ __('Paginering') }}">
                         @if ($items->previousPageUrl())
-                            <a class="mh-blog__page-link" href="{{ $items->previousPageUrl() }}">&larr; Vorige</a>
+                            <a class="mh-blog__page-link" href="{{ $items->previousPageUrl() }}">&larr; {{ __('Vorige') }}</a>
                         @endif
-                        <span class="mh-blog__page-current">Pagina {{ $items->currentPage() }} van {{ $items->lastPage() }}</span>
+                        <span class="mh-blog__page-current">{{ __('Pagina :current van :last', ['current' => $items->currentPage(), 'last' => $items->lastPage()]) }}</span>
                         @if ($items->nextPageUrl())
-                            <a class="mh-blog__page-link" href="{{ $items->nextPageUrl() }}">Volgende &rarr;</a>
+                            <a class="mh-blog__page-link" href="{{ $items->nextPageUrl() }}">{{ __('Volgende') }} &rarr;</a>
                         @endif
                     </nav>
                 @endif

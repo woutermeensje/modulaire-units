@@ -19,7 +19,7 @@ class UnitTypesOverview
 
     public static function appliesTo(Page $page): bool
     {
-        return $page->path === self::PATH;
+        return $page->source('path') === self::PATH;
     }
 
     /**

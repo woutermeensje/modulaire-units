@@ -1,5 +1,6 @@
 import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.css';
+import { t } from '../site/i18n';
 
 // Lists up to this length are picked from directly; longer lists get a search box.
 const SEARCH_THRESHOLD = 8;
@@ -20,7 +21,7 @@ export function initSearchSelects(root = document) {
       maxOptions: null,
       plugins: select.multiple ? ['remove_button', 'dropdown_input'] : [],
       render: {
-        no_results: () => '<div class="no-results">Geen resultaten</div>',
+        no_results: () => `<div class="no-results">${t('Geen resultaten')}</div>`,
       },
     };
 

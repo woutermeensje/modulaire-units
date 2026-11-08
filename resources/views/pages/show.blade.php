@@ -5,7 +5,7 @@
     $isElementor = str_contains((string) $page->content, 'elementor');
 @endphp
 
-@section('body_class', trim('page page-id-'.$page->id.' page-'.($page->slug ?: 'home').($isElementor ? ' elementor-page elementor-page-'.($page->wp_id ?? $page->id) : '')))
+@section('body_class', trim('page page-id-'.$page->id.' page-'.($page->source('slug') ?: 'home').($isElementor ? ' elementor-page elementor-page-'.($page->wp_id ?? $page->id) : '')))
 
 @section('custom_css'){!! $page->custom_css !!}@endsection
 

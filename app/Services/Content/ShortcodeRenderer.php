@@ -88,7 +88,7 @@ class ShortcodeRenderer
 
         if (! empty($attributes['exclude'])) {
             $excluded = array_map('trim', explode(',', $attributes['exclude']));
-            $pages = $pages->reject(fn (Page $page): bool => in_array($page->slug, $excluded, true));
+            $pages = $pages->reject(fn (Page $page): bool => in_array($page->source('slug'), $excluded, true));
         }
 
         return view('shortcodes.subpage-grid', [

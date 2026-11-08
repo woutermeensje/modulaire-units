@@ -5,13 +5,13 @@
 @section('content')
     <main class="mhu-single-page" id="content">
         <nav class="mhu-breadcrumb" aria-label="Breadcrumb">
-            <a href="{{ url('/') }}/">Home</a>
+            <a href="{{ url('/') }}/">{{ __('Home') }}</a>
             <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
-            <span aria-current="page">Winkel</span>
+            <span aria-current="page">{{ __('Winkel') }}</span>
         </nav>
         <div class="mh-col-description mh-related mh-shop">
-            <h1>Winkel</h1>
-            <p class="mh-shop__intro">{{ $products->count() }} {{ $products->count() === 1 ? 'resultaat' : 'resultaten' }}</p>
+            <h1>{{ __('Winkel') }}</h1>
+            <p class="mh-shop__intro">{{ $products->count() === 1 ? __(':count resultaat', ['count' => 1]) : __(':count resultaten', ['count' => $products->count()]) }}</p>
             <div class="mh-related-grid">
                 @foreach ($products as $product)
                     <a href="{{ $product->url() }}" class="mh-related-item">
@@ -21,7 +21,7 @@
                             @endif
                         </div>
                         <span class="mh-related-name">{{ $product->title }}</span>
-                        <span class="mh-related-cats">Bekijk product</span>
+                        <span class="mh-related-cats">{{ __('Bekijk product') }}</span>
                     </a>
                 @endforeach
             </div>

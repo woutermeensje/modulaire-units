@@ -4,7 +4,7 @@
 <footer class="mh-footer" role="contentinfo">
     <div class="mh-footer__inner">
         <div class="mh-footer__column">
-            <h2 class="mh-footer__heading">OVER ONS</h2>
+            <h2 class="mh-footer__heading">{{ __('OVER ONS') }}</h2>
             <p class="mh-footer__text">{{ \App\Models\Setting::get('footer_about') }}</p>
         </div>
 
@@ -16,7 +16,7 @@
                         @foreach ($column->children as $link)
                             <li>
                                 @if ($link->url)
-                                    <a href="{{ $link->url }}">{{ $link->label }}</a>
+                                    <a href="{{ $link->href() }}">{{ $link->label }}</a>
                                 @else
                                     <span>{{ $link->label }}</span>
                                 @endif
@@ -30,6 +30,6 @@
 
     <div class="mh-footer__bottom">
         <span>&copy; {{ date('Y') }} {{ \App\Models\Setting::get('site_name') }}</span>
-        <a href="{{ url('algemene-voorwaarden') }}/">Algemene voorwaarden</a>
+        <a href="{{ url('algemene-voorwaarden') }}/">{{ __('Algemene voorwaarden') }}</a>
     </div>
 </footer>

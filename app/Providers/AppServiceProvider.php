@@ -3,10 +3,11 @@
 namespace App\Providers;
 
 use Anthropic\Client;
+use App\Services\LocalizedLinks;
+use App\Support\Locale;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -18,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->scoped(LocalizedLinks::class);
+
         $this->app->singleton(Client::class, fn (): Client => new Client(apiKey: config('services.anthropic.key')));
     }
 
@@ -26,7 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Carbon::setLocale('nl');
+        // The admin, the customer portal and the Dutch site are in Dutch; the English site switches with SetLocale.
+        Locale::activate(Locale::SOURCE);
 
         Paginator::defaultView('partials.paginering');
 

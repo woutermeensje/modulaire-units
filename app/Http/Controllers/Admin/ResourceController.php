@@ -86,7 +86,7 @@ class ResourceController extends Controller
 
     private function save(Resource $resource, Model $record, Request $request): void
     {
-        $validated = $request->validate($resource->rules($record->exists ? $record : null));
+        $validated = $request->validate($resource->validationRules($record->exists ? $record : null));
 
         DB::transaction(function () use ($resource, $record, $validated, $request): void {
             $attributes = $resource->fill($record, $validated, $request);

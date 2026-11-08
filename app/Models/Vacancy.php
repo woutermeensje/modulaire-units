@@ -40,6 +40,6 @@ class Vacancy extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(route('vacancies.show', $this->slug, false));
+        return SiteUrl::route('vacancies.show', $this->slug, $this->urlLocale());
     }
 }

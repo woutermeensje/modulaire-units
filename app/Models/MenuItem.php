@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslations;
+use App\Services\LocalizedLinks;
+use App\Support\Locale;
 use Database\Factories\MenuItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Collection;
@@ -65,13 +67,28 @@ class MenuItem extends Model
             ->get());
     }
 
+    /**
+     * The link in the active language: a translated URL when one is filled in, otherwise the Dutch URL pointed at
+     * the translation of that page.
+     */
+    public function href(): ?string
+    {
+        $locale = Locale::translated();
+
+        if ($this->url === null || $locale === null || filled($this->translation($locale, 'url'))) {
+            return $this->url;
+        }
+
+        return app(LocalizedLinks::class)->localizeUrl($this->url, $locale);
+    }
+
     public function isActive(string $currentPath): bool
     {
-        if ($this->url === null) {
+        if ($this->href() === null) {
             return false;
         }
 
-        $path = '/'.trim((string) parse_url($this->url, PHP_URL_PATH), '/');
+        $path = '/'.trim((string) parse_url($this->href(), PHP_URL_PATH), '/');
 
         return $path === '/'.trim($currentPath, '/');
     }

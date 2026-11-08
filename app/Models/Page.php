@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
+use App\Support\Locale;
 use App\Support\SiteUrl;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -65,7 +66,7 @@ class Page extends Model
 
     public function url(): string
     {
-        return SiteUrl::path($this->path);
+        return SiteUrl::path($this->path, $this->urlLocale());
     }
 
     /**
@@ -73,9 +74,9 @@ class Page extends Model
      */
     public function tileImage(): ?string
     {
-        $marketingImage = 'marketing/units/'.$this->slug.'.jpg';
+        $marketingImage = 'marketing/units/'.$this->source('slug').'.jpg';
 
-        if ($this->slug !== '' && is_file(public_path($marketingImage))) {
+        if ($this->source('slug') !== '' && is_file(public_path($marketingImage))) {
             return '/'.$marketingImage;
         }
 
@@ -84,7 +85,7 @@ class Page extends Model
 
     public function isHome(): bool
     {
-        return $this->path === '';
+        return $this->source('path') === '';
     }
 
     /**
@@ -92,24 +93,53 @@ class Page extends Model
      */
     public function buildPath(): string
     {
-        if ($this->slug === '' || $this->slug === null) {
+        $slug = (string) ($this->getAttributes()['slug'] ?? '');
+
+        if ($slug === '') {
             return '';
         }
 
-        $parentPath = $this->parent?->path;
+        $parentPath = $this->parent?->getAttributes()['path'] ?? null;
 
-        return trim(($parentPath ? $parentPath.'/' : '').$this->slug, '/');
+        return trim(($parentPath ? $parentPath.'/' : '').$slug, '/');
+    }
+
+    /**
+     * Rebuild the path in a translated language from the translated slugs of the parent chain, e.g. "buy/site-cabins";
+     * a parent without translation contributes its Dutch path. Null while the slug is not translated.
+     */
+    public function buildTranslatedPath(string $locale): ?string
+    {
+        if ($this->buildPath() === '') {
+            return '';
+        }
+
+        $slug = $this->translation($locale, 'slug');
+
+        if (blank($slug)) {
+            return null;
+        }
+
+        $parentPath = $this->parent ? ($this->parent->translation($locale, 'path') ?? $this->parent->getAttributes()['path']) : null;
+
+        return trim(($parentPath ? $parentPath.'/' : '').$slug, '/');
     }
 
     protected static function booted(): void
     {
         static::saving(function (Page $page): void {
-            $page->slug = (string) $page->slug;
+            $page->slug = (string) ($page->getAttributes()['slug'] ?? '');
             $page->path = $page->buildPath();
+
+            foreach (array_keys(Locale::TRANSLATIONS) as $locale) {
+                if ($page->hasTranslation($locale)) {
+                    $page->setTranslations($locale, ['path' => $page->buildTranslatedPath($locale)]);
+                }
+            }
         });
 
         static::saved(function (Page $page): void {
-            if ($page->wasChanged('path')) {
+            if ($page->wasChanged(['path', 'translations'])) {
                 $page->children->each->save();
             }
         });

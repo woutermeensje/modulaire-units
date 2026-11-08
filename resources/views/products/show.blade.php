@@ -5,9 +5,9 @@
 @section('content')
     <main class="mhu-single-page" id="content">
         <nav class="mhu-breadcrumb" aria-label="Breadcrumb">
-            <a href="{{ url('/') }}/">Home</a>
+            <a href="{{ url('/') }}/">{{ __('Home') }}</a>
             <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
-            <a href="{{ route('products.index') }}/">Winkel</a>
+            <a href="{{ \App\Support\SiteUrl::route('products.index') }}">{{ __('Winkel') }}</a>
             <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
             <span aria-current="page">{{ $product->title }}</span>
         </nav>
@@ -31,14 +31,14 @@
 
         @if (trim(strip_tags((string) $product->content)) !== '')
             <div class="mh-col-description">
-                <h2>Beschrijving</h2>
+                <h2>{{ __('Beschrijving') }}</h2>
                 <div class="text-content">{!! $content !!}</div>
             </div>
         @endif
 
         @if ($relatedProducts->isNotEmpty())
             <div class="mh-col-description mh-related">
-                <h2>Gerelateerde producten</h2>
+                <h2>{{ __('Gerelateerde producten') }}</h2>
                 <div class="mh-related-grid">
                     @foreach ($relatedProducts as $related)
                         <a href="{{ $related->url() }}" class="mh-related-item">

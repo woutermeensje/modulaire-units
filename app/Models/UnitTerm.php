@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslations;
+use App\Support\Locale;
 use App\Support\SiteUrl;
 use Database\Factories\UnitTermFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -32,14 +33,14 @@ class UnitTerm extends Model
     public const OFFER = 'aanbod';
 
     /**
-     * Taxonomy key => [label, URL prefix of the original WordPress archive].
+     * Taxonomy key => [label, URL prefix of the original WordPress archive, URL prefix per translated language].
      *
-     * @var array<string, array{label: string, prefix: string}>
+     * @var array<string, array{label: string, prefix: string, prefixes: array<string, string>}>
      */
     public const TAXONOMIES = [
-        self::TYPE => ['label' => 'Type unit', 'prefix' => 'unit-type'],
-        self::CONDITION => ['label' => 'Conditie', 'prefix' => 'conditie'],
-        self::OFFER => ['label' => 'Aanbod', 'prefix' => 'aanbod'],
+        self::TYPE => ['label' => 'Type unit', 'prefix' => 'unit-type', 'prefixes' => ['en' => 'unit-type']],
+        self::CONDITION => ['label' => 'Conditie', 'prefix' => 'conditie', 'prefixes' => ['en' => 'condition']],
+        self::OFFER => ['label' => 'Aanbod', 'prefix' => 'aanbod', 'prefixes' => ['en' => 'offer']],
     ];
 
     /**
@@ -58,13 +59,33 @@ class UnitTerm extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(self::TAXONOMIES[$this->taxonomy]['prefix'].'/'.$this->slug);
+        $locale = $this->urlLocale();
+
+        return SiteUrl::path(self::prefix($this->taxonomy, $locale).'/'.$this->slug, $locale);
+    }
+
+    /**
+     * The URL prefix of a taxonomy archive in a language, e.g. "conditie" in Dutch and "condition" in English.
+     */
+    public static function prefix(string $taxonomy, ?string $locale = null): string
+    {
+        $locale ??= Locale::current();
+
+        return self::TAXONOMIES[$taxonomy]['prefixes'][$locale] ?? self::TAXONOMIES[$taxonomy]['prefix'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function prefixes(?string $locale = null): array
+    {
+        return array_map(fn (string $taxonomy): string => self::prefix($taxonomy, $locale), array_keys(self::TAXONOMIES));
     }
 
     public static function taxonomyForPrefix(string $prefix): ?string
     {
-        foreach (self::TAXONOMIES as $taxonomy => $config) {
-            if ($config['prefix'] === $prefix) {
+        foreach (array_keys(self::TAXONOMIES) as $taxonomy) {
+            if (self::prefix($taxonomy) === $prefix) {
                 return $taxonomy;
             }
         }

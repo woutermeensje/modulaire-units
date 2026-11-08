@@ -4,8 +4,8 @@
 
 @section('content')
     <main id="content" class="site-main page type-page unit-composer">
-        <h1 class="mh-page-title">Unit samenstellen</h1>
-        <p class="unit-composer__intro">Stel je eigen modulaire unit samen: kies de afmeting, het aantal units en lagen, de kleuren en waar ramen en deuren komen. Bewaar of deel je samenstelling met de link.</p>
+        <h1 class="mh-page-title">{{ __('Unit samenstellen') }}</h1>
+        <p class="unit-composer__intro">{{ __('Stel je eigen modulaire unit samen: kies de afmeting, het aantal units en lagen, de kleuren en waar ramen en deuren komen. Bewaar of deel je samenstelling met de link.') }}</p>
 
         @include('partials.unit-composer', ['configuration' => $configuration])
     </main>

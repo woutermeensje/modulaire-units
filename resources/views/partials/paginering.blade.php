@@ -1,10 +1,10 @@
 {{-- Paginering voor de vacaturelijsten; de standaardweergave van Laravel leunt op Tailwind-klassen die hier niet in de CSS zitten. --}}
 @if ($paginator->hasPages())
-    <nav class="paginering" role="navigation" aria-label="Paginering">
+    <nav class="paginering" role="navigation" aria-label="{{ __('Paginering') }}">
         @if ($paginator->onFirstPage())
-            <span class="paginering__stap is-disabled" aria-disabled="true"><i class="ph ph-caret-left" aria-hidden="true"></i> Vorige</span>
+            <span class="paginering__stap is-disabled" aria-disabled="true"><i class="ph ph-caret-left" aria-hidden="true"></i> {{ __('Vorige') }}</span>
         @else
-            <a class="paginering__stap" href="{{ $paginator->previousPageUrl() }}" rel="prev"><i class="ph ph-caret-left" aria-hidden="true"></i> Vorige</a>
+            <a class="paginering__stap" href="{{ $paginator->previousPageUrl() }}" rel="prev"><i class="ph ph-caret-left" aria-hidden="true"></i> {{ __('Vorige') }}</a>
         @endif
 
         <ul class="paginering__paginas">
@@ -19,7 +19,7 @@
                             @if ($page == $paginator->currentPage())
                                 <span class="paginering__pagina is-active" aria-current="page">{{ $page }}</span>
                             @else
-                                <a class="paginering__pagina" href="{{ $url }}" aria-label="Pagina {{ $page }}">{{ $page }}</a>
+                                <a class="paginering__pagina" href="{{ $url }}" aria-label="{{ __('Pagina :page', ['page' => $page]) }}">{{ $page }}</a>
                             @endif
                         </li>
                     @endforeach
@@ -28,9 +28,9 @@
         </ul>
 
         @if ($paginator->hasMorePages())
-            <a class="paginering__stap" href="{{ $paginator->nextPageUrl() }}" rel="next">Volgende <i class="ph ph-caret-right" aria-hidden="true"></i></a>
+            <a class="paginering__stap" href="{{ $paginator->nextPageUrl() }}" rel="next">{{ __('Volgende') }} <i class="ph ph-caret-right" aria-hidden="true"></i></a>
         @else
-            <span class="paginering__stap is-disabled" aria-disabled="true">Volgende <i class="ph ph-caret-right" aria-hidden="true"></i></span>
+            <span class="paginering__stap is-disabled" aria-disabled="true">{{ __('Volgende') }} <i class="ph ph-caret-right" aria-hidden="true"></i></span>
         @endif
     </nav>
 @endif

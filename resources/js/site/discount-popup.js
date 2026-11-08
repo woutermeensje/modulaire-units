@@ -1,3 +1,5 @@
+import { t } from './i18n';
+
 const popup = document.getElementById('mh-discount-popup');
 const delayMs = 8000;
 
@@ -45,13 +47,13 @@ if (popup && typeof popup.showModal === 'function') {
     copyButton?.addEventListener('click', async () => {
         try {
             await navigator.clipboard.writeText(popup.dataset.code);
-            copyButton.textContent = 'Gekopieerd!';
+            copyButton.textContent = t('Gekopieerd!');
         } catch {
-            copyButton.textContent = 'Kopiëren mislukt';
+            copyButton.textContent = t('Kopiëren mislukt');
         }
 
         window.setTimeout(() => {
-            copyButton.textContent = 'Kopieer';
+            copyButton.textContent = t('Kopieer');
         }, 2000);
     });
 }

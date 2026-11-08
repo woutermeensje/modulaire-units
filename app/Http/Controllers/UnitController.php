@@ -14,9 +14,9 @@ class UnitController extends Controller
     public function index(): View
     {
         return view('units.index', [
-            'units' => Unit::query()->published()->with('terms')->orderBy('sort')->latest('published_at')->get(),
+            'units' => Unit::query()->published()->translated()->with('terms')->orderBy('sort')->latest('published_at')->get(),
             'archiveTitle' => 'Units',
-            'seo' => Seo::make('Units', 'Bekijk alle modulaire units van ModulaireHuisvesting.nl: kopen, huren en gebruikt.', route('units.index', [], false)),
+            'seo' => Seo::route('Units', __('Bekijk alle modulaire units van ModulaireHuisvesting.nl: kopen, huren en gebruikt.'), 'units.index'),
         ]);
     }
 
@@ -24,27 +24,27 @@ class UnitController extends Controller
     {
         $term = UnitTerm::query()
             ->where('taxonomy', UnitTerm::taxonomyForPrefix($prefix))
-            ->where('slug', $slug)
+            ->whereLocalized('slug', $slug)
             ->firstOrFail();
 
         return view('units.index', [
-            'units' => $term->units()->published()->with('terms')->orderBy('sort')->latest('published_at')->get(),
+            'units' => $term->units()->published()->translated()->with('terms')->orderBy('sort')->latest('published_at')->get(),
             'archiveTitle' => $term->name,
             'seo' => Seo::make(
-                $term->name.' - Modulaire units',
-                $term->description ?: "Bekijk alle modulaire units in de categorie {$term->name} van ModulaireHuisvesting.nl en vraag vrijblijvend informatie of een offerte aan.",
+                $term->name.' - '.__('Modulaire units'),
+                $term->description ?: __('Bekijk alle modulaire units in de categorie :name van ModulaireHuisvesting.nl en vraag vrijblijvend informatie of een offerte aan.', ['name' => $term->name]),
                 $term->url(),
-            ),
+            )->withAlternates(fn (): string => $term->url(), $term),
         ]);
     }
 
     public function show(string $slug): View
     {
-        $unit = Unit::query()->where('slug', $slug)->with('terms')->firstOrFail();
+        $unit = Unit::query()->whereLocalized('slug', $slug)->with('terms')->firstOrFail();
 
         abort_unless($unit->isPublished() || Auth::check(), 404);
 
-        $relatedUnits = Unit::query()->published()->with('terms')
+        $relatedUnits = Unit::query()->published()->translated()->with('terms')
             ->whereKeyNot($unit->id)
             ->orderBy('sort')->latest('published_at')
             ->limit(4)
@@ -55,7 +55,7 @@ class UnitController extends Controller
             'content' => app(ShortcodeRenderer::class)->render($unit->content),
             'relatedUnits' => $relatedUnits,
             'viewer' => $unit->viewer(),
-            'seo' => Seo::for($unit, $unit->summary(30) ?: "Bekijk de {$unit->title} van ModulaireHuisvesting.nl: kopen of huren, met transport en plaatsing. Vraag vrijblijvend informatie aan."),
+            'seo' => Seo::for($unit, $unit->summary(30) ?: __('Bekijk de :title van ModulaireHuisvesting.nl: kopen of huren, met transport en plaatsing. Vraag vrijblijvend informatie aan.', ['title' => $unit->title])),
         ]);
     }
 }

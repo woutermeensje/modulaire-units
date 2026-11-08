@@ -5,9 +5,9 @@
 @section('content')
     <main class="mhu-single-page" id="content">
         <nav class="mhu-breadcrumb" aria-label="Breadcrumb">
-            <a href="{{ url('/') }}/">Home</a>
+            <a href="{{ \App\Support\SiteUrl::path('') }}">{{ __('Home') }}</a>
             <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
-            <a href="{{ route('units.index') }}/">Units</a>
+            <a href="{{ \App\Support\SiteUrl::route('units.index') }}">{{ __('Units') }}</a>
             <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
             <span aria-current="page">{{ $unit->title }}</span>
         </nav>
@@ -23,12 +23,12 @@
 
             <div class="mh-col-right">
                 {{-- Opens the composer with this unit's configuration as the starting point. --}}
-                @php($composeUrl = route('unit-composer.public').'/'.($viewer ? '?'.http_build_query([\App\Support\UnitConfiguration::SHARE_KEY => \App\Support\UnitConfiguration::toShareCode($viewer['configuration'])]) : ''))
+                @php($composeUrl = \App\Support\SiteUrl::route('unit-composer.public').($viewer ? '?'.http_build_query([\App\Support\UnitConfiguration::SHARE_KEY => \App\Support\UnitConfiguration::toShareCode($viewer['configuration'])]) : ''))
                 <div class="mh-col-right__head">
                     <h1 class="product_title entry-title">{{ $unit->title }}</h1>
                     <a class="mh-compose-link" href="{{ $composeUrl }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                        Stel je eigen unit samen
+                        {{ __('Stel je eigen unit samen') }}
                     </a>
                 </div>
 
@@ -50,12 +50,12 @@
 
                 @if ($unit->rentPrice() || $unit->buyPrice())
                     <div class="mh-price-block">
-                        <h3 class="mh-price-block__heading">Prijsindicatie</h3>
+                        <h3 class="mh-price-block__heading">{{ __('Prijsindicatie') }}</h3>
                         <div class="mh-price-block__cards">
                             @if ($unit->rentPrice())
                                 <div class="mh-price-card">
                                     <div class="mh-price-card__header">
-                                        <span class="mh-price-card__label">Huren</span>
+                                        <span class="mh-price-card__label">{{ __('Huren') }}</span>
                                     </div>
                                     <span class="mh-price-card__value">{{ $unit->rentPrice() }}</span>
                                 </div>
@@ -63,7 +63,7 @@
                             @if ($unit->buyPrice())
                                 <div class="mh-price-card">
                                     <div class="mh-price-card__header">
-                                        <span class="mh-price-card__label">Kopen</span>
+                                        <span class="mh-price-card__label">{{ __('Kopen') }}</span>
                                     </div>
                                     <span class="mh-price-card__value">{{ $unit->buyPrice() }}</span>
                                 </div>
@@ -76,14 +76,14 @@
 
         @if (trim(strip_tags((string) $unit->content)) !== '')
             <div class="mh-col-description">
-                <h2>Unit beschrijving</h2>
+                <h2>{{ __('Unit beschrijving') }}</h2>
                 <div class="text-content">{!! $content !!}</div>
             </div>
         @endif
 
         @if ($relatedUnits->isNotEmpty())
             <div class="mh-col-description mh-related">
-                <h2>Gerelateerde units</h2>
+                <h2>{{ __('Gerelateerde units') }}</h2>
                 <div class="mh-related-grid">
                     @foreach ($relatedUnits as $related)
                         <a href="{{ $related->url() }}" class="mh-related-item">

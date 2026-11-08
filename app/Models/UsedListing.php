@@ -48,7 +48,7 @@ class UsedListing extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(route('used-listings.show', $this->slug, false));
+        return SiteUrl::route('used-listings.show', $this->slug);
     }
 
     /**

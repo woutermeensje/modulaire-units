@@ -42,12 +42,12 @@ class UsedListingController extends Controller
 
         return view('used-listings.show', [
             'listing' => $listing,
-            'seo' => new Seo(
+            'seo' => (new Seo(
                 title: Seo::withSiteName($listing->title),
                 description: $listing->summary(),
                 canonical: $listing->url(),
                 image: $listing->coverImage(),
-            ),
+            ))->withAlternates(fn (): string => $listing->url()),
         ]);
     }
 
@@ -64,7 +64,7 @@ class UsedListingController extends Controller
         redirect()->setIntendedUrl(route('my-used-listings.create'));
 
         return redirect()->route('login')
-            ->with('status', 'Log in of maak gratis een account aan om je gebruikte units aan te bieden.');
+            ->with('status', __('Log in of maak gratis een account aan om je gebruikte units aan te bieden.'));
     }
 
     public function respond(UsedListingResponseRequest $request, string $slug, SubmissionRecorder $recorder): RedirectResponse
@@ -88,6 +88,6 @@ class UsedListingController extends Controller
         }
 
         return redirect()->to($listing->url().'#reageren')
-            ->with('form_success', 'Bedankt voor je reactie! We brengen je zo snel mogelijk in contact met de aanbieder.');
+            ->with('form_success', __('Bedankt voor je reactie! We brengen je zo snel mogelijk in contact met de aanbieder.'));
     }
 }

@@ -11,11 +11,11 @@
 @endpush
 
 @include('admin.fields.configurator', [
-    'field' => \App\Admin\Field::make('configuration', 'Jouw samenstelling', 'configurator'),
+    'field' => \App\Admin\Field::make('configuration', __('Jouw samenstelling'), 'configurator'),
     'record' => null,
     'value' => $configuration,
     'composer' => true,
     'ai' => false,
     'previewUrl' => route('unit-composer.public.preview'),
-    'quoteUrl' => route('unit-composer.quote'),
+    'quoteUrl' => \App\Support\SiteUrl::action('unit-composer.quote'),
 ])

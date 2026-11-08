@@ -21,7 +21,7 @@ class QuoteController extends Controller
 
     public function show(): View
     {
-        $seo = Seo::make('Mijn offerte', null, route('quote.show', [], false));
+        $seo = Seo::route(__('Mijn offerte'), null, 'quote.show');
         $seo->noindex = true;
 
         return view('quote.show', [
@@ -58,10 +58,10 @@ class QuoteController extends Controller
         $this->cart->addComposition($validated['configuration']);
 
         if ($request->expectsJson()) {
-            return response()->json(['count' => $this->cart->count(), 'quote_url' => route('quote.show').'/']);
+            return response()->json(['count' => $this->cart->count(), 'quote_url' => SiteUrl::route('quote.show')]);
         }
 
-        return redirect()->route('quote.show');
+        return redirect()->to(SiteUrl::route('quote.show'));
     }
 
     public function update(Request $request): RedirectResponse
@@ -82,7 +82,7 @@ class QuoteController extends Controller
             $this->cart->remove((string) $type, (string) $id);
         }
 
-        return redirect()->route('quote.show');
+        return redirect()->to(SiteUrl::route('quote.show'));
     }
 
     public function submit(QuoteSubmitRequest $request, SubmissionRecorder $recorder): RedirectResponse
@@ -90,7 +90,7 @@ class QuoteController extends Controller
         $items = $this->cart->items();
 
         if ($items->isEmpty()) {
-            return redirect()->route('quote.show');
+            return redirect()->to(SiteUrl::route('quote.show'));
         }
 
         if (! $recorder->isSpam($request)) {
@@ -114,13 +114,13 @@ class QuoteController extends Controller
                         'url' => SiteUrl::absolute($item['model']->url()),
                         'quantity' => $item['quantity'],
                     ])->all(),
-                'source_url' => SiteUrl::absolute(route('quote.show', [], false).'/'),
+                'source_url' => SiteUrl::absolute(SiteUrl::route('quote.show')),
             ], $request);
         }
 
         $this->cart->clear();
 
-        return redirect()->route('quote.show')
-            ->with('quote_success', 'We hebben je offerteaanvraag ontvangen en nemen zo snel mogelijk contact met je op.');
+        return redirect()->to(SiteUrl::route('quote.show'))
+            ->with('quote_success', __('We hebben je offerteaanvraag ontvangen en nemen zo snel mogelijk contact met je op.'));
     }
 }

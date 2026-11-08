@@ -6,7 +6,7 @@
     /** @var \Illuminate\Support\Collection<int, \App\Models\UsedListing> $listings */
 @endphp
 
-@section('body_class', 'page page-id-'.$page->id.' page-'.$page->slug.' mh-used-page')
+@section('body_class', 'page page-id-'.$page->id.' page-'.$page->source('slug').' mh-used-page')
 
 @section('custom_css'){!! $page->custom_css !!}@endsection
 
@@ -15,13 +15,13 @@
     <header class="mh-used__header">
         <div>
             <h1 id="mh-used-title" class="text-title">{{ $page->title }}</h1>
-            <p class="text-lead">{{ $page->hero['subtitle'] ?? 'Gebruikte modulaire units, aangeboden door bedrijven en organisaties. Bekijk het aanbod of bied zelf gratis units aan.' }}</p>
+            <p class="text-lead">{{ $page->hero['subtitle'] ?? __('Gebruikte modulaire units, aangeboden door bedrijven en organisaties. Bekijk het aanbod of bied zelf gratis units aan.') }}</p>
         </div>
-        <a class="mh-offer-btn mh-offer-btn--primary mh-used__cta" href="{{ \App\Support\SiteUrl::path(route('used-listings.create', [], false)) }}">Units aanbieden</a>
+        <a class="mh-offer-btn mh-offer-btn--primary mh-used__cta" href="{{ \App\Support\SiteUrl::route('used-listings.create') }}">{{ __('Units aanbieden') }}</a>
     </header>
 
     @if ($listings->isEmpty())
-        <p class="mh-used__empty">Er worden op dit moment geen gebruikte units aangeboden. Heb je zelf een unit over? <a href="{{ \App\Support\SiteUrl::path(route('used-listings.create', [], false)) }}">Bied hem gratis aan.</a></p>
+        <p class="mh-used__empty">{{ __('Er worden op dit moment geen gebruikte units aangeboden. Heb je zelf een unit over?') }} <a href="{{ \App\Support\SiteUrl::route('used-listings.create') }}">{{ __('Bied hem gratis aan.') }}</a></p>
     @else
         <ul class="mh-used__grid">
             @foreach ($listings as $listing)
@@ -32,7 +32,7 @@
                                 <img src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($listing->coverImage(), 'medium_large')) }}" alt="{{ $listing->title }}" loading="lazy">
                             @endif
                             @if (count($listing->gallery()) > 1)
-                                <span class="mh-used-card__count">{{ count($listing->gallery()) }} foto's</span>
+                                <span class="mh-used-card__count">{{ __(':count foto\'s', ['count' => count($listing->gallery())]) }}</span>
                             @endif
                         </div>
                         <div class="mh-used-card__body">

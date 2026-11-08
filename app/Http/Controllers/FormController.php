@@ -22,6 +22,6 @@ class FormController extends Controller
         }
 
         return redirect()->to(url()->previous().'#informatie-aanvragen')
-            ->with('form_success', 'Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.');
+            ->with('form_success', __('Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.'));
     }
 }

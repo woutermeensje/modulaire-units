@@ -33,6 +33,6 @@ class Author extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(route('blog.author', $this->slug, false));
+        return SiteUrl::route('blog.author', $this->slug, $this->urlLocale());
     }
 }

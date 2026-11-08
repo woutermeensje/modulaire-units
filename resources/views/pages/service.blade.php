@@ -7,9 +7,17 @@
     $requestUrl = url('offerte-aanvragen').'/';
     $phone = \App\Models\Setting::get('phone');
     $email = \App\Models\Setting::get('email');
+    $phoneLink = $phone ? '<a href="tel:'.e(preg_replace('/[^0-9+]/', '', $phone)).'">'.e($phone).'</a>' : '';
+    $emailLink = $email ? '<a href="mailto:'.e($email).'">'.e($email).'</a>' : '';
+    $contactLine = match (true) {
+        $phone && $email => __('Bel :phone of mail naar :email.', ['phone' => $phoneLink, 'email' => $emailLink]),
+        (bool) $phone => __('Bel :phone.', ['phone' => $phoneLink]),
+        (bool) $email => __('Mail naar :email.', ['email' => $emailLink]),
+        default => '',
+    };
 @endphp
 
-@section('body_class', 'page page-id-'.$page->id.' page-'.$page->slug.' mh-service-page')
+@section('body_class', 'page page-id-'.$page->id.' page-'.$page->source('slug').' mh-service-page')
 
 @section('content')
 <main id="content" class="mh-offer mh-service" aria-labelledby="mh-service-title">
@@ -21,7 +29,7 @@
                     <div class="mh-offer-hero__lead mh-service__intro">{!! $service['intro'] !!}</div>
                 @endif
                 <div class="mh-offer-hero__actions">
-                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">Informatie aanvragen</a>
+                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">{{ __('Informatie aanvragen') }}</a>
                 </div>
             </div>
         </div>
@@ -52,14 +60,13 @@
     <section class="mh-service-cta" aria-labelledby="mh-service-cta-title">
         <div class="mh-service-cta__inner">
             <div>
-                <h2 id="mh-service-cta-title" class="mh-service-cta__title">Vragen over {{ \Illuminate\Support\Str::lower($page->title) }}?</h2>
+                <h2 id="mh-service-cta-title" class="mh-service-cta__title">{{ __('Vragen over :subject?', ['subject' => \Illuminate\Support\Str::lower($page->title)]) }}</h2>
                 <p class="mh-service-cta__text">
-                    Wij denken graag met je mee.
-                    @if ($phone) Bel <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone) }}">{{ $phone }}</a>@endif
-                    @if ($email) of mail naar <a href="mailto:{{ $email }}">{{ $email }}</a>.@endif
+                    {{ __('Wij denken graag met je mee.') }}
+                    {!! $contactLine !!}
                 </p>
             </div>
-            <a class="mh-offer-btn mh-offer-btn--primary mh-service-cta__btn" href="{{ $requestUrl }}">Informatie aanvragen</a>
+            <a class="mh-offer-btn mh-offer-btn--primary mh-service-cta__btn" href="{{ $requestUrl }}">{{ __('Informatie aanvragen') }}</a>
         </div>
     </section>
 </main>

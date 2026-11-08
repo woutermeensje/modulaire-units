@@ -20,13 +20,13 @@
                 @method('PUT')
             @endunless
 
-            @foreach ($resource->fields($isNew ? null : $record) as $section => $fields)
+            @foreach ($resource->formSections($isNew ? null : $record) as $section => $fields)
                 <section class="card dash-section">
                     <h2 class="card-title">{{ $section }}</h2>
                     <div class="portal-form__row admin-fields">
                         @foreach ($fields as $field)
                             <div @class(['portal-field', 'admin-field--full' => $field->fullWidth])>
-                                @include('admin.fields.'.$field->type, ['field' => $field, 'record' => $record, 'value' => old($field->name, $record->{$field->name} ?? null)])
+                                @include('admin.fields.'.$field->type, ['field' => $field, 'record' => $record, 'value' => $resource->fieldValue($record, $field)])
                                 @if ($field->help)
                                     <p class="portal-help">{{ $field->help }}</p>
                                 @endif

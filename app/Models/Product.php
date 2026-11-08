@@ -40,7 +40,7 @@ class Product extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(route('products.show', $this->slug, false));
+        return SiteUrl::route('products.show', $this->slug, $this->urlLocale());
     }
 
     /**

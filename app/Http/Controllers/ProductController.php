@@ -16,22 +16,22 @@ class ProductController extends Controller
         $shopPage = Page::query()->where('path', 'winkel')->first();
 
         return view('products.index', [
-            'products' => Product::query()->published()->orderBy('sort')->orderBy('title')->get(),
-            'seo' => $shopPage ? Seo::for($shopPage) : Seo::make('Winkel', 'Bekijk de containers en modulaire units in de winkel van ModulaireHuisvesting.nl en vraag direct een vrijblijvende offerte aan.', route('products.index', [], false)),
+            'products' => Product::query()->published()->translated()->orderBy('sort')->orderBy('title')->get(),
+            'seo' => $shopPage ? Seo::for($shopPage) : Seo::route(__('Winkel'), __('Bekijk de containers en modulaire units in de winkel van ModulaireHuisvesting.nl en vraag direct een vrijblijvende offerte aan.'), 'products.index'),
         ]);
     }
 
     public function show(string $slug): View
     {
-        $product = Product::query()->where('slug', $slug)->firstOrFail();
+        $product = Product::query()->whereLocalized('slug', $slug)->firstOrFail();
 
         abort_unless($product->isPublished() || Auth::check(), 404);
 
         return view('products.show', [
             'product' => $product,
             'content' => app(ShortcodeRenderer::class)->render($product->content),
-            'relatedProducts' => Product::query()->published()->whereKeyNot($product->id)->inRandomOrder()->limit(4)->get(),
-            'seo' => Seo::for($product, $product->short_description ?: $product->content ?: "Bekijk de {$product->title} van ModulaireHuisvesting.nl en vraag direct een vrijblijvende offerte aan."),
+            'relatedProducts' => Product::query()->published()->translated()->whereKeyNot($product->id)->inRandomOrder()->limit(4)->get(),
+            'seo' => Seo::for($product, $product->short_description ?: $product->content ?: __('Bekijk de :title van ModulaireHuisvesting.nl en vraag direct een vrijblijvende offerte aan.', ['title' => $product->title])),
         ]);
     }
 }

@@ -1,5 +1,6 @@
 import { windowSpans } from '../window-spans';
 import { setSelectValue } from './search-select';
+import { t } from '../site/i18n';
 
 // Every configuration field that is part of the request; unchosen colour swatches are left out.
 const FIELDS = '[name^="configuration"]:not(:disabled):not([type="radio"]:not(:checked)):not([type="checkbox"]:not(:checked))';
@@ -122,12 +123,12 @@ function initConfigurator(root) {
   shareCopy?.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(shareInput.value);
-      shareCopy.lastChild.textContent = ' Gekopieerd';
+      shareCopy.lastChild.textContent = ` ${t('Gekopieerd')}`;
     } catch {
       shareInput.select();
-      shareCopy.lastChild.textContent = ' Kopieer met Ctrl/Cmd+C';
+      shareCopy.lastChild.textContent = ` ${t('Kopieer met Ctrl/Cmd+C')}`;
     }
-    setTimeout(() => { shareCopy.lastChild.textContent = ' Kopieer link'; }, 2000);
+    setTimeout(() => { shareCopy.lastChild.textContent = ` ${t('Kopieer link')}`; }, 2000);
   });
 
   // "Toevoegen aan offerte" is there from the start, and is offered again after every change.
@@ -141,14 +142,14 @@ function initConfigurator(root) {
 
     quote.hidden = false;
     quoteButton.disabled = false;
-    quoteLabel.textContent = 'Toevoegen aan offerte';
+    quoteLabel.textContent = t('Toevoegen aan offerte');
   };
 
   // Mirrors partials/header.blade.php: with items in the quote, the main call to action becomes "Mijn offerte".
   const showQuoteCount = (count, quoteUrl) => {
     document.querySelectorAll('[data-quote-cta]').forEach((cta) => {
       cta.href = quoteUrl;
-      cta.textContent = 'Mijn offerte';
+      cta.textContent = t('Mijn offerte');
     });
     document.querySelectorAll('.mh-mobile-nav .mh-btn--nav-quote').forEach((link) => link.remove());
 
@@ -179,11 +180,11 @@ function initConfigurator(root) {
       }
 
       const data = await response.json();
-      quoteLabel.textContent = 'Toegevoegd aan offerte';
+      quoteLabel.textContent = t('Toegevoegd aan offerte');
       quote.querySelector('[data-configurator-quote-link]').hidden = false;
       showQuoteCount(data.count, data.quote_url);
     } catch {
-      quoteLabel.textContent = 'Mislukt, probeer opnieuw';
+      quoteLabel.textContent = t('Mislukt, probeer opnieuw');
       quoteButton.disabled = false;
     }
   });
@@ -380,7 +381,7 @@ function initConfigurator(root) {
 
   generateButton?.addEventListener('click', async () => {
     if (description.value.trim() === '') {
-      status.textContent = 'Beschrijf eerst de unit.';
+      status.textContent = t('Beschrijf eerst de unit.');
       description.focus();
       return;
     }
@@ -392,7 +393,7 @@ function initConfigurator(root) {
     }
 
     generateButton.disabled = true;
-    status.textContent = 'Claude denkt na…';
+    status.textContent = t('Claude denkt na…');
 
     try {
       const response = await fetch(root.dataset.designUrl, {
@@ -403,7 +404,7 @@ function initConfigurator(root) {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        status.textContent = data.message ?? 'Er ging iets mis. Probeer het opnieuw.';
+        status.textContent = data.message ?? t('Er ging iets mis. Probeer het opnieuw.');
         return;
       }
 
@@ -413,9 +414,9 @@ function initConfigurator(root) {
         fillIfEmpty('meta_description', data.meta_description);
       }
       refreshPreview();
-      status.textContent = 'Klaar. Controleer het voorbeeld en pas zo nodig vakken aan voordat je opslaat.';
+      status.textContent = t('Klaar. Controleer het voorbeeld en pas zo nodig vakken aan voordat je opslaat.');
     } catch {
-      status.textContent = 'Geen verbinding met de server. Probeer het opnieuw.';
+      status.textContent = t('Geen verbinding met de server. Probeer het opnieuw.');
     } finally {
       generateButton.disabled = false;
     }
@@ -433,7 +434,7 @@ function initConfigurator(root) {
     }
 
     event.preventDefault();
-    photosStatus.textContent = "3D-foto's maken…";
+    photosStatus.textContent = t("3D-foto's maken…");
 
     try {
       const { renderUnitPhotos } = await loadViewerModule();

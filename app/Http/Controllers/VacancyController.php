@@ -16,7 +16,7 @@ class VacancyController extends Controller
 {
     public function show(string $slug): View
     {
-        $vacancy = Vacancy::query()->where('slug', $slug)->firstOrFail();
+        $vacancy = Vacancy::query()->whereLocalized('slug', $slug)->firstOrFail();
 
         abort_unless($vacancy->isPublished() || Auth::check(), 404);
 
@@ -29,7 +29,7 @@ class VacancyController extends Controller
 
     public function apply(VacancyApplicationRequest $request, string $slug, SubmissionRecorder $recorder): RedirectResponse
     {
-        $vacancy = Vacancy::query()->published()->where('slug', $slug)->firstOrFail();
+        $vacancy = Vacancy::query()->published()->whereLocalized('slug', $slug)->firstOrFail();
 
         if (! $recorder->isSpam($request)) {
             $file = $request->file('cv');
@@ -50,6 +50,6 @@ class VacancyController extends Controller
         }
 
         return redirect()->to($vacancy->url().'#solliciteren')
-            ->with('form_success', 'Bedankt voor je sollicitatie! We nemen zo snel mogelijk contact met je op.');
+            ->with('form_success', __('Bedankt voor je sollicitatie! We nemen zo snel mogelijk contact met je op.'));
     }
 }

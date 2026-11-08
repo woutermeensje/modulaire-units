@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Locale;
 use Database\Factories\SettingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,10 +33,28 @@ class Setting extends Model
         'discount_popup_title' => ['label' => 'Kortingspop-up: titel', 'default' => 'Ontvang korting op je modulaire unit'],
         'discount_popup_text' => ['label' => 'Kortingspop-up: tekst', 'default' => 'Noem deze kortingscode bij je offerteaanvraag of in contact met onze adviseurs.', 'type' => 'textarea'],
         'google_analytics_id' => ['label' => 'Google Analytics ID (G-…)', 'default' => ''],
+        'site_tagline_en' => ['label' => 'Engels: slogan', 'default' => 'View the complete range of modular units!'],
+        'footer_about_en' => ['label' => 'Engels: footer over ons', 'default' => 'Modulairehuisvesting.nl supplies flexible, temporary and modular accommodation for organisations throughout the Netherlands.', 'type' => 'textarea'],
+        'discount_popup_title_en' => ['label' => 'Engels: kortingspop-up titel', 'default' => 'Get a discount on your modular unit'],
+        'discount_popup_text_en' => ['label' => 'Engels: kortingspop-up tekst', 'default' => 'Mention this discount code in your quote request or when you contact our advisers.', 'type' => 'textarea'],
     ];
 
+    /**
+     * Settings shown on the website that have their own value per translated language, in the key "{key}_{locale}".
+     *
+     * @var list<string>
+     */
+    public const TRANSLATABLE = ['site_tagline', 'footer_about', 'discount_popup_title', 'discount_popup_text'];
+
+    /**
+     * The value of a setting; on a translated site the translated setting is used for the texts in TRANSLATABLE.
+     */
     public static function get(string $key, ?string $default = null): ?string
     {
+        if (($locale = Locale::translated()) !== null && in_array($key, self::TRANSLATABLE, true) && isset(self::FIELDS[$key.'_'.$locale])) {
+            $key .= '_'.$locale;
+        }
+
         $values = Cache::rememberForever('settings', fn (): array => static::query()->pluck('value', 'key')->all());
 
         $value = $values[$key] ?? null;

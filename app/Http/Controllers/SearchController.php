@@ -23,13 +23,13 @@ class SearchController extends Controller
         if ($query !== '') {
             $like = '%'.$query.'%';
 
-            $units = Unit::query()->published()->with('terms')
-                ->where(fn ($q) => $q->where('title', 'like', $like)->orWhere('content', 'like', $like))
+            $units = Unit::query()->published()->translated()->with('terms')
+                ->whereLocalizedLike(['title', 'content'], $like)
                 ->orderBy('sort')
                 ->get();
 
-            $pages = Page::query()->published()
-                ->where(fn ($q) => $q->where('title', 'like', $like)->orWhere('content', 'like', $like))
+            $pages = Page::query()->published()->translated()
+                ->whereLocalizedLike(['title', 'content'], $like)
                 ->limit(20)
                 ->get()
                 ->map(fn (Page $page): array => [
@@ -38,8 +38,8 @@ class SearchController extends Controller
                     'excerpt' => Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags(ShortcodeRenderer::strip($page->content)))), 160),
                 ]);
 
-            $posts = Post::query()->published()
-                ->where(fn ($q) => $q->where('title', 'like', $like)->orWhere('content', 'like', $like))
+            $posts = Post::query()->published()->translated()
+                ->whereLocalizedLike(['title', 'content'], $like)
                 ->limit(20)
                 ->get()
                 ->map(fn (Post $post): array => [
@@ -51,7 +51,7 @@ class SearchController extends Controller
             $otherResults = $pages->concat($posts);
         }
 
-        $seo = Seo::make($query !== '' ? "Zoekresultaten voor “{$query}”" : 'Zoeken');
+        $seo = Seo::make($query !== '' ? __('Zoekresultaten voor “:query”', ['query' => $query]) : __('Zoeken'));
         $seo->noindex = true;
 
         return view('search.index', [

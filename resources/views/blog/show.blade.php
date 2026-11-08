@@ -6,9 +6,9 @@
     <main id="content" class="site-main mh-post">
         <article class="mh-post__article">
             <nav class="mhu-breadcrumb" aria-label="Breadcrumb">
-                <a href="{{ url('/') }}/">Home</a>
+                <a href="{{ \App\Support\SiteUrl::path('') }}">{{ __('Home') }}</a>
                 <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
-                <a href="{{ route('blog.index') }}/">Blog</a>
+                <a href="{{ \App\Support\SiteUrl::route('blog.index') }}">{{ __('Blog') }}</a>
                 <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
                 <span aria-current="page">{{ $post->title }}</span>
             </nav>
@@ -42,7 +42,7 @@
 
         @if ($relatedPosts->isNotEmpty())
             <section class="mh-post__related">
-                <h2 class="mh-blog__list-title">Lees ook</h2>
+                <h2 class="mh-blog__list-title">{{ __('Lees ook') }}</h2>
                 <div class="mh-post__related-grid">
                     @foreach ($relatedPosts as $related)
                         <a class="mh-post__related-card" href="{{ $related->url() }}">
@@ -57,7 +57,7 @@
     </main>
 
     <script type="application/ld+json">{!! json_encode([
-        '@context' => 'https://schema.org',
+        '@'.'context' => 'https://schema.org',
         '@type' => 'BlogPosting',
         'headline' => $post->title,
         'datePublished' => $post->published_at?->toIso8601String(),

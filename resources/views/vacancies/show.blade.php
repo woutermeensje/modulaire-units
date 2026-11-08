@@ -27,14 +27,14 @@
                 </div>
 
                 <section class="sj-application sj-card" id="solliciteren">
-                    <h2 class="sj-application-title">Reageren op deze vacature/opdracht.</h2>
+                    <h2 class="sj-application-title">{{ __('Reageren op deze vacature/opdracht.') }}</h2>
 
                     @if (session('form_success'))
                         <div class="mh-form-notice mh-form-notice--success" role="status">{{ session('form_success') }}</div>
                     @elseif ($vacancy->is_filled)
-                        <p>Deze vacature is inmiddels vervuld.</p>
+                        <p>{{ __('Deze vacature is inmiddels vervuld.') }}</p>
                     @else
-                        <form class="sj-application-form" method="post" action="{{ route('vacancies.apply', $vacancy->slug) }}" enctype="multipart/form-data">
+                        <form class="sj-application-form" method="post" action="{{ \App\Support\SiteUrl::action('vacancies.apply', $vacancy->slug) }}" enctype="multipart/form-data">
                             @csrf
                             <div class="mh-form__honeypot" aria-hidden="true">
                                 <label for="vacancy-website">Website</label>
@@ -42,37 +42,37 @@
                             </div>
                             <div class="sj-application-grid">
                                 <label class="sj-application-field">
-                                    <span>Voornaam</span>
+                                    <span>{{ __('Voornaam') }}</span>
                                     <input type="text" name="first_name" value="{{ old('first_name') }}" autocomplete="given-name" required>
                                     @error('first_name')<span class="mh-form__error">{{ $message }}</span>@enderror
                                 </label>
                                 <label class="sj-application-field">
-                                    <span>Achternaam</span>
+                                    <span>{{ __('Achternaam') }}</span>
                                     <input type="text" name="last_name" value="{{ old('last_name') }}" autocomplete="family-name" required>
                                     @error('last_name')<span class="mh-form__error">{{ $message }}</span>@enderror
                                 </label>
                                 <label class="sj-application-field">
-                                    <span>E-mailadres</span>
+                                    <span>{{ __('E-mailadres') }}</span>
                                     <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required>
                                     @error('email')<span class="mh-form__error">{{ $message }}</span>@enderror
                                 </label>
                                 <label class="sj-application-field">
-                                    <span>Telefoonnummer</span>
+                                    <span>{{ __('Telefoonnummer') }}</span>
                                     <input type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" required>
                                     @error('phone')<span class="mh-form__error">{{ $message }}</span>@enderror
                                 </label>
                             </div>
                             <label class="sj-application-field sj-application-field--full">
-                                <span>Bericht</span>
+                                <span>{{ __('Bericht') }}</span>
                                 <textarea name="message" rows="6" required>{{ old('message') }}</textarea>
                                 @error('message')<span class="mh-form__error">{{ $message }}</span>@enderror
                             </label>
                             <label class="sj-application-field sj-application-field--full">
-                                <span>CV bijlage</span>
+                                <span>{{ __('CV bijlage') }}</span>
                                 <input type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
                                 @error('cv')<span class="mh-form__error">{{ $message }}</span>@enderror
                             </label>
-                            <button class="sj-application-submit" type="submit">Solliciteren</button>
+                            <button class="sj-application-submit" type="submit">{{ __('Solliciteren') }}</button>
                         </form>
                     @endif
                 </section>
@@ -81,7 +81,7 @@
     </main>
 
     <script type="application/ld+json">{!! json_encode([
-        '@context' => 'https://schema.org',
+        '@'.'context' => 'https://schema.org',
         '@type' => 'JobPosting',
         'title' => $vacancy->title,
         'description' => $vacancy->content,

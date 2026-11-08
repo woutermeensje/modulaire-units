@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl-NL">
+<html lang="{{ \App\Support\Locale::isSource() ? 'nl-NL' : \App\Support\Locale::details()['hreflang'] }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +13,9 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap&amp;subset=latin">
+    @unless (\App\Support\Locale::isSource())
+        <script>window.siteTranslations = @json(\App\Support\JsTranslations::all());</script>
+    @endunless
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 
@@ -31,7 +34,7 @@
     @endif
 </head>
 <body class="elementor-kit-6 @yield('body_class')">
-    <a class="skip-link screen-reader-text" href="#content">Ga naar de inhoud</a>
+    <a class="skip-link screen-reader-text" href="#content">{{ __('Ga naar de inhoud') }}</a>
 
     @include('partials.header')
 

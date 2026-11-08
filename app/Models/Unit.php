@@ -81,7 +81,7 @@ class Unit extends Model
 
     public function url(): string
     {
-        return SiteUrl::path(route('units.show', $this->slug, false));
+        return SiteUrl::route('units.show', $this->slug, $this->urlLocale());
     }
 
     /**

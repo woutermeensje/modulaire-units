@@ -51,7 +51,7 @@ class QuoteFlowTest extends TestCase
         $this->post(route('quote.add'), ['type' => 'unit', 'id' => $unit->id]);
 
         $this->get('/mijn-offerte/')
-            ->assertSee('href="'.route('quote.show').'/" class="mh-btn mh-btn--solid mh-btn--nav-contact" data-quote-cta>Mijn offerte</a>', false)
+            ->assertSee('href="/mijn-offerte/" class="mh-btn mh-btn--solid mh-btn--nav-contact" data-quote-cta>Mijn offerte</a>', false)
             ->assertDontSee('data-quote-cta>Informatie aanvragen</a>', false)
             ->assertDontSee('mh-btn--nav-quote', false);
     }

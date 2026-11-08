@@ -31,11 +31,11 @@
         @endif
         <div class="mh-unit-card__footer">
             <div class="mh-unit-card__actions">
-                <form method="post" action="{{ route('quote.add') }}" class="mh-unit-card__quote-form mh-unit-card__quote-form--stacked">
+                <form method="post" action="{{ \App\Support\SiteUrl::action('quote.add') }}" class="mh-unit-card__quote-form mh-unit-card__quote-form--stacked">
                     @csrf
                     <input type="hidden" name="type" value="unit">
                     <input type="hidden" name="id" value="{{ $unit->id }}">
-                    <button type="submit" class="mh-unit-card__action-button mh-unit-card__action-button--quote mh-unit-card__quote mh-unit-card__quote-button">Toevoegen aan offerte</button>
+                    <button type="submit" class="mh-unit-card__action-button mh-unit-card__action-button--quote mh-unit-card__quote mh-unit-card__quote-button">{{ __('Toevoegen aan offerte') }}</button>
                 </form>
             </div>
         </div>

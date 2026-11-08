@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Post;
 use App\Models\Setting;
+use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -12,6 +13,9 @@ use Illuminate\Support\Str;
  */
 class Seo
 {
+    /**
+     * @param  array<string, string>  $alternates  The URL of this page per language (locale => root-relative URL), for hreflang and the language switch.
+     */
     public function __construct(
         public string $title,
         public ?string $description = null,
@@ -19,6 +23,7 @@ class Seo
         public ?string $image = null,
         public bool $noindex = false,
         public string $type = 'website',
+        public array $alternates = [],
     ) {}
 
     public static function make(string $title, ?string $description = null, ?string $canonical = null): self
@@ -42,7 +47,7 @@ class Seo
             ?? static::description($fallbackDescription)
             ?? static::description($model->content ?? null);
 
-        return new self(
+        $seo = new self(
             title: $title,
             description: $description,
             canonical: method_exists($model, 'url') ? $model->url() : null,
@@ -50,6 +55,54 @@ class Seo
             noindex: (bool) ($model->noindex ?? false),
             type: $model instanceof Post ? 'article' : 'website',
         );
+
+        return method_exists($model, 'url') ? $seo->withAlternates(fn (): string => $model->url(), $model) : $seo;
+    }
+
+    /**
+     * Meta data for a fixed route such as "units.index", with its URL in every language.
+     *
+     * @param  array<string, mixed>|string|int  $parameters
+     */
+    public static function route(string $title, ?string $description, string $name, array|string|int $parameters = []): self
+    {
+        return static::make($title, $description, SiteUrl::route($name, $parameters))
+            ->withAlternates(fn (): string => SiteUrl::route($name, $parameters));
+    }
+
+    /**
+     * Collect the URL of the page in every language by running the callback per language. With a record, languages
+     * in which it has no translation are left out, because the page doesn't exist there.
+     *
+     * @param  Closure(): string  $url
+     */
+    public function withAlternates(Closure $url, ?Model $record = null): self
+    {
+        $this->alternates = [];
+
+        foreach (Locale::all() as $locale) {
+            if ($record !== null && method_exists($record, 'hasTranslation') && ! $record->hasTranslation($locale)) {
+                continue;
+            }
+
+            $this->alternates[$locale] = Locale::using($locale, $url);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Absolute alternate URLs for hreflang; empty when the page exists in one language only.
+     *
+     * @return array<string, string>
+     */
+    public function alternateUrls(): array
+    {
+        if (count($this->alternates) < 2) {
+            return [];
+        }
+
+        return array_map(fn (string $url): string => SiteUrl::absolute($url), $this->alternates);
     }
 
     /**
@@ -76,7 +129,7 @@ class Seo
             return null;
         }
 
-        return SiteUrl::absolute(str_starts_with($this->canonical, 'http') ? $this->canonical : SiteUrl::path($this->canonical));
+        return SiteUrl::absolute(str_starts_with($this->canonical, 'http') ? $this->canonical : SiteUrl::path($this->canonical, Locale::SOURCE));
     }
 
     /**

@@ -1,10 +1,10 @@
 <div class="job_listings">
     <div class="filter-header">
-        <h2>Werken bij Modulairehuisvesting</h2>
-        <p>Bekijk onze openstaande vacatures en word onderdeel van ons team.</p>
+        <h2>{{ __('Werken bij Modulairehuisvesting') }}</h2>
+        <p>{{ __('Bekijk onze openstaande vacatures en word onderdeel van ons team.') }}</p>
     </div>
     @if ($vacancies->isEmpty())
-        <p class="no_job_listings_found">Er zijn op dit moment geen openstaande vacatures.</p>
+        <p class="no_job_listings_found">{{ __('Er zijn op dit moment geen openstaande vacatures.') }}</p>
     @else
         <ul class="job_listings">
             @foreach ($vacancies as $vacancy)

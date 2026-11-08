@@ -6,8 +6,8 @@
      */
 @endphp
 <section class="unit-composer unit-composer--section" id="unit-samensteller">
-    <h2 class="mh-page-title">Stel je eigen unit samen</h2>
-    <p class="unit-composer__intro">Kies de afmeting, het aantal units en lagen, de kleuren en waar ramen en deuren komen. Bewaar of deel je samenstelling met de link.</p>
+    <h2 class="mh-page-title">{{ __('Stel je eigen unit samen') }}</h2>
+    <p class="unit-composer__intro">{{ __('Kies de afmeting, het aantal units en lagen, de kleuren en waar ramen en deuren komen. Bewaar of deel je samenstelling met de link.') }}</p>
 
     @include('partials.unit-composer', $composer)
 </section>

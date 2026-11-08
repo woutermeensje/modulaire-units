@@ -121,4 +121,21 @@ trait HasTranslations
             $query->whereNotNull($this->qualifyColumn('translations').'->'.$locale.'->'.static::TRANSLATABLE[0]);
         }
     }
+
+    /**
+     * Search attributes with LIKE in the active language.
+     *
+     * @param  list<string>  $columns
+     */
+    #[Scope]
+    protected function whereLocalizedLike(Builder $query, array $columns, string $like): void
+    {
+        $locale = Locale::translated();
+
+        $query->where(function (Builder $query) use ($columns, $like, $locale): void {
+            foreach ($columns as $column) {
+                $query->orWhere($locale === null ? $this->qualifyColumn($column) : $this->qualifyColumn('translations').'->'.$locale.'->'.$column, 'like', $like);
+            }
+        });
+    }
 }

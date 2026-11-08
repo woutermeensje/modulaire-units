@@ -9,6 +9,7 @@ use App\Services\Content\OfferLanding;
 use App\Services\Content\ServiceLanding;
 use App\Services\Content\ShortcodeRenderer;
 use App\Services\Content\UnitTypesOverview;
+use App\Support\Locale;
 use App\Support\Seo;
 use App\Support\UnitConfiguration;
 use Illuminate\Http\RedirectResponse;
@@ -36,20 +37,20 @@ class PageController extends Controller
     {
         $path = trim($path, '/');
 
-        if ($redirect = $this->findRedirect($path)) {
+        if (Locale::isSource() && $redirect = $this->findRedirect($path)) {
             $redirect->increment('hits');
 
             return redirect($this->redirectTarget($request, $redirect), $redirect->status_code);
         }
 
-        $page = Page::query()->where('path', $path)->first();
+        $page = Page::query()->whereLocalized('path', $path)->first();
 
         if ($page && ($page->isPublished() || Auth::check())) {
             return $this->renderPage($page, $request);
         }
 
         if (! str_contains($path, '/') && $path !== '') {
-            $post = Post::query()->where('slug', $path)->with(['author', 'category'])->first();
+            $post = Post::query()->whereLocalized('slug', $path)->with(['author', 'category'])->first();
 
             if ($post && ($post->isPublished() || Auth::check())) {
                 return app(BlogController::class)->renderPost($post);
@@ -80,7 +81,7 @@ class PageController extends Controller
             ]);
         }
 
-        if ($page->path === UsedListingController::PAGE_PATH) {
+        if ($page->source('path') === UsedListingController::PAGE_PATH) {
             return app(UsedListingController::class)->index($page);
         }
 
@@ -96,7 +97,7 @@ class PageController extends Controller
             'page' => $page,
             'content' => $this->shortcodes->render($page->content, $page),
             'seo' => Seo::for($page, $page->excerpt),
-            ...($page->path === '' ? ['composer' => $this->composer($request)] : []),
+            ...($page->source('path') === '' ? ['composer' => $this->composer($request)] : []),
         ]);
     }
 

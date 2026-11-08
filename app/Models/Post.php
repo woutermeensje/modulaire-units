@@ -60,7 +60,7 @@ class Post extends Model
      */
     public function url(): string
     {
-        return SiteUrl::path($this->slug);
+        return SiteUrl::path($this->slug, $this->urlLocale());
     }
 
     public function summary(int $words = 55): string

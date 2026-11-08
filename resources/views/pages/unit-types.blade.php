@@ -7,7 +7,7 @@
     $requestUrl = url('offerte-aanvragen').'/';
 @endphp
 
-@section('body_class', 'page page-id-'.$page->id.' page-'.$page->slug.' mh-unit-types-page')
+@section('body_class', 'page page-id-'.$page->id.' page-'.$page->source('slug').' mh-unit-types-page')
 
 @section('custom_css'){!! $page->custom_css !!}@endsection
 
@@ -21,9 +21,9 @@
                     <p class="mh-offer-hero__lead">{{ $overview['intro'] }}</p>
                 @endif
                 <div class="mh-offer-hero__actions">
-                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">Informatie aanvragen</a>
+                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">{{ __('Informatie aanvragen') }}</a>
                     @if ($overview['units']->isNotEmpty())
-                        <a class="mh-offer-btn mh-offer-btn--dark" href="#units">Bekijk de units</a>
+                        <a class="mh-offer-btn mh-offer-btn--dark" href="#units">{{ __('Bekijk de units') }}</a>
                     @endif
                 </div>
             </div>
@@ -37,7 +37,7 @@
 
     @if ($overview['units']->isNotEmpty())
         <section id="units" class="mh-unit-types__units" aria-labelledby="mh-unit-types-units-title">
-            <h2 id="mh-unit-types-units-title" class="mh-unit-types__units-title">Onze units</h2>
+            <h2 id="mh-unit-types-units-title" class="mh-unit-types__units-title">{{ __('Onze units') }}</h2>
             <div class="mh-unit-types__list">
                 @foreach ($overview['units'] as $unit)
                     @php($image = $unit->photo3d())
@@ -62,9 +62,9 @@
                                     <dl class="mh-unit-tile__prices">
                                         @if ($unit->rentPrice())
                                             <div class="mh-unit-tile__price">
-                                                <dt>Huurprijs</dt>
+                                                <dt>{{ __('Huurprijs') }}</dt>
                                                 @if (filled($unit->price_rent_week))
-                                                    <dd>{{ \App\Models\Unit::euro($unit->price_rent_week) }} <small>per week</small></dd>
+                                                    <dd>{{ \App\Models\Unit::euro($unit->price_rent_week) }} <small>{{ __('per week') }}</small></dd>
                                                 @else
                                                     <dd>{{ $unit->rentPrice() }}</dd>
                                                 @endif
@@ -72,13 +72,13 @@
                                         @endif
                                         @if ($unit->buyPrice())
                                             <div class="mh-unit-tile__price">
-                                                <dt>Aanschafprijs</dt>
+                                                <dt>{{ __('Aanschafprijs') }}</dt>
                                                 <dd>{{ $unit->buyPrice() }}</dd>
                                             </div>
                                         @endif
                                     </dl>
                                 @endif
-                                <a class="mh-unit-tile__button" href="{{ $unit->url() }}">Unit bekijken <span aria-hidden="true">→</span></a>
+                                <a class="mh-unit-tile__button" href="{{ $unit->url() }}">{{ __('Unit bekijken') }} <span aria-hidden="true">→</span></a>
                             </div>
                         </div>
                     </article>
