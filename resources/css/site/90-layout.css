@@ -238,3 +238,12 @@ body:not(.elementor-page) .site-main.page .page-content {
   justify-content: center;
   gap: 10px;
 }
+
+/* ── Header: minder ruimte rond het scheidingslijntje tussen menu en knoppen ── */
+.mh-header__divider {
+  margin-inline: -12px !important;
+}
+
+.mh-header .mh-header__cta > a.mh-header__login:first-child {
+  padding-left: 6px;
+}
