@@ -318,15 +318,15 @@ function initConfigurator(root) {
     } else if (current === 'door') {
       setSlot(slot, 'empty');
     } else {
-      // Centre the window on the clicked slot when both neighbours are free and no other window touches them;
-      // otherwise it takes the free slot next to it.
+      // A window takes the free slot to the right of the clicked one, or else the one to the left, so two clicks next
+      // to each other give two windows side by side. Only on a wall of three slots (3 m) a click on the free middle
+      // slot centres a single window on it, as two windows don't fit there anyway.
       const segment = segmentOf(slot);
       const inUnit = (position) => slots[position] && Math.floor(position / segment) === Math.floor(index / segment);
       const free = (position) => inUnit(position) && slotValue(slots[position]) === 'empty';
-      const noWindow = (position) => !inUnit(position) || slotValue(slots[position]) !== 'window';
       const partner = [index + 1, index - 1].find(free);
 
-      if (free(index - 1) && free(index + 1) && noWindow(index - 2) && noWindow(index + 2)) {
+      if (segment === 3 && index % 3 === 1 && free(index - 1) && free(index + 1)) {
         [index - 1, index, index + 1].forEach((position) => setSlot(slots[position], 'window'));
       } else if (partner === undefined) {
         setSlot(slot, 'door');

@@ -1,0 +1,139 @@
+/* ==========================================================================
+   3D-prototype van een samengestelde unit (partials/unit-3d-view): wisselen
+   tussen plattegrond, 3D en binnenkant. Op de unitkaarten van /modulaire-units/
+   en op de detailpagina van een unit.
+   ========================================================================== */
+
+.mh-unit-3d {
+  position: relative;
+  display: grid;
+  align-self: stretch;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #EEF4F7;
+}
+
+.mh-unit-3d__pane {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.mh-unit-3d__pane[hidden] {
+  display: none;
+}
+
+.mh-unit-3d__plan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 56px 16px 16px;
+  background: #fff;
+}
+
+.mh-unit-3d__plan svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mh-unit-3d__viewer {
+  position: relative;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.mh-unit-3d__viewer:active {
+  cursor: grabbing;
+}
+
+.mh-unit-3d__viewer img,
+.mh-unit-3d__viewer canvas {
+  display: block;
+}
+
+.mh-unit-3d__viewer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mh-unit-3d__views {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #DCE5EB;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(23, 44, 66, 0.08);
+}
+
+/* Scoped to .mh-unit-3d__views so the pink button:hover/focus from 01-reset.css does not win. */
+.mh-unit-3d__views .mh-unit-3d__view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #5B6B78;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.mh-unit-3d__views .mh-unit-3d__view:hover,
+.mh-unit-3d__views .mh-unit-3d__view:focus {
+  background: #F0F5F8;
+  color: #1F2A33;
+}
+
+.mh-unit-3d__views .mh-unit-3d__view:focus-visible {
+  outline: 2px solid #1F4E6B;
+  outline-offset: 1px;
+}
+
+.mh-unit-3d__views .mh-unit-3d__view.is-active,
+.mh-unit-3d__views .mh-unit-3d__view.is-active:hover,
+.mh-unit-3d__views .mh-unit-3d__view.is-active:focus {
+  background: #E1EEF4;
+  color: #1F4E6B;
+}
+
+.mh-unit-3d__viewer .mh-unit-3d__hint {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+  min-height: 28px;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 2px rgba(23, 44, 66, 0.12);
+  color: #1F2A33;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mh-unit-3d__viewer.is-ready .mh-unit-3d__hint {
+  opacity: 1;
+}

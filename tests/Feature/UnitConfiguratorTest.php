@@ -148,8 +148,8 @@ class UnitConfiguratorTest extends TestCase
 
         $this->get($unit->url())
             ->assertOk()
+            ->assertSee('data-unit-card-viewer', false)
             ->assertSee($unit->configuration_images[0])
-            ->assertSee($unit->configuration_images[1])
             ->assertDontSee('og:image', false);
     }
 

@@ -188,7 +188,7 @@
                     </div>
                 </section>
             @endforeach
-            <p class="portal-help">Bovenaanzicht van de unit: klik op een vak langs een gevel om te wisselen tussen dicht, raam en deur. Elk vak is 1 meter; een raam van 1,80 m beslaat twee vakken. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte, met unit 1 aan de voorzijde. Met twee lagen stel je de verdieping apart in.</p>
+            <p class="portal-help">Bovenaanzicht van de unit: klik op een vak langs een gevel om te wisselen tussen dicht, raam en deur. Elk vak is 1 meter; een raam van 1,80 m beslaat twee vakken: het aangeklikte vak en het vrije vak rechts ervan (of links, als rechts bezet is). Klik je daarna op het vrije vak naast een raam, dan komt er een tweede raam direct naast. Twee ramen in het midden van een gevel van 6 m: klik op vak 2 en vak 4. Op een gevel van 3 m komt een klik op het middelste vak uit op één raam in het midden. Klik nog eens op een raam voor een deur, en nog eens voor dicht. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte, met unit 1 aan de voorzijde. Met twee lagen stel je de verdieping apart in.</p>
         </div>
     </div>
 

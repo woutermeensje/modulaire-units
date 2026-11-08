@@ -13,10 +13,24 @@
         </nav>
 
         <div class="mh-product-wrapper">
-            @include('partials.item-gallery', ['images' => $unit->images(), 'title' => $unit->title, 'viewer' => $viewer])
+            @if ($viewer)
+                <div class="mh-col-left">
+                    @include('partials.unit-3d-view', ['unit' => $unit, 'viewer' => $viewer, 'poster' => $unit->photo3d(), 'posterVariant' => 'large'])
+                </div>
+            @else
+                @include('partials.item-gallery', ['images' => $unit->images(), 'title' => $unit->title])
+            @endif
 
             <div class="mh-col-right">
-                <h1 class="product_title entry-title">{{ $unit->title }}</h1>
+                {{-- Opens the composer with this unit's configuration as the starting point. --}}
+                @php($composeUrl = route('unit-composer.public').'/'.($viewer ? '?'.http_build_query([\App\Support\UnitConfiguration::SHARE_KEY => \App\Support\UnitConfiguration::toShareCode($viewer['configuration'])]) : ''))
+                <div class="mh-col-right__head">
+                    <h1 class="product_title entry-title">{{ $unit->title }}</h1>
+                    <a class="mh-compose-link" href="{{ $composeUrl }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                        Stel je eigen unit samen
+                    </a>
+                </div>
 
                 @if ($unit->terms->isNotEmpty())
                     <div class="mh-product-cats">
@@ -41,7 +55,6 @@
                             @if ($unit->rentPrice())
                                 <div class="mh-price-card">
                                     <div class="mh-price-card__header">
-                                        <svg class="mh-price-card__icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                                         <span class="mh-price-card__label">Huren</span>
                                     </div>
                                     <span class="mh-price-card__value">{{ $unit->rentPrice() }}</span>
@@ -50,7 +63,6 @@
                             @if ($unit->buyPrice())
                                 <div class="mh-price-card">
                                     <div class="mh-price-card__header">
-                                        <svg class="mh-price-card__icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                                         <span class="mh-price-card__label">Kopen</span>
                                     </div>
                                     <span class="mh-price-card__value">{{ $unit->buyPrice() }}</span>

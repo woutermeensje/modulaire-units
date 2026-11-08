@@ -1,6 +1,6 @@
 /**
- * The unit cards on /modulaire-units/: each composed unit is shown as its rotatable 3D prototype, which visitors can
- * turn with the mouse straight from the overview, and can be switched to its floor plan or a look inside.
+ * The 3D prototype of a configured unit (partials/unit-3d-view) on the unit cards of /modulaire-units/ and on the unit
+ * detail page: a rotatable 3D view that visitors turn with the mouse, switchable to its floor plan or a look inside.
  * Three.js is only downloaded when a card comes into view; until then, and on devices without WebGL, the 3D photo
  * stays in place.
  */

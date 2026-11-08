@@ -226,11 +226,15 @@ class PublicSiteTest extends TestCase
 
         $this->get('/units/met-configuratie/')
             ->assertOk()
-            ->assertSee('Bekijk in 3D')
-            ->assertSee('data-unit-viewer=\'{"configuration":{"size":"3x3"', false)
+            ->assertSee('data-unit-card-viewer=\'{"configuration":{"size":"3x3"', false)
+            ->assertSee('Plattegrond van')
+            ->assertSee('data-unit-card-view="interior"', false)
+            ->assertDontSee('id="mh-open-gallery"', false)
+            ->assertSee('Stel je eigen unit samen')
+            ->assertSee('href="'.e(route('unit-composer.public').'/?'.http_build_query(['samenstelling' => UnitConfiguration::toShareCode(UnitConfiguration::defaults('3x3'))])).'"', false)
             ->assertSee('"dimensions":{"length":3,"depth":3,"floors":1}', false);
 
-        $this->get('/units/zonder-configuratie/')->assertOk()->assertDontSee('Bekijk in 3D')->assertDontSee('data-unit-viewer', false);
+        $this->get('/units/zonder-configuratie/')->assertOk()->assertDontSee('data-unit-card-viewer', false)->assertSee('id="mh-open-gallery"', false);
 
         Unit::factory()->create(['slug' => 'gekoppeld', 'configuration' => UnitConfiguration::normalize(['size' => '6x3', 'modules' => 3])]);
         $this->get('/units/gekoppeld/')->assertOk()->assertSee('"dimensions":{"length":6,"depth":9,"floors":1}', false);
