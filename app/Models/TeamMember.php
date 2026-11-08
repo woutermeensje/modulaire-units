@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-#[Fillable(['wp_id', 'name', 'role', 'email', 'phone', 'linkedin_url', 'photo', 'sort', 'is_visible'])]
+#[Fillable(['translations', 'wp_id', 'name', 'role', 'email', 'phone', 'linkedin_url', 'photo', 'sort', 'is_visible'])]
 class TeamMember extends Model
 {
     /** @use HasFactory<TeamMemberFactory> */
