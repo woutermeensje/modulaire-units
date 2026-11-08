@@ -23,7 +23,7 @@
 
             <div class="mh-col-right">
                 {{-- Opens the composer with this unit's configuration as the starting point. --}}
-                @php($composeUrl = \App\Support\SiteUrl::route('unit-composer.public').($viewer ? '?'.http_build_query([\App\Support\UnitConfiguration::SHARE_KEY => \App\Support\UnitConfiguration::toShareCode($viewer['configuration'])]) : ''))
+                @php($composeUrl = \App\Support\SiteUrl::absolute(\App\Support\SiteUrl::route('unit-composer.public')).($viewer ? '?'.http_build_query([\App\Support\UnitConfiguration::SHARE_KEY => \App\Support\UnitConfiguration::toShareCode($viewer['configuration'])]) : ''))
                 <div class="mh-col-right__head">
                     <h1 class="product_title entry-title">{{ $unit->title }}</h1>
                     <a class="mh-compose-link" href="{{ $composeUrl }}">
