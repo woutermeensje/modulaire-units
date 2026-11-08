@@ -161,7 +161,7 @@ class Unit extends Model
      */
     public function rentPrice(): ?string
     {
-        return filled($this->price_rent_week) ? self::euro($this->price_rent_week).' per week' : ($this->price_rent ?: null);
+        return filled($this->price_rent_week) ? __(':price per week', ['price' => self::euro($this->price_rent_week)]) : ($this->price_rent ?: null);
     }
 
     /**
@@ -169,7 +169,7 @@ class Unit extends Model
      */
     public function buyPrice(): string
     {
-        return 'Op aanvraag';
+        return __('Op aanvraag');
     }
 
     /**
