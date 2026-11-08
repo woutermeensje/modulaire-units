@@ -66,7 +66,7 @@ class EnglishSiteTest extends TestCase
         $this->get('/en/about-us/')
             ->assertSee('<link rel="canonical" href="http://localhost:8000/en/about-us/">', false)
             ->assertSee('<meta property="og:locale" content="en_GB">', false)
-            ->assertSee('<a href="/over-ons/" class="mh-header__login mh-header__language" hreflang="nl"', false);
+            ->assertSee('<a href="/over-ons/" class="mh-header__language" hreflang="nl"', false);
     }
 
     public function test_dutch_links_in_content_and_menus_point_to_the_english_page(): void

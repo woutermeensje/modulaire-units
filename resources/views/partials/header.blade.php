@@ -35,13 +35,13 @@
         <div class="mh-header__divider"></div>
 
         <div class="mh-header__cta">
-            @include('partials.language-switch', ['class' => 'mh-header__login mh-header__language'])
             @auth
                 <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="mh-header__login">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="mh-header__login">{{ __('Inloggen') }}</a>
             @endauth
             <a href="{{ $ctaUrl }}" class="mh-btn mh-btn--solid mh-btn--nav-contact" data-quote-cta>{{ $ctaLabel }}</a>
+            @include('partials.language-switch', ['class' => 'mh-header__language'])
         </div>
 
         <a href="{{ \App\Support\SiteUrl::route('quote.show') }}" class="mh-header__quote-icon mh-header__quote-icon--always" aria-label="{{ __('Mijn offerte') }}">
@@ -95,8 +95,8 @@
             @else
                 <a href="{{ route('login') }}" class="mh-btn mh-btn--outline mh-mobile-nav__cta">{{ __('Inloggen') }}</a>
             @endauth
-            @include('partials.language-switch', ['class' => 'mh-btn mh-btn--outline mh-mobile-nav__cta'])
             <a href="{{ $ctaUrl }}" class="mh-btn mh-btn--solid mh-btn--nav-contact mh-mobile-nav__cta" data-quote-cta>{{ $ctaLabel }}</a>
+            @include('partials.language-switch', ['class' => 'mh-btn mh-btn--outline mh-mobile-nav__cta mh-mobile-nav__language', 'showName' => true])
         </div>
     </div>
 </div>

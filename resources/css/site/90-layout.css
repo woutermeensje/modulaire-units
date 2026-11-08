@@ -200,3 +200,41 @@ body:not(.elementor-page) .site-main.page .page-content {
   font-size: var(--text-4xl);
   font-weight: 700;
 }
+
+
+/* ── Header: taalschakelaar als vlaggetje, rechts van de knoppen ── */
+.mh-header a.mh-header__language {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 8px;
+  transition: background-color .15s ease;
+}
+
+.mh-header a.mh-header__language:hover,
+.mh-header a.mh-header__language:focus-visible {
+  background: rgba(43, 110, 143, .08);
+}
+
+.mh-flag {
+  display: block;
+  width: 26px;
+  height: 18px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+  object-fit: cover;
+}
+
+.mh-header a.mh-header__language .mh-flag {
+  width: 28px;
+  height: 19px;
+}
+
+.mh-mobile-nav__language {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
