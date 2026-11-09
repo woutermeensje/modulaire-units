@@ -28,7 +28,7 @@ class UnitTypesOverview
     {
         return [
             'content' => trim($this->shortcodes->render((string) $page->content, $page)),
-            'units' => Unit::query()->published()->whereNotNull('user_id')->orderBy('sort')->latest('published_at')->get(),
+            'units' => Unit::query()->published()->whereNotNull('user_id')->orderBy('sort')->oldest('published_at')->oldest('id')->get(),
         ];
     }
 }

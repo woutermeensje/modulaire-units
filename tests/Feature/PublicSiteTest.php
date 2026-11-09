@@ -176,6 +176,17 @@ class PublicSiteTest extends TestCase
             ->assertSee('Vragen over transport &amp; plaatsing?', false);
     }
 
+    public function test_modulaire_units_page_lists_the_oldest_unit_first(): void
+    {
+        Page::factory()->create(['slug' => 'modulaire-units', 'title' => 'Modulaire units', 'content' => '']);
+        $admin = User::factory()->admin()->create();
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Tweede unit', 'published_at' => now()->subDay()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Eerste unit', 'published_at' => now()->subWeek()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Laatste unit', 'published_at' => now()->subHour()]);
+
+        $this->get('/modulaire-units/')->assertSeeInOrder(['Eerste unit', 'Tweede unit', 'Laatste unit']);
+    }
+
     public function test_modulaire_units_page_shows_the_published_composed_units_instead_of_the_composer(): void
     {
         $rent = Page::factory()->create(['slug' => 'huren', 'title' => 'Huren']);
