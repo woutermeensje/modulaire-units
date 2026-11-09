@@ -31,6 +31,9 @@ class UsedListingTest extends TestCase
             ->assertSee('Kantoorunit 6 x 3 m')
             ->assertSee('Utrecht')
             ->assertSee('€ 12.500')
+            ->assertSee('<article class="mh-unit-tile">', false)
+            ->assertSeeInOrder(['<dt>Aanschafprijs</dt>', '<dd>€ 12.500</dd>', '<dt>Locatie</dt>', '<dd>Utrecht</dd>', 'Unit bekijken'], false)
+            ->assertDontSee('Huurprijs')
             ->assertDontSee('Nog niet gecontroleerd')
             ->assertSee('Ons netwerk koopt ook in.');
     }

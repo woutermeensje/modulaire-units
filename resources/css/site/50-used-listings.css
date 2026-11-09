@@ -4,7 +4,7 @@
    ========================================================================== */
 
 .mh-used__header,
-.mh-used__grid,
+.mh-used__list,
 .mh-used__empty,
 .mh-used__content,
 .mh-used__form-wrap,
@@ -35,49 +35,12 @@
   text-align: center;
 }
 
-.mh-used__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  padding: 0;
-  list-style: none;
-}
-
-.mh-used-card {
-  overflow: hidden;
-  margin: 0;
-  border: 1px solid var(--color-border, #dedede);
-  border-radius: 12px;
-  background: #fff;
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-
-.mh-used-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(43, 110, 143, 0.18);
-}
-
-.mh-used-card__link,
-.mh-used-card__link:hover,
-.mh-used-card__link:visited {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
-.mh-used-card__media {
+/* De kaarten zijn de unittegels van /modulaire-units/ (48-unit-types.css); hier alleen het aantal foto's op de foto. */
+.mh-used .mh-unit-tile__image {
   position: relative;
-  aspect-ratio: 4 / 3;
-  background: linear-gradient(135deg, rgba(57, 116, 155, 0.90), rgba(43, 110, 143, 0.98));
 }
 
-.mh-used-card__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mh-used-card__count {
+.mh-unit-tile__count {
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -86,33 +49,6 @@
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   font-size: var(--text-sm);
-}
-
-.mh-used-card__body {
-  display: grid;
-  gap: 0.35rem;
-  padding: 16px 20px 20px;
-}
-
-.mh-used-card__title {
-  margin: 0;
-  color: var(--color-text, #333);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.mh-used-card__location {
-  margin: 0;
-  color: #6B7280;
-  font-size: var(--text-sm);
-}
-
-.mh-used-card__price {
-  margin: 0.25rem 0 0;
-  color: var(--color-primary-text, #2B6E8F);
-  font-size: var(--text-xl);
-  font-weight: 700;
 }
 
 .mh-used__content {
@@ -162,19 +98,9 @@ a.mh-used__respond-link:visited {
   margin-top: 14px;
 }
 
-@media (max-width: 960px) {
-  .mh-used__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 640px) {
   .mh-used__header {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .mh-used__grid {
-    grid-template-columns: 1fr;
   }
 }

@@ -193,9 +193,11 @@
   font-weight: 400;
 }
 
-/* Scoped to .mh-unit-types so the Elementor kit link colours (.elementor-kit-6 a, a:hover) do not win. */
+/* Scoped to .mh-unit-types and .mh-used (the /gebruikt/ cards use the same tile) so the Elementor kit link colours (.elementor-kit-6 a, a:hover) do not win. */
 .mh-unit-types .mh-unit-tile__button,
-.mh-unit-types .mh-unit-tile__button:visited {
+.mh-unit-types .mh-unit-tile__button:visited,
+.mh-used .mh-unit-tile__button,
+.mh-used .mh-unit-tile__button:visited {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -215,7 +217,9 @@
 }
 
 .mh-unit-types .mh-unit-tile__button:hover,
-.mh-unit-types .mh-unit-tile__button:focus {
+.mh-unit-types .mh-unit-tile__button:focus,
+.mh-used .mh-unit-tile__button:hover,
+.mh-used .mh-unit-tile__button:focus {
   background: #1F5670;
   color: #fff;
   text-decoration: none;

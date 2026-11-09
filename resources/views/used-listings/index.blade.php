@@ -23,27 +23,42 @@
     @if ($listings->isEmpty())
         <p class="mh-used__empty">{{ __('Er worden op dit moment geen gebruikte units aangeboden. Heb je zelf een unit over?') }} <a href="{{ \App\Support\SiteUrl::route('used-listings.create') }}">{{ __('Bied hem gratis aan.') }}</a></p>
     @else
-        <ul class="mh-used__grid">
+        <div class="mh-unit-types__list mh-used__list">
             @foreach ($listings as $listing)
-                <li class="mh-used-card">
-                    <a class="mh-used-card__link" href="{{ $listing->url() }}">
-                        <div class="mh-used-card__media">
-                            @if ($listing->coverImage())
-                                <img src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($listing->coverImage(), 'medium_large')) }}" alt="{{ $listing->title }}" loading="lazy">
-                            @endif
-                            @if (count($listing->gallery()) > 1)
-                                <span class="mh-used-card__count">{{ __(':count foto\'s', ['count' => count($listing->gallery())]) }}</span>
-                            @endif
-                        </div>
-                        <div class="mh-used-card__body">
-                            <h2 class="mh-used-card__title">{{ $listing->title }}</h2>
-                            <p class="mh-used-card__location">{{ $listing->location }}</p>
-                            <p class="mh-used-card__price">{{ $listing->formattedPrice() }}</p>
-                        </div>
+                @php($photoCount = count($listing->gallery()))
+                <article class="mh-unit-tile">
+                    <a class="mh-unit-tile__image" href="{{ $listing->url() }}" tabindex="-1" aria-hidden="true">
+                        @if ($listing->coverImage())
+                            <img src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($listing->coverImage(), 'medium_large')) }}" alt="" width="600" height="400" loading="lazy">
+                        @endif
+                        @if ($photoCount > 1)
+                            <span class="mh-unit-tile__count">{{ __(':count foto\'s', ['count' => $photoCount]) }}</span>
+                        @endif
                     </a>
-                </li>
+                    <div class="mh-unit-tile__body">
+                        <h2 class="mh-unit-tile__title"><a href="{{ $listing->url() }}">{{ $listing->title }}</a></h2>
+                        @if ($listing->summary(40) !== '')
+                            <p class="mh-unit-tile__text">{{ $listing->summary(40) }}</p>
+                        @endif
+                        <div class="mh-unit-tile__footer">
+                            <dl class="mh-unit-tile__prices">
+                                <div class="mh-unit-tile__price">
+                                    <dt>{{ __('Aanschafprijs') }}</dt>
+                                    <dd>{{ $listing->formattedPrice() }}</dd>
+                                </div>
+                                @if (filled($listing->location))
+                                    <div class="mh-unit-tile__price">
+                                        <dt>{{ __('Locatie') }}</dt>
+                                        <dd>{{ $listing->location }}</dd>
+                                    </div>
+                                @endif
+                            </dl>
+                            <a class="mh-unit-tile__button" href="{{ $listing->url() }}">{{ __('Unit bekijken') }} <span aria-hidden="true">→</span></a>
+                        </div>
+                    </div>
+                </article>
             @endforeach
-        </ul>
+        </div>
     @endif
 
     @if ($content !== '')
