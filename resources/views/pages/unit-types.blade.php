@@ -1,10 +1,9 @@
-{{-- Overzichtspagina van de modulaire units (/modulaire-units/): hero met schuin paneel, de pagina-inhoud en de gepubliceerde units die in het account zijn samengesteld. --}}
+{{-- Overzichtspagina van de modulaire units (/modulaire-units/): de pagina-inhoud en de gepubliceerde units die in het account zijn samengesteld. --}}
 @extends('layouts.site')
 
 @php
     /** @var \App\Models\Page $page */
-    /** @var array{intro: string, content: string, image: ?string, units: \Illuminate\Database\Eloquent\Collection<int, \App\Models\Unit>} $overview */
-    $requestUrl = url('offerte-aanvragen').'/';
+    /** @var array{content: string, units: \Illuminate\Database\Eloquent\Collection<int, \App\Models\Unit>} $overview */
 @endphp
 
 @section('body_class', 'page page-id-'.$page->id.' page-'.$page->source('slug').' mh-unit-types-page')
@@ -13,23 +12,7 @@
 
 @section('content')
 <main id="content" class="mh-offer mh-unit-types" aria-labelledby="mh-unit-types-title">
-    <header class="mh-offer-hero" @if ($overview['image']) style="--mh-offer-hero-image: url('{{ url($overview['image']) }}');" @endif>
-        <div class="mh-offer-hero__panel">
-            <div class="mh-offer-hero__content">
-                <h1 id="mh-unit-types-title">{{ $page->title }}</h1>
-                @if ($overview['intro'] !== '')
-                    <p class="mh-offer-hero__lead">{{ $overview['intro'] }}</p>
-                @endif
-                <div class="mh-offer-hero__actions">
-                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">{{ __('Informatie aanvragen') }}</a>
-                    @if ($overview['units']->isNotEmpty())
-                        <a class="mh-offer-btn mh-offer-btn--dark" href="#units">{{ __('Bekijk de units') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-        <div class="mh-offer-hero__image" aria-hidden="true"></div>
-    </header>
+    <h1 id="mh-unit-types-title" class="screen-reader-text">{{ $page->title }}</h1>
 
     @if ($overview['content'] !== '')
         <div class="mh-unit-types__content text-content">{!! $overview['content'] !!}</div>
@@ -38,6 +21,11 @@
     @if ($overview['units']->isNotEmpty())
         <section id="units" class="mh-unit-types__units" aria-labelledby="mh-unit-types-units-title">
             <h2 id="mh-unit-types-units-title" class="mh-unit-types__units-title">{{ __('Onze units') }}</h2>
+            <nav class="mhu-breadcrumb" aria-label="Breadcrumb">
+                <a href="{{ \App\Support\SiteUrl::path('') }}">{{ __('Home') }}</a>
+                <span class="mhu-breadcrumb__sep" aria-hidden="true">›</span>
+                <span aria-current="page">{{ $page->title }}</span>
+            </nav>
             <div class="mh-unit-types__list">
                 @foreach ($overview['units'] as $unit)
                     @php($image = $unit->photo3d())

@@ -15,10 +15,31 @@
 }
 
 .mh-unit-types__units-title {
-  margin: 0 0 24px;
+  margin: 0 0 8px;
   color: #1F2A33;
   font-size: var(--text-3xl);
   line-height: var(--leading-tight);
+}
+
+.mh-unit-types .mhu-breadcrumb {
+  margin: 0 0 24px;
+  color: #777;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.mh-unit-types .mhu-breadcrumb a {
+  color: #777;
+  text-decoration: none;
+}
+
+.mh-unit-types .mhu-breadcrumb a:hover {
+  color: var(--color-primary-text, #2B6E8F);
+}
+
+.mh-unit-types .mhu-breadcrumb__sep {
+  margin: 0 8px;
+  color: #b4b4b4;
 }
 
 .mh-unit-types__list {

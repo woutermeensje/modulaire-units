@@ -63,6 +63,11 @@ a.mh-btn--solid.mh-btn--nav-contact:hover {
   font-weight: 600 !important;
 }
 
+/* In de headerbalk zelf iets platter, in lijn met de andere knoppen (10px boven en onder). */
+.mh-header a.mh-btn--solid.mh-btn--nav-contact {
+  padding: 10px 18px !important;
+}
+
 /* Kleuren: primaire kleur #2B6E8F, secundaire kleur #4B88A8. Knoppen worden bij hover een tint donkerder
    (--color-primary-dark). */
 

@@ -189,10 +189,9 @@ class PublicSiteTest extends TestCase
 
         $this->get('/modulaire-units/')
             ->assertOk()
-            ->assertSee('<h1 id="mh-unit-types-title">Modulaire units</h1>', false)
-            ->assertSee('mh-offer-hero__panel', false)
-            ->assertSee('Het complete aanbod.')
-            ->assertSee('<a class="mh-offer-btn mh-offer-btn--dark" href="#units">Bekijk de units</a>', false)
+            ->assertSee('<h1 id="mh-unit-types-title" class="screen-reader-text">Modulaire units</h1>', false)
+            ->assertDontSee('mh-offer-hero', false)
+            ->assertSeeInOrder(['Onze units', 'aria-label="Breadcrumb"', '<a href="/">Home</a>', '<span aria-current="page">Modulaire units</span>'], false)
             ->assertSee('Portiersloge')
             ->assertSee('href="/units/portiersloge/"', false)
             ->assertSeeInOrder(['<dt>Huurprijs</dt>', '<dd>Vanaf € 250,- per maand</dd>', '<dt>Aanschafprijs</dt>', '<dd>Op aanvraag</dd>'], false)
