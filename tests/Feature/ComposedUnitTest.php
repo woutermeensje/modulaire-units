@@ -67,6 +67,18 @@ class ComposedUnitTest extends TestCase
             ->assertDontSee('Units aanbieden');
     }
 
+    public function test_my_units_lists_the_first_created_unit_first(): void
+    {
+        $admin = User::factory()->admin()->create();
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Tweede unit', 'created_at' => now()->subDay()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Eerste unit', 'created_at' => now()->subWeek()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Laatste unit', 'created_at' => now()->subHour()]);
+
+        $this->actingAs($admin)->get(route('my-used-listings.index'))
+            ->assertOk()
+            ->assertSeeInOrder(['Eerste unit', 'Tweede unit', 'Laatste unit']);
+    }
+
     public function test_a_title_and_size_are_required(): void
     {
         $this->actingAs(User::factory()->admin()->create())

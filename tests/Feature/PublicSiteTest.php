@@ -176,13 +176,13 @@ class PublicSiteTest extends TestCase
             ->assertSee('Vragen over transport &amp; plaatsing?', false);
     }
 
-    public function test_modulaire_units_page_lists_the_oldest_unit_first(): void
+    public function test_modulaire_units_page_lists_the_first_created_unit_first(): void
     {
         Page::factory()->create(['slug' => 'modulaire-units', 'title' => 'Modulaire units', 'content' => '']);
         $admin = User::factory()->admin()->create();
-        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Tweede unit', 'published_at' => now()->subDay()]);
-        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Eerste unit', 'published_at' => now()->subWeek()]);
-        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Laatste unit', 'published_at' => now()->subHour()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Tweede unit', 'created_at' => now()->subDay(), 'published_at' => now()->subMinute()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Eerste unit', 'created_at' => now()->subWeek(), 'published_at' => now()->subHour()]);
+        Unit::factory()->create(['user_id' => $admin->id, 'title' => 'Laatste unit', 'created_at' => now()->subHour(), 'published_at' => now()->subWeek()]);
 
         $this->get('/modulaire-units/')->assertSeeInOrder(['Eerste unit', 'Tweede unit', 'Laatste unit']);
     }

@@ -24,7 +24,7 @@ class UsedListingController extends Controller
 
         return view('portal.used-listings.index', [
             'listings' => $user->isAdmin() ? collect() : $user->usedListings()->latest()->get(),
-            'units' => $user->isAdmin() ? $user->units()->latest()->get() : collect(),
+            'units' => $user->isAdmin() ? $user->units()->oldest()->oldest('id')->get() : collect(),
         ]);
     }
 
