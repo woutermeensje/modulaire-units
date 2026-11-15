@@ -664,7 +664,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
+  min-height: 48px;
   padding: 6px 6px 6px 12px;
   border: var(--border-default);
   border-radius: var(--radius-default);
@@ -690,45 +691,76 @@
 }
 
 .unit-count__stepper {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: flex;
+  align-items: stretch;
   flex-shrink: 0;
-}
-
-.unit-count__button {
-  display: inline-grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
+  height: 34px;
   border: var(--border-default);
   border-radius: var(--radius-default);
   background: var(--color-bg-white);
-  color: inherit;
-  cursor: pointer;
+  overflow: hidden;
 }
 
-.unit-count__button:hover {
-  border-color: var(--color-border-strong);
-}
-
-.unit-count__input {
-  width: 40px;
-  height: 30px;
+/* Prefixed with .unit-count so they win from the site reset, which gives every button a pink border and hover and
+   every number input a full width, border and padding (see .mh-qp__stepper in the quote for the same fix). */
+.unit-count .unit-count__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
   border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.unit-count .unit-count__button:hover,
+.unit-count .unit-count__button:focus-visible {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  outline: none;
+}
+
+.unit-count .unit-count__input {
+  width: 38px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: var(--border-default);
+  border-right: var(--border-default);
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font: inherit;
   font-weight: 600;
   text-align: center;
+  box-shadow: none;
+  transition: none;
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+.unit-count .unit-count__input:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-primary-soft);
 }
 
 .unit-count__input::-webkit-outer-spin-button,
 .unit-count__input::-webkit-inner-spin-button {
   margin: 0;
   -webkit-appearance: none;
+}
+
+.unit-count.is-chosen .unit-count__stepper {
+  border-color: var(--color-primary);
 }
 
 .unit-swatch--small {
@@ -762,4 +794,76 @@
 .unit-configurator__plan-help .portal-help {
   flex: 1 1 280px;
   margin: 0;
+}
+
+/* The interior on the floor of the top view, drawn by the JavaScript; every block can be dragged into place. */
+.unit-plan__items {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Prefixed with .unit-plan__items so it wins from the site reset for buttons (pink border and hover, padding). */
+.unit-plan__items .unit-plan-item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 4px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(16, 36, 56, 0.18);
+  cursor: grab;
+  touch-action: none;
+  overflow: hidden;
+  transition: box-shadow .15s ease;
+}
+
+.unit-plan__items .unit-plan-item:hover,
+.unit-plan__items .unit-plan-item:focus-visible {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  box-shadow: 0 0 0 3px rgba(16, 92, 160, 0.25);
+  outline: none;
+  z-index: 2;
+}
+
+.unit-plan__items .unit-plan-item.is-dragging {
+  cursor: grabbing;
+  opacity: 0.85;
+  z-index: 3;
+  transition: none;
+}
+
+/* Hung high on the wall, as dashed on the floor plan. */
+.unit-plan__items .unit-plan-item--airco {
+  border-style: dashed;
+  background: #ffffff;
+}
+
+/* Small items on the wall keep a grabbable size, centred on their spot. */
+.unit-plan__items .unit-plan-item--socket,
+.unit-plan__items .unit-plan-item--network {
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  font-size: 11px;
+}
+
+.unit-plan__items .unit-plan-item--toilet,
+.unit-plan__items .unit-plan-item--cabinet {
+  border-color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary-strong);
+}
+
+.unit-plan__items .unit-plan-item.is-tentative {
+  border-style: dashed;
+  opacity: 0.6;
 }

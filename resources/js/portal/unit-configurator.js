@@ -1,5 +1,5 @@
 import { windowSpans } from '../window-spans';
-import { plannedItems } from '../interior-layout';
+import { interiorLayout, plannedItems } from '../interior-layout';
 import { setSelectValue } from './search-select';
 import { t } from '../site/i18n';
 
@@ -285,8 +285,105 @@ function initConfigurator(root) {
     tentativeBox.hidden = !sizeSelect.value || chosen.size === 0;
   };
 
+  // The interior on the floor of the top view: every item as a block that can be dragged, or moved with the arrow
+  // keys, to where it should go. Positions are percentages of the floor, which has the proportions of the unit.
+  const itemIcons = JSON.parse(root.dataset.itemIcons);
+  const itemLabels = JSON.parse(root.dataset.itemLabels);
+  const itemLayers = [...root.querySelectorAll('[data-configurator-items]')];
+
+  const renderItems = () => {
+    if (!sizeSelect.value) {
+      return;
+    }
+
+    const configuration = readConfiguration();
+    const { length, depth } = dimensions();
+    itemLayers.forEach((layer) => {
+      const level = layer.dataset.level;
+      const items = LEVELS.indexOf(level) < floors() ? interiorLayout(configuration, { length, depth }, level).items : [];
+      layer.replaceChildren(...items.map((item) => {
+        const block = document.createElement('button');
+        block.type = 'button';
+        block.className = `unit-plan-item unit-plan-item--${item.type}${item.tentative ? ' is-tentative' : ''}`;
+        block.dataset.planItem = item.id;
+        block.dataset.x = String((item.x1 + item.x2) / 2);
+        block.dataset.y = String((item.y1 + item.y2) / 2);
+        block.style.left = `${(item.x1 / length) * 100}%`;
+        block.style.top = `${(item.y1 / depth) * 100}%`;
+        block.style.width = `${((item.x2 - item.x1) / length) * 100}%`;
+        block.style.height = `${((item.y2 - item.y1) / depth) * 100}%`;
+        block.title = itemLabels[item.type] ?? item.type;
+        block.setAttribute('aria-label', block.title);
+        block.innerHTML = `<i class="ph ${itemIcons[item.type] ?? 'ph-square'}" aria-hidden="true"></i>`;
+
+        return block;
+      }));
+    });
+  };
+
+  let itemDrag = null;
+  root.addEventListener('pointerdown', (event) => {
+    const block = event.target.closest('[data-plan-item]');
+    if (!block || event.button > 0) {
+      return;
+    }
+
+    event.preventDefault();
+    block.setPointerCapture(event.pointerId);
+    block.focus({ preventScroll: true });
+    itemDrag = { block, floor: block.parentElement.getBoundingClientRect(), startX: event.clientX, startY: event.clientY, dx: 0, dy: 0 };
+    block.classList.add('is-dragging');
+  });
+
+  root.addEventListener('pointermove', (event) => {
+    if (!itemDrag) {
+      return;
+    }
+
+    itemDrag.dx = event.clientX - itemDrag.startX;
+    itemDrag.dy = event.clientY - itemDrag.startY;
+    itemDrag.block.style.transform = `translate(${itemDrag.dx}px, ${itemDrag.dy}px)`;
+  });
+
+  const endItemDrag = (event) => {
+    if (!itemDrag) {
+      return;
+    }
+
+    const { block, floor, dx, dy } = itemDrag;
+    itemDrag = null;
+    block.classList.remove('is-dragging');
+    block.style.transform = '';
+
+    if (event.type === 'pointercancel' || Math.hypot(dx, dy) < 4) {
+      return;
+    }
+
+    const { length, depth } = dimensions();
+    setPosition(block.dataset.planItem, Number(block.dataset.x) + (dx / floor.width) * length, Number(block.dataset.y) + (dy / floor.height) * depth);
+    refreshPreview();
+  };
+  root.addEventListener('pointerup', endItemDrag);
+  root.addEventListener('pointercancel', endItemDrag);
+
+  // Arrow keys move the focused item 10 cm; its block is drawn anew, so focus moves to the new one.
+  root.addEventListener('keydown', (event) => {
+    const block = event.target.closest('[data-plan-item]');
+    const step = { ArrowLeft: [-0.1, 0], ArrowRight: [0.1, 0], ArrowUp: [0, -0.1], ArrowDown: [0, 0.1] }[event.key];
+    if (!block || !step) {
+      return;
+    }
+
+    event.preventDefault();
+    const id = block.dataset.planItem;
+    setPosition(id, Number(block.dataset.x) + step[0], Number(block.dataset.y) + step[1]);
+    refreshPreview();
+    root.querySelector(`[data-plan-item="${id}"]`)?.focus({ preventScroll: true });
+  });
+
   const refreshPreview = () => {
     prunePositions();
+    renderItems();
     updateViewer();
     updateShareUrl();
     resetQuote();
@@ -676,6 +773,7 @@ function initConfigurator(root) {
     resetQuote();
   });
   markWindowPairs();
+  renderItems();
 
   if (root.dataset.composer !== undefined) {
     showView('3d');

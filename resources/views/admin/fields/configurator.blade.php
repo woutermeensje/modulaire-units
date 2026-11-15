@@ -41,6 +41,9 @@
         'Meubilair' => ['options' => UnitConfiguration::FURNITURE, 'key' => 'furniture', 'max' => UnitConfiguration::MAX_FURNITURE],
     ];
     $chosen = [...($configuration['interior'] ?? []), ...array_keys($configuration['furniture'] ?? [])];
+    // What the floor of the top view shows for every interior item, so it can be dragged into place there.
+    $itemIcons = array_map(fn (array $option): string => $option['icon'], $interiorOptions) + $countIcons;
+    $itemLabels = array_map(fn (string $itemLabel): string => __($itemLabel), UnitConfiguration::INTERIOR + UnitConfiguration::FURNITURE + UnitConfiguration::CONNECTIONS);
     $tentativeOptions = UnitConfiguration::INTERIOR + UnitConfiguration::FURNITURE;
     $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
     $slotLabels = array_map(fn (string $slotLabel): string => __($slotLabel), UnitConfiguration::SLOTS);
@@ -49,6 +52,7 @@
 <div @class(['unit-configurator', 'unit-configurator--composer' => $composer]) data-unit-configurator data-preview-url="{{ $previewUrl ?? route('admin.units.preview') }}" @if ($ai) data-design-url="{{ $designUrl ?? route('admin.units.design') }}" @endif
      data-slot-labels='@json($slotLabels)' data-slot-icons='@json($slotIcons)'
      data-slot-counts='@json($slotCounts)' data-backdrops='@json(UnitRenderer::BACKDROPS)'
+     data-item-icons='@json($itemIcons)' data-item-labels='@json($itemLabels)'
      @if ($composer) data-composer data-share-param="{{ UnitConfiguration::SHARE_KEY }}" @endif>
     @if ($ai)
         <div class="unit-configurator__ai">
@@ -205,7 +209,7 @@
                         {{ __($legendLabel) }}
                     </li>
                 @endforeach
-                <li class="unit-plan-legend__hint">{{ __('Klik op een vak om te wisselen.') }}</li>
+                <li class="unit-plan-legend__hint">{{ __('Klik op een vak om te wisselen. Sleep wat binnen staat naar de plek die je wilt.') }}</li>
             </ul>
             @foreach (UnitConfiguration::LEVELS as $level => $levelLabel)
                 @php($levelInUse = $loop->index < $configuration['floors'])
@@ -248,6 +252,8 @@
                             @foreach (UnitConfiguration::WALLS as $wall => $wallLabel)
                                 <span class="unit-plan__name unit-plan__name--{{ $wall }}">{{ __($wallLabel) }}</span>
                             @endforeach
+                            {{-- Filled by the JavaScript with the interior of this layer, which can be dragged into place. --}}
+                            <div class="unit-plan__items" data-configurator-items data-level="{{ $level }}"></div>
                         </div>
                     </div>
                 </section>

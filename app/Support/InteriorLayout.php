@@ -591,8 +591,8 @@ final class InteriorLayout
     }
 
     /**
-     * Whether an item takes up the same floor space at the same height as one already placed. Wall sockets and
-     * network points never get in the way.
+     * Whether an item takes up the same floor space at the same height as one already placed. Wall sockets, network
+     * points and chairs never get in the way.
      *
      * @param  Item  $item
      * @param  list<Item>  $placed
@@ -606,7 +606,8 @@ final class InteriorLayout
         $size = self::SIZES[$item['type']];
 
         foreach ($placed as $other) {
-            if (in_array($other['type'], self::POINTS, true)) {
+            // A chair is moved aside or tucked under, so it never pushes anything else away.
+            if (in_array($other['type'], [...self::POINTS, 'chair'], true)) {
                 continue;
             }
 

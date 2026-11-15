@@ -130,7 +130,8 @@ function overlapsAny(item, placed) {
   const size = SIZES[item.type];
 
   return placed.some((other) => {
-    if (POINTS.includes(other.type)) {
+    // A chair is moved aside or tucked under, so it never pushes anything else away.
+    if (POINTS.includes(other.type) || other.type === 'chair') {
       return false;
     }
     const otherSize = SIZES[other.type];

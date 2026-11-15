@@ -171,6 +171,13 @@ class UnitInteriorOptionsTest extends TestCase
         $this->assertEqualsWithDelta(1.5, ($items['walls:desk:0']['y1'] + $items['walls:desk:0']['y2']) / 2, 0.001);
     }
 
+    public function test_a_dragged_chair_does_not_push_the_counter_away_from_the_hatch(): void
+    {
+        $items = $this->items(UnitConfiguration::normalize([...self::HERAS, 'positions' => ['walls:chair:0' => ['x' => 2.5, 'y' => 2.3]]]));
+
+        $this->assertEqualsWithDelta(2.5, ($items['walls:counter:0']['x1'] + $items['walls:counter:0']['x2']) / 2, 0.001);
+    }
+
     public function test_dragged_positions_are_kept_within_the_unit(): void
     {
         $configuration = UnitConfiguration::normalize(['size' => '3x3', 'interior' => ['airco'], 'positions' => ['walls:airco:0' => ['x' => 9, 'y' => -2]]]);
