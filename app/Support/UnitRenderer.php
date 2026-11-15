@@ -89,7 +89,7 @@ class UnitRenderer
             $body .= '<g transform="translate('.$this->number($originX).' '.$this->number($originY).')">';
             foreach (array_slice(array_keys(UnitConfiguration::LEVELS), 0, $floors) as $floor => $level) {
                 $walls = $configuration[$level];
-                $body .= $this->unit($length, $depth, $walls[$view['front']], $walls[$view['side']], $configuration['colors'], $this->seams($configuration), $floor * self::HEIGHT);
+                $body .= $this->unit($length, $depth, $walls[$view['front']], $walls[$view['side']], $configuration['colors'], $this->seams($configuration), $floor * self::HEIGHT, $floor === 0 && ($configuration['steps'] ?? false));
             }
             $body .= '</g>';
 
@@ -125,8 +125,9 @@ class UnitRenderer
      * @param  array{cladding: string, frame: string}  $colors
      * @param  list<int>  $seams  Positions along the side face where two coupled units meet.
      * @param  float  $base  Height in metres the layer stands on: 0 for the ground floor, the wall height for a stacked layer.
+     * @param  bool  $steps  Whether a step stands outside every door.
      */
-    private function unit(int $length, int $depth, array $frontSlots, array $sideSlots, array $colors, array $seams, float $base = 0): string
+    private function unit(int $length, int $depth, array $frontSlots, array $sideSlots, array $colors, array $seams, float $base = 0, bool $steps = false): string
     {
         $front = fn (float $s, float $z): array => $this->project($s, 0, $base + $z);
         $side = fn (float $s, float $z): array => $this->project($length, $s, $base + $z);
@@ -143,10 +144,42 @@ class UnitRenderer
             $this->project($length, $depth, $base + $height), $this->project(0, $depth, $base + $height),
         ], $this->shade($colors['frame'], 1.35));
 
+        $sideSteps = $steps ? $this->steps($sideSlots, $seams[0] ?? $depth, fn (float $along, float $out, float $z): array => $this->project($length + $out, $along, $z)) : '';
+        $frontSteps = $steps ? $this->steps($frontSlots, $length, fn (float $along, float $out, float $z): array => $this->project($along, -$out, $z)) : '';
+
         return $shadow
             .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), '#9fbfd2', $seams, $seams[0] ?? $depth)
+            .$sideSteps
             .$this->face($front, $length, $frontSlots, $colors['cladding'], $colors['frame'], '#c4def0')
+            .$frontSteps
             .$roof;
+    }
+
+    /**
+     * A concrete step outside every door of a face: its top and the two faces that can be seen.
+     *
+     * @param  list<string>  $slots
+     * @param  \Closure(float, float, float): array{float, float}  $point  A point by its position along the face, its
+     *                                                                     distance out from it and its height.
+     */
+    private function steps(array $slots, int $segment, \Closure $point): string
+    {
+        $svg = '';
+        ['width' => $width, 'depth' => $stepDepth, 'height' => $height] = FloorPlanRenderer::STEP;
+
+        foreach (UnitConfiguration::openings($slots, $segment) as $opening) {
+            if ($opening['type'] !== UnitConfiguration::DOOR) {
+                continue;
+            }
+
+            $from = ($opening['left'] + $opening['right'] - $width) / 2;
+            $to = $from + $width;
+            $svg .= $this->polygon([$point($from, $stepDepth, 0), $point($to, $stepDepth, 0), $point($to, $stepDepth, $height), $point($from, $stepDepth, $height)], '#8f8d88')
+                .$this->polygon([$point($to, 0, 0), $point($to, $stepDepth, 0), $point($to, $stepDepth, $height), $point($to, 0, $height)], '#7a7873')
+                .$this->polygon([$point($from, 0, $height), $point($to, 0, $height), $point($to, $stepDepth, $height), $point($from, $stepDepth, $height)], '#b3b1ab');
+        }
+
+        return $svg;
     }
 
     /**
@@ -175,6 +208,8 @@ class UnitRenderer
                     .$this->polygon($rect($middle - 0.02, $middle + 0.02, $bottom, $top), $frame),
                 UnitConfiguration::DOOR => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($frame, 1.25), 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
                     .$this->polygon($rect($right - 0.18, $right - 0.1, 1.05, 1.13), '#d9d9d9'),
+                UnitConfiguration::HATCH => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($glass, 0.9), 'stroke="'.$frame.'" stroke-width="4" stroke-linejoin="round"')
+                    .$this->polygon($rect($left - 0.05, $right + 0.05, $bottom - 0.05, $bottom), '#a7adb1'),
                 default => '',
             };
         }

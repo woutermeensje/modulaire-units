@@ -1,4 +1,5 @@
 import { windowSpans } from '../window-spans';
+import { plannedItems } from '../interior-layout';
 import { setSelectValue } from './search-select';
 import { t } from '../site/i18n';
 
@@ -39,9 +40,42 @@ function initConfigurator(root) {
 
   const usageSelect = root.querySelector('[data-configurator-usage]');
   const interiorInputs = [...root.querySelectorAll('[name="configuration[interior][]"]')];
+  const amountInputs = [...root.querySelectorAll('[data-configurator-amount]')];
+  const tentativeInputs = [...root.querySelectorAll('[name="configuration[tentative][]"]')];
+  const stepsToggle = root.querySelector('[data-configurator-steps]');
+  const positionsBox = root.querySelector('[data-configurator-positions]');
+  const positionsReset = root.querySelector('[data-configurator-positions-reset]');
+
+  // How many of each piece of furniture or connection, by the group in their name: configuration[furniture][desk].
+  const readAmounts = (group) => {
+    const amounts = {};
+    amountInputs.filter((input) => input.name.startsWith(`configuration[${group}]`)).forEach((input) => {
+      const amount = Number(input.value) || 0;
+      if (amount > 0) {
+        amounts[input.name.slice(input.name.lastIndexOf('[') + 1, -1)] = amount;
+      }
+    });
+
+    return amounts;
+  };
+
+  const readPositions = () => {
+    const positions = {};
+    positionsBox.querySelectorAll('[data-position]').forEach((input) => {
+      const axis = input.name.endsWith('[x]') ? 'x' : 'y';
+      positions[input.dataset.position] = { ...positions[input.dataset.position], [axis]: Number(input.value) };
+    });
+
+    return positions;
+  };
+
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
     const interior = interiorInputs.filter((input) => input.checked).map((input) => input.value);
+    const furniture = readAmounts('furniture');
+    const connections = readAmounts('connections');
+    const tentative = tentativeInputs.filter((input) => input.checked && !input.disabled).map((input) => input.value);
+    const positions = readPositions();
     const color = (part) => root.querySelector(`[name="configuration[colors][${part}]"]:checked`)?.value;
     const levels = {};
     LEVELS.slice(0, floors()).forEach((level) => {
@@ -61,6 +95,11 @@ function initConfigurator(root) {
       background: field('background'),
       ...(interior.length ? { interior } : {}),
       ...(usageSelect?.selectedOptions.length ? { usage: [...usageSelect.selectedOptions].map((option) => option.value) } : {}),
+      ...(Object.keys(furniture).length ? { furniture } : {}),
+      ...(Object.keys(connections).length ? { connections } : {}),
+      ...(tentative.length ? { tentative } : {}),
+      ...(stepsToggle?.checked ? { steps: true } : {}),
+      ...(Object.keys(positions).length ? { positions } : {}),
     };
   };
 
@@ -83,6 +122,7 @@ function initConfigurator(root) {
 
   // "3d" shows the unit from outside, "interior" looks down into the ground floor; both use the same 3D viewer.
   const interiorNote = root.querySelector('[data-configurator-interior-note]');
+  const planHelp = root.querySelector('[data-configurator-plan-help]');
   const showView = async (view) => {
     currentView = view;
     root.querySelectorAll('[data-configurator-view]').forEach((button) => {
@@ -91,6 +131,7 @@ function initConfigurator(root) {
       button.setAttribute('aria-pressed', String(isActive));
     });
     preview.hidden = view !== '2d';
+    planHelp.hidden = view !== '2d';
     viewerElement.hidden = view === '2d';
     viewerHelp.hidden = view === '2d';
     interiorNote.hidden = view !== 'interior' || floors() === 1;
@@ -189,7 +230,63 @@ function initConfigurator(root) {
     }
   });
 
+  // Where an item was dragged to on the floor plan, in nominal metres; see App\Support\InteriorLayout.
+  const setPosition = (id, x, y) => {
+    // Within the unit, as the server only accepts positions inside it; it snaps them to a wall or corner itself.
+    const { length, depth } = dimensions();
+    const position = { x: Math.max(0, Math.min(length, x)), y: Math.max(0, Math.min(depth, y)) };
+    ['x', 'y'].forEach((axis) => {
+      let input = positionsBox.querySelector(`[name="configuration[positions][${id}][${axis}]"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `configuration[positions][${id}][${axis}]`;
+        input.dataset.position = id;
+        positionsBox.append(input);
+      }
+      input.value = String(Math.round(position[axis] * 100) / 100);
+    });
+    positionsReset.hidden = false;
+  };
+
+  const clearPositions = () => {
+    positionsBox.replaceChildren();
+    positionsReset.hidden = true;
+  };
+
+  // Positions of items the unit no longer has are dropped, so they don't come back when the item is chosen again.
+  const prunePositions = () => {
+    if (!sizeSelect.value) {
+      return;
+    }
+
+    const configuration = readConfiguration();
+    const ids = new Set(LEVELS.slice(0, floors()).flatMap((level) => plannedItems(configuration, level).map(([id]) => id)));
+    positionsBox.querySelectorAll('[data-position]').forEach((input) => {
+      if (!ids.has(input.dataset.position)) {
+        input.remove();
+      }
+    });
+    positionsReset.hidden = !positionsBox.querySelector('[data-position]');
+  };
+
+  // "Nog niet zeker" only offers what was chosen.
+  const tentativeBox = root.querySelector('[data-configurator-tentative]');
+  const updateTentative = () => {
+    const chosen = new Set([
+      ...interiorInputs.filter((input) => input.checked).map((input) => input.value),
+      ...Object.keys(readAmounts('furniture')),
+    ]);
+    tentativeInputs.forEach((input) => {
+      const isChosen = chosen.has(input.value);
+      input.disabled = !isChosen;
+      input.closest('[data-tentative-for]').hidden = !isChosen;
+    });
+    tentativeBox.hidden = !sizeSelect.value || chosen.size === 0;
+  };
+
   const refreshPreview = () => {
+    prunePositions();
     updateViewer();
     updateShareUrl();
     resetQuote();
@@ -226,6 +323,7 @@ function initConfigurator(root) {
   const applySize = () => {
     const size = sizeSelect.value;
     root.querySelectorAll('[data-configurator-body]').forEach((element) => { element.hidden = !size; });
+    updateTentative();
 
     if (!size) {
       return;
@@ -247,6 +345,12 @@ function initConfigurator(root) {
       module.hidden = Number(module.dataset.configuratorModule) > modules();
       module.querySelector('[data-configurator-module-label]').hidden = modules() === 1;
     });
+  };
+
+  const setAmount = (input, value) => {
+    const amount = Math.max(0, Math.min(Number(input.max) || 0, Math.round(Number(value) || 0)));
+    input.value = String(amount);
+    input.closest('[data-configurator-count]').classList.toggle('is-chosen', amount > 0);
   };
 
   const setSlot = (slot, value) => {
@@ -317,6 +421,8 @@ function initConfigurator(root) {
       group?.forEach((part) => setSlot(part, 'empty'));
       setSlot(slot, 'door');
     } else if (current === 'door') {
+      setSlot(slot, 'hatch');
+    } else if (current === 'hatch') {
       setSlot(slot, 'empty');
     } else {
       // A window takes the free slot to the right of the clicked one, or else the one to the left, so two clicks next
@@ -365,6 +471,17 @@ function initConfigurator(root) {
     });
     root.querySelector('[name="configuration[background]"]').value = configuration.background;
     interiorInputs.forEach((input) => { input.checked = (configuration.interior ?? []).includes(input.value); });
+    amountInputs.forEach((input) => {
+      const [, group, item] = input.name.match(/^configuration\[(\w+)\]\[(\w+)\]$/);
+      setAmount(input, configuration[group]?.[item] ?? 0);
+    });
+    if (stepsToggle) {
+      stepsToggle.checked = configuration.steps ?? false;
+    }
+    updateTentative();
+    tentativeInputs.forEach((input) => { input.checked = (configuration.tentative ?? []).includes(input.value); });
+    clearPositions();
+    Object.entries(configuration.positions ?? {}).forEach(([id, { x, y }]) => setPosition(id, x, y));
   };
 
   const fillIfEmpty = (id, value) => {
@@ -469,7 +586,90 @@ function initConfigurator(root) {
   root.querySelectorAll('[name^="configuration[colors]"]').forEach((input) => {
     input.addEventListener('change', refreshPreview);
   });
-  interiorInputs.forEach((input) => input.addEventListener('change', refreshPreview));
+  interiorInputs.forEach((input) => input.addEventListener('change', () => {
+    updateTentative();
+    refreshPreview();
+  }));
+  tentativeInputs.forEach((input) => input.addEventListener('change', refreshPreview));
+  stepsToggle?.addEventListener('change', refreshPreview);
+
+  amountInputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      setAmount(input, input.value);
+      updateTentative();
+      refreshPreview();
+    });
+    input.closest('[data-configurator-count]').querySelectorAll('[data-count-step]').forEach((button) => {
+      button.addEventListener('click', () => {
+        setAmount(input, (Number(input.value) || 0) + Number(button.dataset.countStep));
+        updateTentative();
+        refreshPreview();
+      });
+    });
+  });
+
+  positionsReset.addEventListener('click', () => {
+    clearPositions();
+    refreshPreview();
+  });
+
+  // Dragging an item on the floor plan: the item follows the pointer, and where it is let go becomes its position.
+  // The server then draws it snapped to its wall or corner. Coordinates are those of the floor's group in the SVG, in
+  // millimetres; data-scale-x/y convert them to the nominal metres of the configuration.
+  let drag = null;
+  const pointOnPlan = (event, plan) => new DOMPoint(event.clientX, event.clientY).matrixTransform(plan.getScreenCTM().inverse());
+
+  preview.addEventListener('pointerdown', (event) => {
+    const item = event.target.closest('[data-item]');
+    const plan = item?.closest('[data-plan-level]');
+    if (!plan || event.button > 0) {
+      return;
+    }
+
+    event.preventDefault();
+    preview.setPointerCapture(event.pointerId);
+    drag = { item, plan, start: pointOnPlan(event, plan), moved: false };
+    item.classList.add('is-dragging');
+  });
+
+  preview.addEventListener('pointermove', (event) => {
+    if (!drag) {
+      return;
+    }
+
+    const point = pointOnPlan(event, drag.plan);
+    drag.dx = point.x - drag.start.x;
+    drag.dy = point.y - drag.start.y;
+    drag.moved ||= Math.hypot(drag.dx, drag.dy) > 50;
+    drag.item.setAttribute('transform', `translate(${drag.dx} ${drag.dy})`);
+  });
+
+  const endDrag = (event) => {
+    if (!drag) {
+      return;
+    }
+
+    const { item, plan, moved, dx, dy } = drag;
+    drag = null;
+    item.classList.remove('is-dragging');
+    if (preview.hasPointerCapture(event.pointerId)) {
+      preview.releasePointerCapture(event.pointerId);
+    }
+
+    if (!moved || event.type === 'pointercancel') {
+      item.removeAttribute('transform');
+      return;
+    }
+
+    setPosition(
+      item.dataset.item,
+      Number(item.dataset.x) + dx / Number(plan.dataset.scaleX),
+      Number(item.dataset.y) + dy / Number(plan.dataset.scaleY),
+    );
+    refreshPreview();
+  };
+  preview.addEventListener('pointerup', endDrag);
+  preview.addEventListener('pointercancel', endDrag);
   stairsToggle.addEventListener('change', refreshPreview);
   usageSelect?.addEventListener('change', () => {
     updateShareUrl();

@@ -18,8 +18,10 @@ use Illuminate\Validation\Rule;
  * other windows and doors than the ground floor; without a second layer upper_walls is left out. With stairs,
  * every door on the second layer gets an outside staircase with a landing.
  *
- * What the unit will be used for (usage) and what is fitted inside (interior) are only kept when something was chosen,
- * so they are left out otherwise. Lighting is always fitted, so it is not an option; see InteriorLayout.
+ * What the unit will be used for (usage), what is fitted inside (interior), the furniture and the electrical and network
+ * connections with their numbers, which of those are still uncertain (tentative), a step in front of the ground-floor
+ * doors (steps) and the positions items were dragged to on the floor plan (positions) are only kept when something
+ * was chosen, so they are left out otherwise. Lighting is always fitted, so it is not an option; see InteriorLayout.
  *
  * @phpstan-type Configuration array{
  *     size: string,
@@ -31,6 +33,12 @@ use Illuminate\Validation\Rule;
  *     colors: array{cladding: string, frame: string},
  *     background: string,
  *     usage?: list<string>,
+ *     interior?: list<string>,
+ *     furniture?: array<string, int>,
+ *     connections?: array<string, int>,
+ *     tentative?: list<string>,
+ *     steps?: true,
+ *     positions?: array<string, array{x: float, y: float}>,
  * }
  */
 class UnitConfiguration
@@ -73,22 +81,28 @@ class UnitConfiguration
 
     public const DOOR = 'door';
 
+    /** A wind- and watertight pass-through hatch, e.g. for handing out access passes; a counter usually stands under it. */
+    public const HATCH = 'hatch';
+
     /** @var array<string, string> */
     public const SLOTS = [
         self::EMPTY => 'Dicht',
         self::WINDOW => 'Raam',
         self::DOOR => 'Deur',
+        self::HATCH => 'Uitgifteluik',
     ];
 
     /**
      * Outside sizes in metres of the window and door frames, the height their bottom stands at from the bottom of the
      * wall (the floor is at 0.15), and how many 1 m slots they take. A window covers two neighbouring slots.
+     * The hatch has an indicative size: its sill is just above counter height.
      *
      * @var array<string, array{width: float, height: float, bottom: float, slots: int}>
      */
     public const OPENING_SIZES = [
         self::WINDOW => ['width' => 1.8, 'height' => 1.2, 'bottom' => 0.9, 'slots' => 2],
         self::DOOR => ['width' => 0.875, 'height' => 2.125, 'bottom' => 0.15, 'slots' => 1],
+        self::HATCH => ['width' => 0.8, 'height' => 0.7, 'bottom' => 1.2, 'slots' => 1],
     ];
 
     /** Clear opening in metres of the door frame. */
@@ -149,9 +163,37 @@ class UnitConfiguration
      */
     public const INTERIOR = [
         'airco' => 'Airco',
+        'heater' => 'Verwarming',
         'toilet' => 'Sanitair',
         'kitchen' => 'Keukentje',
     ];
+
+    /**
+     * Furniture that can be ordered in numbers; InteriorLayout places it, and it can be dragged on the floor plan.
+     *
+     * @var array<string, string>
+     */
+    public const FURNITURE = [
+        'desk' => 'Bureau',
+        'chair' => 'Bureaustoel',
+        'counter' => 'Uitgiftebalie',
+        'worktop' => 'Werkblad',
+        'cabinet' => 'Opbergkast',
+    ];
+
+    public const MAX_FURNITURE = 8;
+
+    /**
+     * Wall sockets and network points that can be ordered in numbers.
+     *
+     * @var array<string, string>
+     */
+    public const CONNECTIONS = [
+        'socket' => 'Wandcontactdoos',
+        'network' => 'Netwerkaansluiting (UTP)',
+    ];
+
+    public const MAX_CONNECTIONS = 24;
 
     /** Query parameter that holds a composition in a share link. */
     public const SHARE_KEY = 'samenstelling';
@@ -198,7 +240,26 @@ class UnitConfiguration
             "{$key}.interior.*" => [Rule::in(array_keys(self::INTERIOR))],
             "{$key}.usage" => ['nullable', 'array'],
             "{$key}.usage.*" => [Rule::in(array_keys(self::USAGES))],
+            "{$key}.furniture" => ['nullable', 'array:'.implode(',', array_keys(self::FURNITURE))],
+            "{$key}.furniture.*" => ['nullable', 'integer', 'between:0,'.self::MAX_FURNITURE],
+            "{$key}.connections" => ['nullable', 'array:'.implode(',', array_keys(self::CONNECTIONS))],
+            "{$key}.connections.*" => ['nullable', 'integer', 'between:0,'.self::MAX_CONNECTIONS],
+            "{$key}.tentative" => ['nullable', 'array'],
+            "{$key}.tentative.*" => [Rule::in([...array_keys(self::INTERIOR), ...array_keys(self::FURNITURE)])],
+            "{$key}.steps" => ['nullable', 'boolean'],
+            "{$key}.positions" => ['nullable', 'array'],
+            "{$key}.positions.*" => ['array:x,y'],
+            "{$key}.positions.*.x" => ['required', 'numeric', 'between:0,'.self::maxExtent()],
+            "{$key}.positions.*.y" => ['required', 'numeric', 'between:0,'.self::maxExtent()],
         ];
+    }
+
+    /**
+     * The longest side in metres any configuration can have, as the limit for dragged positions.
+     */
+    public static function maxExtent(): int
+    {
+        return max(array_map(fn (array $size): int => max($size['length'], $size['depth'] * self::MAX_MODULES), self::SIZES));
     }
 
     /**
@@ -335,8 +396,77 @@ class UnitConfiguration
         $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $interior = array_values(array_intersect(array_keys(self::INTERIOR), (array) ($input['interior'] ?? [])));
         $usage = array_values(array_intersect(array_keys(self::USAGES), (array) ($input['usage'] ?? [])));
+        $furniture = self::counts($input['furniture'] ?? [], self::FURNITURE, self::MAX_FURNITURE);
+        $connections = self::counts($input['connections'] ?? [], self::CONNECTIONS, self::MAX_CONNECTIONS);
+        $tentative = array_values(array_intersect([...$interior, ...array_keys($furniture)], (array) ($input['tentative'] ?? [])));
+        $steps = filter_var($input['steps'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        return ['size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background, ...($interior ? ['interior' => $interior] : []), ...($usage ? ['usage' => $usage] : [])];
+        $configuration = [
+            'size' => $size, 'modules' => $modules, 'floors' => $floors, ...$levels, 'stairs' => $stairs, 'colors' => $colors, 'background' => $background,
+            ...($interior ? ['interior' => $interior] : []),
+            ...($usage ? ['usage' => $usage] : []),
+            ...($furniture ? ['furniture' => $furniture] : []),
+            ...($connections ? ['connections' => $connections] : []),
+            ...($tentative ? ['tentative' => $tentative] : []),
+            ...($steps ? ['steps' => true] : []),
+        ];
+
+        $positions = self::positions((array) ($input['positions'] ?? []), $configuration);
+
+        return $configuration + ($positions ? ['positions' => $positions] : []);
+    }
+
+    /**
+     * How many of each option were ordered, in the order of the options; options ordered zero times are left out.
+     *
+     * @param  array<string, string>  $options
+     * @return array<string, int>
+     */
+    private static function counts(mixed $input, array $options, int $max): array
+    {
+        $counts = [];
+        foreach (array_keys($options) as $option) {
+            $count = max(0, min($max, (int) (is_array($input) ? ($input[$option] ?? 0) : 0)));
+            if ($count > 0) {
+                $counts[$option] = $count;
+            }
+        }
+
+        return $counts;
+    }
+
+    /**
+     * The positions items were dragged to on the floor plan, in nominal metres, kept only for items the configuration
+     * still has and limited to the inside of the unit. InteriorLayout snaps them to a wall or corner where needed.
+     *
+     * @param  array<mixed>  $input
+     * @param  Configuration  $configuration
+     * @return array<string, array{x: float, y: float}>
+     */
+    private static function positions(array $input, array $configuration): array
+    {
+        if ($input === []) {
+            return [];
+        }
+
+        ['length' => $length, 'depth' => $depth] = self::dimensions($configuration);
+        $positions = [];
+
+        foreach (array_slice(array_keys(self::LEVELS), 0, $configuration['floors']) as $level) {
+            foreach (InteriorLayout::itemIds($configuration, $level) as $id) {
+                $position = $input[$id] ?? null;
+                if (! is_array($position) || ! is_numeric($position['x'] ?? null) || ! is_numeric($position['y'] ?? null)) {
+                    continue;
+                }
+
+                $positions[$id] = [
+                    'x' => round(max(0, min($length, (float) $position['x'])), 2),
+                    'y' => round(max(0, min($depth, (float) $position['y'])), 2),
+                ];
+            }
+        }
+
+        return $positions;
     }
 
     /**

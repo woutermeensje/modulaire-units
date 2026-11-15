@@ -31,32 +31,40 @@ final class ComposedUnit
     }
 
     /**
-     * Colours, the number of windows and doors, the interior and the use in the language of the page, e.g.
-     * "Wanden antraciet, frame antraciet, 2 ramen, 1 deur, inrichting: airco, keukentje, gebruik: kantoor, kantine".
+     * Colours, the number of windows, doors and hatches, the interior, furniture, connections and the use in the
+     * language of the page, e.g. "Wanden antraciet, frame antraciet, 4 ramen, 1 deur, 1 uitgifteluik, opstapje,
+     * inrichting: airco, verwarming, sanitair (optioneel), meubilair: 1× bureau, 1× bureaustoel, elektra: 4×
+     * wandcontactdoos, 1× netwerkaansluiting (utp), gebruik: portiersloge".
      */
     public function summary(): string
     {
-        $windows = 0;
-        $doors = 0;
+        $openings = [UnitConfiguration::WINDOW => 0, UnitConfiguration::DOOR => 0, UnitConfiguration::HATCH => 0];
 
         foreach (array_keys(UnitConfiguration::LEVELS) as $level) {
             foreach ($this->configuration[$level] ?? [] as $wall => $slots) {
-                $openings = UnitConfiguration::openings($slots, UnitConfiguration::slotCount($this->configuration['size'], $wall));
-                $windows += count(array_filter($openings, fn (array $opening): bool => $opening['type'] === UnitConfiguration::WINDOW));
-                $doors += count(array_filter($openings, fn (array $opening): bool => $opening['type'] === UnitConfiguration::DOOR));
+                foreach (UnitConfiguration::openings($slots, UnitConfiguration::slotCount($this->configuration['size'], $wall)) as $opening) {
+                    $openings[$opening['type']]++;
+                }
             }
         }
 
-        $names = fn (array $keys, array $labels): string => mb_strtolower(implode(', ', array_map(fn (string $key): string => __($labels[$key]), $keys)));
+        $tentative = $this->configuration['tentative'] ?? [];
+        $name = fn (string $key, array $labels): string => mb_strtolower(__($labels[$key])).(in_array($key, $tentative, true) ? ' ('.__('optioneel').')' : '');
+        $names = fn (array $keys, array $labels): string => implode(', ', array_map(fn (string $key): string => $name($key, $labels), $keys));
+        $amounts = fn (array $counts, array $labels): string => implode(', ', array_map(fn (string $key, int $count): string => $count.'× '.$name($key, $labels), array_keys($counts), $counts));
         $colour = fn (string $part): string => mb_strtolower(__(UnitConfiguration::COLORS[$this->configuration['colors'][$part]]));
 
         return implode(', ', array_filter([
             __('Wanden :colour', ['colour' => $colour('cladding')]),
             __('frame :colour', ['colour' => $colour('frame')]),
-            trans_choice(':count raam|:count ramen', $windows),
-            trans_choice(':count deur|:count deuren', $doors),
+            trans_choice(':count raam|:count ramen', $openings[UnitConfiguration::WINDOW]),
+            trans_choice(':count deur|:count deuren', $openings[UnitConfiguration::DOOR]),
+            $openings[UnitConfiguration::HATCH] > 0 ? trans_choice(':count uitgifteluik|:count uitgifteluiken', $openings[UnitConfiguration::HATCH]) : null,
+            ($this->configuration['steps'] ?? false) ? __('opstapje') : null,
             $this->configuration['stairs'] ? __('buitentrap') : null,
             empty($this->configuration['interior']) ? null : __('inrichting: :items', ['items' => $names($this->configuration['interior'], UnitConfiguration::INTERIOR)]),
+            empty($this->configuration['furniture']) ? null : __('meubilair: :items', ['items' => $amounts($this->configuration['furniture'], UnitConfiguration::FURNITURE)]),
+            empty($this->configuration['connections']) ? null : __('elektra: :items', ['items' => $amounts($this->configuration['connections'], UnitConfiguration::CONNECTIONS)]),
             empty($this->configuration['usage']) ? null : __('gebruik: :items', ['items' => $names($this->configuration['usage'], UnitConfiguration::USAGES)]),
         ]));
     }

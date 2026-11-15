@@ -8,7 +8,13 @@ namespace App\Support;
  * configurator. With two layers both floors are drawn side by side.
  *
  * The interior is drawn with the usual symbols: ceiling lights (always fitted) as a crossed circle, the toilet cubicle,
- * the kitchenette and every airco, which hangs high on the wall and is therefore dashed. See InteriorLayout.
+ * the kitchenette, every airco (high on the wall and therefore dashed), heaters, furniture, wall sockets and network
+ * points. Items that are still uncertain are drawn faded with "optie". See InteriorLayout.
+ *
+ * Every item is a group with data-item (its id) and its centre in nominal metres (data-x, data-y), and every floor a
+ * group with data-plan-level and its scale in millimetres per nominal metre, so the configurator can drag items on it.
+ *
+ * The drawing is indicative: it shows the composition, not a technically approved design.
  *
  * Drawing units are millimetres; the SVG scales to its container through the viewBox.
  *
@@ -33,6 +39,9 @@ class FloorPlanRenderer
 
     private const WALL_FILL = '#c9c9c9';
 
+    /** The step outside a door, in metres: indicative, as the real one depends on the ground. */
+    public const STEP = ['width' => 1.0, 'depth' => 0.4, 'height' => 0.15];
+
     /**
      * @param  array<string, mixed>  $configuration
      */
@@ -46,7 +55,9 @@ class FloorPlanRenderer
         $planWidth = $length + 2 * self::MARGIN;
         $top = self::MARGIN + ($titled ? self::TITLE : 0);
         $width = $planWidth * count($levels);
-        $height = $top + $depth + self::MARGIN;
+        $size = UnitConfiguration::SIZES[$configuration['size']];
+        $scaleX = $length / $size['length'];
+        $scaleY = $depth / ($size['depth'] * $configuration['modules']);
 
         $body = '';
         foreach (array_keys($levels) as $index => $level) {
@@ -54,17 +65,19 @@ class FloorPlanRenderer
             if ($titled) {
                 $body .= $this->text($originX + $length / 2, 320, $levels[$level], 'font-size="220" font-weight="bold"');
             }
-            $body .= '<g transform="translate('.$originX.' '.$top.')">'.$this->plan($configuration, $level, $length, $depth).'</g>';
+            $body .= '<g transform="translate('.$originX.' '.$top.')" data-plan-level="'.$level.'" data-scale-x="'.$this->number($scaleX).'" data-scale-y="'.$this->number($scaleY).'">'
+                .$this->plan($configuration, $level, $length, $depth).'</g>';
         }
 
+        [$legend, $legendHeight] = $this->legend($configuration, $width, $top + $depth + self::MARGIN - 200);
+        $height = $top + $depth + self::MARGIN + $legendHeight;
         $label = UnitConfiguration::label($configuration);
 
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.$width.' '.$height.'" role="img" aria-label="'.e($label).'">'
             .'<title>'.e($label).'</title>'
             .'<rect width="'.$width.'" height="'.$height.'" fill="#ffffff"/>'
             .$body
-            .$this->legend($height - 200, in_array('airco', $configuration['interior'] ?? [], true))
-            .$this->text($width - 200, $height - 200, __('Maten in mm'), 'font-size="130" text-anchor="end" fill="#555555"')
+            .$legend
             .'</svg>';
     }
 
@@ -91,7 +104,8 @@ class FloorPlanRenderer
                 return ['type' => $opening['type'], 'from' => $center - $width / 2, 'width' => $width, 'height' => ($opening['top'] - $opening['bottom']) * 1000];
             }, UnitConfiguration::openings($configuration[$level][$wall], UnitConfiguration::slotCount($configuration['size'], $wall)));
 
-            $svg .= $this->wall($wall, $wallLength, $length, $depth, $openings);
+            $steps = ($configuration['steps'] ?? false) && $level === array_key_first(UnitConfiguration::LEVELS);
+            $svg .= $this->wall($wall, $wallLength, $length, $depth, $openings, $steps);
         }
 
         return $svg.$this->overallDimensions($length, $depth);
@@ -104,8 +118,9 @@ class FloorPlanRenderer
      * outside, y points into the unit. The frame is then turned into place on the plan.
      *
      * @param  list<array{type: string, from: float, width: float, height: float}>  $openings
+     * @param  bool  $steps  Whether a step stands outside every door.
      */
-    private function wall(string $wall, int $wallLength, int $length, int $depth, array $openings): string
+    private function wall(string $wall, int $wallLength, int $length, int $depth, array $openings, bool $steps = false): string
     {
         $transform = match ($wall) {
             'front' => "matrix(1 0 0 -1 0 {$depth})",
@@ -129,7 +144,11 @@ class FloorPlanRenderer
 
         $labels = '';
         foreach ($openings as $opening) {
-            $svg .= $opening['type'] === UnitConfiguration::DOOR ? $this->door($opening) : $this->window($opening);
+            $svg .= match ($opening['type']) {
+                UnitConfiguration::DOOR => $this->door($opening).($steps ? $this->step($opening) : ''),
+                UnitConfiguration::HATCH => $this->hatch($opening),
+                default => $this->window($opening),
+            };
             $labels .= $this->openingLabels($wall, $opening, $wallLength, $length, $depth);
         }
 
@@ -182,6 +201,35 @@ class FloorPlanRenderer
     }
 
     /**
+     * A hatch: a solid sill line across the wall with a single pane, so it reads differently from a window.
+     *
+     * @param  array{from: float, width: float}  $opening
+     */
+    private function hatch(array $opening): string
+    {
+        ['from' => $from, 'width' => $width] = $opening;
+        $to = $from + $width;
+
+        return '<rect x="'.$this->number($from).'" y="0" width="'.$this->number($width).'" height="'.self::WALL.'" fill="#ffffff" stroke="'.self::INK.'" stroke-width="10"/>'
+            .$this->line($from, self::WALL / 2, $to, self::WALL / 2, 14)
+            .$this->dimensionLine($from, $to, -350);
+    }
+
+    /**
+     * A step outside a door, a little wider than the door.
+     *
+     * @param  array{from: float, width: float}  $opening
+     */
+    private function step(array $opening): string
+    {
+        ['from' => $from, 'width' => $width] = $opening;
+        $stepDepth = self::STEP['depth'] * 1000;
+        $overhang = (self::STEP['width'] * 1000 - $width) / 2;
+
+        return '<rect x="'.$this->number($from - $overhang).'" y="'.$this->number(-$stepDepth).'" width="'.$this->number($width + 2 * $overhang).'" height="'.$this->number($stepDepth).'" fill="#eeeeee" fill-opacity="0.6" stroke="'.self::INK.'" stroke-width="8"/>';
+    }
+
+    /**
      * Sizes of an opening, written upright outside its wall: "1800 / 1200" for a window, outside and clear size for a door.
      *
      * @param  array{type: string, from: float, width: float, height: float}  $opening
@@ -190,10 +238,12 @@ class FloorPlanRenderer
     {
         $isDoor = $opening['type'] === UnitConfiguration::DOOR;
         $along = $opening['from'] + $opening['width'] / 2;
-        $out = $isDoor ? 1150 : 480;
-        $lines = $isDoor
-            ? [$this->millimetres($opening['width']).' × '.$this->millimetres($opening['height']), 'vrij '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['width'] * 1000).' × '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['height'] * 1000)]
-            : [$this->millimetres($opening['width']).' / '.$this->millimetres($opening['height'])];
+        $out = $isDoor ? 1150 : ($opening['type'] === UnitConfiguration::HATCH ? 580 : 480);
+        $lines = match ($opening['type']) {
+            UnitConfiguration::DOOR => [$this->millimetres($opening['width']).' × '.$this->millimetres($opening['height']), 'vrij '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['width'] * 1000).' × '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['height'] * 1000)],
+            UnitConfiguration::HATCH => [__('Luik'), $this->millimetres($opening['width']).' / '.$this->millimetres($opening['height'])],
+            default => [$this->millimetres($opening['width']).' / '.$this->millimetres($opening['height'])],
+        };
 
         [$x, $y, $rotate] = match ($wall) {
             'front' => [$along, $depth + $out, 0],
@@ -250,21 +300,141 @@ class FloorPlanRenderer
         $scaleY = $depth / ($size['depth'] * $configuration['modules']);
         $layout = InteriorLayout::for($configuration, $level);
 
-        $svg = '';
+        $lights = '';
+        foreach ($layout['lights'] as $light) {
+            $lights .= $this->light($light['x'] * $scaleX, $light['y'] * $scaleY);
+        }
+
+        // Lights hang from the ceiling, so they come first and everything on the floor and walls can be grabbed.
+        $svg = $lights;
         foreach ($layout['items'] as $item) {
             $rect = ['x1' => $item['x1'] * $scaleX, 'y1' => $item['y1'] * $scaleY, 'x2' => $item['x2'] * $scaleX, 'y2' => $item['y2'] * $scaleY];
-            $svg .= match ($item['type']) {
+            $symbol = match ($item['type']) {
                 'toilet' => $this->toilet($item, $rect),
                 'kitchen' => $this->kitchen($item, $rect),
                 'airco' => $this->airco($item, $rect),
+                'heater' => $this->heater($item, $rect),
+                'socket', 'network' => $this->connection($item, $rect),
+                'chair' => $this->chair($item, $rect),
+                default => $this->furniture($item, $rect),
             };
-        }
 
-        foreach ($layout['lights'] as $light) {
-            $svg .= $this->light($light['x'] * $scaleX, $light['y'] * $scaleY);
+            $centerX = ($rect['x1'] + $rect['x2']) / 2;
+            $centerY = ($rect['y1'] + $rect['y2']) / 2;
+            $label = __(UnitConfiguration::INTERIOR[$item['type']] ?? UnitConfiguration::FURNITURE[$item['type']] ?? UnitConfiguration::CONNECTIONS[$item['type']] ?? $item['type']);
+            $svg .= '<g class="plan-item" data-item="'.e($item['id']).'" data-x="'.round(($item['x1'] + $item['x2']) / 2, 3).'" data-y="'.round(($item['y1'] + $item['y2']) / 2, 3).'"'
+                .($item['tentative'] ? ' opacity="0.55"' : '').'>'
+                .'<title>'.e($label.($item['tentative'] ? ' ('.__('optioneel').')' : '')).'</title>'
+                // A hit area around small symbols, so they can be grabbed on a touch screen too.
+                .'<rect x="'.$this->number(min($rect['x1'], $centerX - 200)).'" y="'.$this->number(min($rect['y1'], $centerY - 200)).'" width="'.$this->number(max($rect['x2'] - $rect['x1'], 400)).'" height="'.$this->number(max($rect['y2'] - $rect['y1'], 400)).'" fill="#ffffff" fill-opacity="0"/>'
+                .$symbol
+                .($item['tentative'] ? $this->text($centerX, $centerY + ($item['type'] === 'toilet' ? -200 : 50), __('optie'), 'font-size="110" font-style="italic"') : '')
+                .'</g>';
         }
 
         return $svg;
+    }
+
+    /**
+     * A heater low on its wall: a narrow box with fins.
+     *
+     * @param  array{wall: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function heater(array $item, array $rect): string
+    {
+        $svg = '<rect x="'.$this->number($rect['x1']).'" y="'.$this->number($rect['y1']).'" width="'.$this->number($rect['x2'] - $rect['x1']).'" height="'.$this->number($rect['y2'] - $rect['y1']).'" fill="#ffffff" stroke="'.self::INK.'" stroke-width="8"/>';
+        $alongX = in_array($item['wall'], ['front', 'back'], true);
+        $from = $alongX ? $rect['x1'] : $rect['y1'];
+        $to = $alongX ? $rect['x2'] : $rect['y2'];
+
+        for ($fin = $from + 100; $fin < $to - 50; $fin += 100) {
+            $svg .= $alongX ? $this->line($fin, $rect['y1'], $fin, $rect['y2'], 5) : $this->line($rect['x1'], $fin, $rect['x2'], $fin, 5);
+        }
+
+        return $svg;
+    }
+
+    /**
+     * A wall socket (a half circle against the wall with a line to it) or a network point (a small square marked
+     * "UTP"), as on an electrical plan.
+     *
+     * @param  array{type: string, wall: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function connection(array $item, array $rect): string
+    {
+        $centerX = ($rect['x1'] + $rect['x2']) / 2;
+        $centerY = ($rect['y1'] + $rect['y2']) / 2;
+        // From the wall into the room.
+        [$inX, $inY] = match ($item['wall']) {
+            'back' => [0, 1], 'front' => [0, -1], 'left' => [1, 0], 'right' => [-1, 0],
+        };
+        $wallX = $centerX - $inX * ($rect['x2'] - $rect['x1']) / 2;
+        $wallY = $centerY - $inY * ($rect['y2'] - $rect['y1']) / 2;
+        $symbolX = $wallX + $inX * 160;
+        $symbolY = $wallY + $inY * 160;
+        $stroke = 'stroke="'.self::INK.'" stroke-width="8"';
+
+        if ($item['type'] === 'network') {
+            return $this->line($wallX, $wallY, $symbolX, $symbolY, 8)
+                .'<rect x="'.$this->number($symbolX - 75).'" y="'.$this->number($symbolY - 75).'" width="150" height="150" fill="#ffffff" '.$stroke.'/>'
+                .$this->text($symbolX, $symbolY + 28, 'UTP', 'font-size="70" font-weight="bold"');
+        }
+
+        $angle = rad2deg(atan2($inY, $inX));
+
+        return $this->line($wallX, $wallY, $symbolX, $symbolY, 8)
+            .'<path d="M -90 0 A 90 90 0 0 1 90 0 Z" transform="translate('.$this->number($symbolX).' '.$this->number($symbolY).') rotate('.$this->number($angle - 90).')" fill="#ffffff" '.$stroke.'/>'
+            .$this->line($symbolX - 45 * $inY, $symbolY + 45 * $inX, $symbolX - 45 * $inY + $inX * 60, $symbolY + 45 * $inX + $inY * 60, 6)
+            .$this->line($symbolX + 45 * $inY, $symbolY - 45 * $inX, $symbolX + 45 * $inY + $inX * 60, $symbolY - 45 * $inX + $inY * 60, 6);
+    }
+
+    /**
+     * A chair: the seat with its backrest on the side away from the desk or wall it faces.
+     *
+     * @param  array{wall: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function chair(array $item, array $rect): string
+    {
+        $stroke = 'stroke="'.self::INK.'" stroke-width="8"';
+        $inset = 60;
+        $back = 110;
+        [$x1, $y1, $x2, $y2] = [$rect['x1'] + $inset, $rect['y1'] + $inset, $rect['x2'] - $inset, $rect['y2'] - $inset];
+
+        [$bx1, $by1, $bx2, $by2] = match ($item['wall']) {
+            'back' => [$x1, $y2 - $back, $x2, $y2],
+            'front' => [$x1, $y1, $x2, $y1 + $back],
+            'left' => [$x2 - $back, $y1, $x2, $y2],
+            'right' => [$x1, $y1, $x1 + $back, $y2],
+        };
+
+        return '<rect x="'.$this->number($x1).'" y="'.$this->number($y1).'" width="'.$this->number($x2 - $x1).'" height="'.$this->number($y2 - $y1).'" rx="60" fill="#ffffff" '.$stroke.'/>'
+            .'<rect x="'.$this->number($bx1).'" y="'.$this->number($by1).'" width="'.$this->number($bx2 - $bx1).'" height="'.$this->number($by2 - $by1).'" rx="40" fill="'.self::WALL_FILL.'" '.$stroke.'/>';
+    }
+
+    /**
+     * A desk, counter, worktop or cabinet: its outline with its name, a cabinet also with the usual diagonal.
+     *
+     * @param  array{type: string, wall: string}  $item
+     * @param  array{x1: float, y1: float, x2: float, y2: float}  $rect
+     */
+    private function furniture(array $item, array $rect): string
+    {
+        $stroke = 'stroke="'.self::INK.'" stroke-width="8"';
+        $centerX = ($rect['x1'] + $rect['x2']) / 2;
+        $centerY = ($rect['y1'] + $rect['y2']) / 2;
+        $isUpright = in_array($item['wall'], ['left', 'right'], true);
+        $names = ['desk' => __('Bureau'), 'counter' => __('Balie'), 'worktop' => __('Werkblad'), 'cabinet' => __('Kast')];
+
+        $svg = '<rect x="'.$this->number($rect['x1']).'" y="'.$this->number($rect['y1']).'" width="'.$this->number($rect['x2'] - $rect['x1']).'" height="'.$this->number($rect['y2'] - $rect['y1']).'" fill="'.($item['type'] === 'counter' ? '#eeeeee' : '#ffffff').'" '.$stroke.'/>';
+
+        if ($item['type'] === 'cabinet') {
+            $svg .= $this->line($rect['x1'], $rect['y1'], $rect['x2'], $rect['y2'], 5);
+        }
+
+        return $svg.$this->text($centerX, $centerY + 45, $names[$item['type']] ?? '', 'font-size="120"'.($isUpright ? ' transform="rotate(-90 '.$this->number($centerX).' '.$this->number($centerY + 45).')"' : ''));
     }
 
     /**
@@ -363,19 +533,55 @@ class FloorPlanRenderer
     }
 
     /**
-     * What the symbols mean, in the bottom left corner: the lights always, the airco when there is one.
+     * What the symbols mean, from the bottom left corner: the lights always, the airco, heater, wall sockets and network
+     * points when there are any, followed by the note that the drawing is indicative and in millimetres. Entries wrap
+     * onto a new row when the drawing is too narrow.
+     *
+     * @param  Configuration  $configuration
+     * @return array{string, int} The legend and the height it takes beyond its first row.
      */
-    private function legend(float $baseline, bool $hasAirco): string
+    private function legend(array $configuration, int $width, float $baseline): array
     {
-        $svg = $this->light(280, $baseline - 45, 80).$this->text(420, $baseline, __('Verlichting'), 'font-size="130" text-anchor="start" fill="#555555"');
+        $interior = $configuration['interior'] ?? [];
+        $connections = $configuration['connections'] ?? [];
+        $dashed = 'fill="#ffffff" stroke="'.self::INK.'" stroke-width="8"';
 
-        if ($hasAirco) {
-            $svg .= '<rect x="1250" y="'.$this->number($baseline - 110).'" width="260" height="130" fill="#ffffff" stroke="'.self::INK.'" stroke-width="8" stroke-dasharray="40 30"/>'
-                .$this->text(1380, $baseline - 10, 'AC', 'font-size="90" font-weight="bold"')
-                .$this->text(1570, $baseline, __('Airco (aan de wand, hoog)'), 'font-size="130" text-anchor="start" fill="#555555"');
+        $entries = [[fn (float $x, float $y): string => $this->light($x + 80, $y - 45, 80), __('Verlichting')]];
+        if (in_array('airco', $interior, true)) {
+            $entries[] = [fn (float $x, float $y): string => '<rect x="'.$this->number($x).'" y="'.$this->number($y - 110).'" width="260" height="130" '.$dashed.' stroke-dasharray="40 30"/>'
+                .$this->text($x + 130, $y - 10, 'AC', 'font-size="90" font-weight="bold"'), __('Airco (aan de wand, hoog)')];
+        }
+        if (in_array('heater', $interior, true)) {
+            $entries[] = [fn (float $x, float $y): string => $this->heater(['wall' => 'back'], ['x1' => $x, 'y1' => $y - 90, 'x2' => $x + 260, 'y2' => $y - 10]), __('Verwarming (aan de wand, laag)')];
+        }
+        if (isset($connections['socket'])) {
+            $entries[] = [fn (float $x, float $y): string => $this->connection(['type' => 'socket', 'wall' => 'left'], ['x1' => $x, 'y1' => $y - 60, 'x2' => $x, 'y2' => $y - 30]), __('Wandcontactdoos')];
+        }
+        if (isset($connections['network'])) {
+            $entries[] = [fn (float $x, float $y): string => $this->connection(['type' => 'network', 'wall' => 'left'], ['x1' => $x, 'y1' => $y - 60, 'x2' => $x, 'y2' => $y - 30]), __('Netwerkaansluiting (UTP)')];
+        }
+        $entries[] = [null, __('Indicatieve tekening')];
+        $entries[] = [null, __('Maten in mm')];
+
+        $rowHeight = 260;
+        $x = 200;
+        $y = $baseline;
+        $svg = '';
+
+        foreach ($entries as [$symbol, $label]) {
+            $symbolWidth = $symbol ? 340 : 0;
+            $entryWidth = $symbolWidth + (int) ceil(mb_strlen($label) * 130 * 0.56) + 220;
+
+            if ($x > 200 && $x + $entryWidth > $width - 200) {
+                $x = 200;
+                $y += $rowHeight;
+            }
+
+            $svg .= ($symbol ? $symbol($x, $y) : '').$this->text($x + $symbolWidth, $y, $label, 'font-size="130" text-anchor="start" fill="#555555"');
+            $x += $entryWidth;
         }
 
-        return $svg;
+        return [$svg, (int) ($y - $baseline)];
     }
 
     /**

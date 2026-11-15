@@ -23,12 +23,25 @@
             $slotCounts[$size][$wall] = UnitConfiguration::slotCount($size, $wall);
         }
     }
-    $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::DOOR => 'ph-door'];
+    $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::DOOR => 'ph-door', UnitConfiguration::HATCH => 'ph-storefront'];
     $interiorOptions = [
         'airco' => ['icon' => 'ph-snowflake', 'help' => __('Airco-unit aan de wand, voor koelen en verwarmen')],
+        'heater' => ['icon' => 'ph-thermometer-hot', 'help' => __('Elektrische verwarming laag aan de wand')],
         'toilet' => ['icon' => 'ph-toilet', 'help' => __('Toiletruimte met fonteintje')],
         'kitchen' => ['icon' => 'ph-cooking-pot', 'help' => __('Keukenblok met spoelbak en kookplaat')],
     ];
+    // The interior options per category, in the order they are shown.
+    $interiorGroups = ['Klimaat & verwarming' => ['airco', 'heater'], 'Sanitair & keuken' => ['toilet', 'kitchen']];
+    $countIcons = [
+        'desk' => 'ph-desk', 'chair' => 'ph-chair', 'counter' => 'ph-storefront', 'worktop' => 'ph-rectangle', 'cabinet' => 'ph-lockers',
+        'socket' => 'ph-plug', 'network' => 'ph-network',
+    ];
+    $countGroups = [
+        'Elektra & netwerk' => ['options' => UnitConfiguration::CONNECTIONS, 'key' => 'connections', 'max' => UnitConfiguration::MAX_CONNECTIONS],
+        'Meubilair' => ['options' => UnitConfiguration::FURNITURE, 'key' => 'furniture', 'max' => UnitConfiguration::MAX_FURNITURE],
+    ];
+    $chosen = [...($configuration['interior'] ?? []), ...array_keys($configuration['furniture'] ?? [])];
+    $tentativeOptions = UnitConfiguration::INTERIOR + UnitConfiguration::FURNITURE;
     $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
     $slotLabels = array_map(fn (string $slotLabel): string => __($slotLabel), UnitConfiguration::SLOTS);
 @endphp
@@ -120,24 +133,73 @@
                     </fieldset>
                 @endforeach
             </div>
+            @foreach ($interiorGroups as $groupLabel => $items)
+                <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>
+                    <legend class="portal-label">{{ __($groupLabel) }}</legend>
+                    <div class="unit-configurator__swatches">
+                        @foreach ($items as $item)
+                            <label class="unit-swatch" title="{{ $interiorOptions[$item]['help'] }}">
+                                <input type="checkbox" name="configuration[interior][]" value="{{ $item }}" @checked(in_array($item, $configuration['interior'] ?? [], true))>
+                                <span class="unit-swatch__icon"><i class="ph {{ $interiorOptions[$item]['icon'] }}"></i></span>
+                                <span class="unit-swatch__label">{{ __(UnitConfiguration::INTERIOR[$item]) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @if ($loop->first)
+                        <p class="portal-help">{{ __('Een airco koelt en verwarmt; elektrische verwarming staat laag aan de wand. Van allebei komt er één per unit, ook op de verdieping. Te combineren.') }}</p>
+                    @else
+                        <p class="portal-help">{{ __('Het toilet en het keukentje staan op de begane grond, op een plek zonder deur.') }}</p>
+                    @endif
+                </fieldset>
+            @endforeach
+            @foreach ($countGroups as $groupLabel => $group)
+                <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>
+                    <legend class="portal-label">{{ __($groupLabel) }}</legend>
+                    <div class="unit-configurator__counts">
+                        @foreach ($group['options'] as $item => $itemLabel)
+                            @php($count = $configuration[$group['key']][$item] ?? 0)
+                            <div @class(['unit-count', 'is-chosen' => $count > 0]) data-configurator-count>
+                                <label class="unit-count__label" for="configuration_{{ $group['key'] }}_{{ $item }}"><i class="ph {{ $countIcons[$item] }}"></i> {{ __($itemLabel) }}</label>
+                                <div class="unit-count__stepper">
+                                    <button type="button" class="unit-count__button" data-count-step="-1" aria-label="{{ __('Minder') }}"><i class="ph ph-minus"></i></button>
+                                    <input class="unit-count__input" type="number" inputmode="numeric" id="configuration_{{ $group['key'] }}_{{ $item }}" name="configuration[{{ $group['key'] }}][{{ $item }}]" value="{{ $count }}" min="0" max="{{ $group['max'] }}" data-configurator-amount>
+                                    <button type="button" class="unit-count__button" data-count-step="1" aria-label="{{ __('Meer') }}"><i class="ph ph-plus"></i></button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <p class="portal-help">{{ $group['key'] === 'connections'
+                        ? __('Verlichting zit er altijd in. Wandcontactdozen worden over de wanden verdeeld, netwerkaansluitingen komen ernaast.')
+                        : __('Een uitgiftebalie komt bij een uitgifteluik of raam, een bureau bij een raam en een stoel bij een bureau of balie. Meubilair staat op de begane grond.') }}</p>
+                </fieldset>
+            @endforeach
             <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>
-                <legend class="portal-label">{{ __('Inrichting') }}</legend>
+                <legend class="portal-label">{{ __('Toegang') }}</legend>
+                <input type="hidden" name="configuration[steps]" value="0">
+                <label class="portal-checkbox">
+                    <input type="checkbox" name="configuration[steps]" value="1" data-configurator-steps @checked($configuration['steps'] ?? false)>
+                    {{ __('Opstapje voor de deuren op de begane grond') }}
+                </label>
+            </fieldset>
+            <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body data-configurator-tentative @unless ($isConfigured && $chosen) hidden @endunless>
+                <legend class="portal-label">{{ __('Nog niet zeker') }}</legend>
                 <div class="unit-configurator__swatches">
-                    @foreach (UnitConfiguration::INTERIOR as $item => $itemLabel)
-                        <label class="unit-swatch" title="{{ $interiorOptions[$item]['help'] }}">
-                            <input type="checkbox" name="configuration[interior][]" value="{{ $item }}" @checked(in_array($item, $configuration['interior'] ?? [], true))>
-                            <span class="unit-swatch__icon"><i class="ph {{ $interiorOptions[$item]['icon'] }}"></i></span>
+                    @foreach ($tentativeOptions as $item => $itemLabel)
+                        @php($isChosen = in_array($item, $chosen, true))
+                        <label class="unit-swatch unit-swatch--small" data-tentative-for="{{ $item }}" @unless ($isChosen) hidden @endunless>
+                            <input type="checkbox" name="configuration[tentative][]" value="{{ $item }}" @checked(in_array($item, $configuration['tentative'] ?? [], true)) @disabled(! $isChosen)>
+                            <span class="unit-swatch__icon"><i class="ph ph-question"></i></span>
                             <span class="unit-swatch__label">{{ __($itemLabel) }}</span>
                         </label>
                     @endforeach
                 </div>
-                <p class="portal-help">{{ __('Verlichting zit er altijd in. Een airco koelt en verwarmt; er komt er één per unit, hoog aan de wand. Het toilet en het keukentje staan op de begane grond, op een plek zonder deur.') }}</p>
+                <p class="portal-help">{{ __('Vink aan wat je wel wilt meenemen in de offerte, maar nog niet zeker weet. Het staat dan als optie op de plattegrond.') }}</p>
             </fieldset>
         </div>
 
         <div class="unit-configurator__levels" data-configurator-body @unless ($isConfigured) hidden @endunless>
             <ul class="unit-plan-legend" aria-label="{{ __('Legenda') }}">
-                @foreach ([UnitConfiguration::EMPTY => 'Dicht', UnitConfiguration::WINDOW => 'Raam (180 cm)', UnitConfiguration::DOOR => 'Deur (87,5 cm)'] as $slot => $legendLabel)
+                @foreach ([UnitConfiguration::EMPTY => 'Dicht', UnitConfiguration::WINDOW => 'Raam (180 cm)', UnitConfiguration::DOOR => 'Deur (87,5 cm)', UnitConfiguration::HATCH => 'Uitgifteluik (80 cm, wind- en waterdicht)'] as $slot => $legendLabel)
                     <li class="unit-plan-legend__item">
                         <span class="unit-plan-legend__icon unit-slot--{{ $slot }}"><i class="ph {{ $slotIcons[$slot] }}"></i></span>
                         {{ __($legendLabel) }}
@@ -190,7 +252,7 @@
                     </div>
                 </section>
             @endforeach
-            <p class="portal-help">{{ __('Bovenaanzicht van de unit: klik op een vak langs een gevel om te wisselen tussen dicht, raam en deur. Elk vak is 1 meter; een raam van 1,80 m beslaat twee vakken: het aangeklikte vak en het vrije vak rechts ervan (of links, als rechts bezet is). Klik je daarna op het vrije vak naast een raam, dan komt er een tweede raam direct naast. Twee ramen in het midden van een gevel van 6 m: klik op vak 2 en vak 4. Op een gevel van 3 m komt een klik op het middelste vak uit op één raam in het midden. Klik nog eens op een raam voor een deur, en nog eens voor dicht. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte, met unit 1 aan de voorzijde. Met twee lagen stel je de verdieping apart in.') }}</p>
+            <p class="portal-help">{{ __('Bovenaanzicht van de unit: klik op een vak langs een gevel om te wisselen tussen dicht, raam en deur. Elk vak is 1 meter; een raam van 1,80 m beslaat twee vakken: het aangeklikte vak en het vrije vak rechts ervan (of links, als rechts bezet is). Klik je daarna op het vrije vak naast een raam, dan komt er een tweede raam direct naast. Twee ramen in het midden van een gevel van 6 m: klik op vak 2 en vak 4. Op een gevel van 3 m komt een klik op het middelste vak uit op één raam in het midden. Klik nog eens op een raam voor een deur, nog eens voor een uitgifteluik en nog eens voor dicht. Gekoppelde units staan met de lange zijde tegen elkaar en vormen één open ruimte, met unit 1 aan de voorzijde. Met twee lagen stel je de verdieping apart in.') }}</p>
         </div>
     </div>
 
@@ -225,10 +287,22 @@
             <div class="unit-configurator__preview" data-configurator-preview @if ($composer) hidden @endif>
                 {!! app(FloorPlanRenderer::class)->render($configuration) !!}
             </div>
+            <div data-configurator-positions hidden>
+                @foreach ($configuration['positions'] ?? [] as $id => $position)
+                    <input type="hidden" name="configuration[positions][{{ $id }}][x]" value="{{ $position['x'] }}" data-position="{{ $id }}">
+                    <input type="hidden" name="configuration[positions][{{ $id }}][y]" value="{{ $position['y'] }}" data-position="{{ $id }}">
+                @endforeach
+            </div>
             <div class="unit-configurator__viewer" data-configurator-viewer @unless ($composer) hidden @endunless></div>
             <p class="unit-configurator__viewer-note" data-configurator-interior-note hidden>{{ __('Je ziet de binnenkant van de begane grond; de verdieping is hier weggelaten.') }}</p>
         </div>
         <p class="portal-help" data-configurator-viewer-help @unless ($composer) hidden @endunless>{{ __('Sleep om de unit te draaien, scroll om in of uit te zoomen.') }}</p>
+        <div class="unit-configurator__plan-help" data-configurator-plan-help @if ($composer) hidden @endif>
+            <p class="portal-help">{{ __('Sleep een item op de plattegrond om het te verplaatsen: wat aan de wand hangt schuift naar de dichtstbijzijnde wand, een bureau of stoel blijft staan waar je hem neerzet.') }}</p>
+            <button type="button" class="btn btn-secondary" data-configurator-positions-reset @if (empty($configuration['positions'])) hidden @endif>
+                <i class="ph ph-arrow-counter-clockwise"></i> {{ __('Automatische indeling') }}
+            </button>
+        </div>
         @if ($composer && ! $storeUrl)
             <div class="unit-configurator__share">
                 <input class="portal-input" readonly value="{{ request()->fullUrl() }}" aria-label="{{ __('Link naar deze samenstelling') }}" data-configurator-share-url>

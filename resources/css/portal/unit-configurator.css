@@ -645,3 +645,121 @@
   min-width: 0;
   color: var(--color-text-muted);
 }
+
+/* A wind- and watertight pass-through hatch: dark, so it stands apart from windows and doors. */
+.unit-slot--hatch {
+  border-color: var(--color-text-muted);
+  background: #ecebe6;
+  color: #3b3b3b;
+}
+
+/* Furniture and connections ordered in numbers: a label with a minus/plus stepper. */
+.unit-configurator__counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.unit-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg-white);
+  font-size: 14px;
+}
+
+.unit-count.is-chosen {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+.unit-count__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.unit-count__label i {
+  font-size: 18px;
+}
+
+.unit-count__stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.unit-count__button {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: var(--border-default);
+  border-radius: var(--radius-default);
+  background: var(--color-bg-white);
+  color: inherit;
+  cursor: pointer;
+}
+
+.unit-count__button:hover {
+  border-color: var(--color-border-strong);
+}
+
+.unit-count__input {
+  width: 40px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.unit-count__input::-webkit-outer-spin-button,
+.unit-count__input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.unit-swatch--small {
+  padding: 4px 10px 4px 4px;
+  font-size: 13px;
+}
+
+/* Items on the floor plan can be dragged to another place. */
+.unit-configurator__preview .plan-item {
+  cursor: grab;
+  touch-action: none;
+}
+
+.unit-configurator__preview .plan-item:hover > :not(title) {
+  filter: drop-shadow(0 0 40px rgba(16, 92, 160, 0.55));
+}
+
+.unit-configurator__preview .plan-item.is-dragging {
+  cursor: grabbing;
+  opacity: 0.75;
+}
+
+.unit-configurator__plan-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.unit-configurator__plan-help .portal-help {
+  flex: 1 1 280px;
+  margin: 0;
+}

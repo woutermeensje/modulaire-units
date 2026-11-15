@@ -29,6 +29,8 @@ class UnitDesigner
         Drie aangrenzende "window"-vakken zijn één raam precies in het midden ervan; zo zet je een raam midden in een
         kopgevel van 3 meter: ["window", "window", "window"]. Laat tussen losse ramen minstens één vak "empty".
         Een deur (87,5 cm breed) beslaat één vak.
+        Een vak kan ook "hatch" zijn: een wind- en waterdicht uitgifteluik (80 cm breed), bijv. voor een portiersloge of
+        het uitgeven van passen; een luik beslaat één vak en is geen raam.
         - front (voorzijde) is de lange zijde van de voorste unit, back (achterzijde) die van de achterste unit:
           3 vakken bij 3x3, 6 vakken bij 6x3.
         - left (linkerzijde) en right (rechterzijde) lopen langs alle units: 3 vakken per module.
@@ -45,9 +47,15 @@ class UnitDesigner
         Er zijn vier kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw)
         en "#4188aa" (logoblauw, het lichtere blauw uit het logo).
         Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
-        interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "toilet"
-        (toiletruimte met fonteintje) en "kitchen" (keukentje). Verlichting zit er altijd in. Kies alleen wat gevraagd wordt
+        interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "heater"
+        (elektrische verwarming laag aan de wand in elke unit; te combineren met airco), "toilet" (toiletruimte met fonteintje)
+        en "kitchen" (keukentje). Verlichting zit er altijd in. Kies alleen wat gevraagd wordt
         of duidelijk bij het gebruik hoort; anders een lege lijst. Waar het komt te staan wordt automatisch bepaald.
+        furniture is het meubilair met aantallen (0 tot 8): "desk" (bureau), "chair" (bureaustoel), "counter" (uitgiftebalie,
+        komt bij een uitgifteluik of raam), "worktop" (werkblad) en "cabinet" (opbergkast). connections zijn de aantallen
+        "socket" (wandcontactdozen, 0 tot 24) en "network" (netwerkaansluitingen/UTP, 0 tot 24). Zet alles op 0 wat niet gevraagd wordt.
+        steps zet een opstapje voor de deuren op de begane grond. tentative is een lijst met keuzes uit interior en furniture
+        die de klant nog niet zeker weet (bijv. "toilet als optie"); anders een lege lijst.
         Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 
         Volg de beschrijving zo letterlijk mogelijk. Wat niet genoemd wordt, kies je zelf op een logische manier:
@@ -162,11 +170,32 @@ class UnitDesigner
                 ],
                 'background' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::BACKGROUNDS)],
                 'interior' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::INTERIOR)], 'description' => 'Inrichting; verlichting zit er altijd in'],
+                'furniture' => $this->amounts(UnitConfiguration::FURNITURE, 'Aantal stuks meubilair per soort'),
+                'connections' => $this->amounts(UnitConfiguration::CONNECTIONS, 'Aantal wandcontactdozen en netwerkaansluitingen'),
+                'steps' => ['type' => 'boolean', 'description' => 'Opstapje voor de deuren op de begane grond'],
+                'tentative' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => [...array_keys(UnitConfiguration::INTERIOR), ...array_keys(UnitConfiguration::FURNITURE)]], 'description' => 'Keuzes die nog niet zeker zijn'],
                 'title' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'title', 'meta_description'],
+            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'furniture', 'connections', 'steps', 'tentative', 'title', 'meta_description'],
             'additionalProperties' => false,
+        ];
+    }
+
+    /**
+     * An object with a whole number for every option.
+     *
+     * @param  array<string, string>  $options
+     * @return array<string, mixed>
+     */
+    private function amounts(array $options, string $description): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => array_map(fn (string $label): array => ['type' => 'integer', 'description' => $label], $options),
+            'required' => array_keys($options),
+            'additionalProperties' => false,
+            'description' => $description,
         ];
     }
 }

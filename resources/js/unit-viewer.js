@@ -27,8 +27,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { windowSpans } from './window-spans';
-import { interiorLayout } from './interior-layout';
+import { interiorLayout, openings } from './interior-layout';
 
 // Dimensions in metres, matching App\Support\UnitRenderer.
 const HEIGHT = 2.6;
@@ -40,56 +39,8 @@ const BOTTOM_RAIL = 0.15;
 const RAISE = 0.1;
 const CORNER_CASTING = 0.18;
 
-// Window and door sizes and placement, matching App\Support\UnitConfiguration::OPENING_SIZES and openings().
-const OPENING_SIZES = {
-  window: { width: 1.8, height: 1.2, bottom: 0.9, slots: 2 },
-  door: { width: 0.875, height: 2.125, bottom: 0.15, slots: 1 },
-};
+// The clear opening of a door, matching App\Support\UnitConfiguration::DOOR_CLEAR; openings() comes from interior-layout.js.
 const DOOR_CLEAR = { width: 0.811, height: 2.093 };
-const POST_CLEARANCE = 0.12;
-
-/**
- * Where the windows and doors of a wall are, in metres from its left end (seen from outside), each centred on its
- * slots but kept clear of the posts at wall ends and at seams between units every `segment` slots. Runs of window
- * slots are split into windows by windowSpans().
- */
-function openings(slots, segment) {
-  const result = [];
-  let index = 0;
-
-  while (index < slots.length) {
-    const type = slots[index];
-    const size = OPENING_SIZES[type];
-    if (!size) {
-      index++;
-      continue;
-    }
-
-    const start = Math.floor(index / segment) * segment;
-    let spans = [size.slots];
-
-    if (type === 'window') {
-      let end = index;
-      while (end < Math.min(slots.length, start + segment) && slots[end] === 'window') {
-        end++;
-      }
-      spans = windowSpans(end - index);
-      if (spans.length === 0) {
-        index = end;
-        continue;
-      }
-    }
-
-    spans.forEach((span) => {
-      let left = index + (span - size.width) / 2;
-      left = Math.min(Math.max(left, start + POST_CLEARANCE), start + segment - POST_CLEARANCE - size.width);
-      result.push({ type, left, right: left + size.width, bottom: size.bottom, top: size.bottom + size.height });
-      index += span;
-    });
-  }
-
-  return result;
-}
 
 /**
  * Each wall is built along local +x from its left end (seen from outside) with its outside facing local +z,
@@ -247,6 +198,7 @@ function createMaterials(colors, ribs) {
     cabinet: new MeshStandardMaterial({ color: '#f4f3ef', roughness: 0.6 }),
     worktop: new MeshStandardMaterial({ color: '#6b6760', roughness: 0.5 }),
     hob: new MeshStandardMaterial({ color: '#1d1f21', roughness: 0.25, metalness: 0.4 }),
+    data: new MeshStandardMaterial({ color: '#2f6fb3', roughness: 0.4 }),
   };
 }
 
@@ -292,7 +244,29 @@ function buildDoor({ left, right, bottom, top }, materials) {
 }
 
 /**
- * One wall: a cladding panel and a white inner lining with real openings, filled with windows and doors.
+ * A pass-through hatch: a heavy frame with a sliding pane and a sill sloping outwards, so rain runs off.
+ */
+function buildHatch({ left, right, bottom, top }, materials) {
+  const width = right - left;
+  const height = top - bottom;
+  const centerX = (left + right) / 2;
+  const centerY = (bottom + top) / 2;
+  const group = new Group();
+
+  group.add(
+    box(width / 2, height - 0.1, 0.01, centerX + width / 4 - 0.03, centerY, -CLADDING_THICKNESS / 2 - 0.015, materials.glass),
+    box(width / 2, height - 0.1, 0.01, centerX - width / 4 + 0.03, centerY, -CLADDING_THICKNESS / 2 + 0.015, materials.glass),
+    box(0.07, height, 0.1, left + 0.035, centerY, -0.02, materials.frame),
+    box(0.07, height, 0.1, right - 0.035, centerY, -0.02, materials.frame),
+    box(width, 0.07, 0.1, centerX, top - 0.035, -0.02, materials.frame),
+    box(width + 0.1, 0.04, 0.16, centerX, bottom - 0.02, 0.03, materials.steel),
+  );
+
+  return group;
+}
+
+/**
+ * One wall: a cladding panel and a white inner lining with real openings, filled with windows, doors and hatches.
  * The unit has no roof, so the top of both layers shows the thickness of the wall.
  */
 function buildWall(width, slots, segment, materials) {
@@ -314,7 +288,8 @@ function buildWall(width, slots, segment, materials) {
     hole.closePath();
     shape.holes.push(hole);
 
-    group.add(opening.type === 'door' ? buildDoor(opening, materials) : buildWindow(opening, materials));
+    const builder = { door: buildDoor, hatch: buildHatch }[opening.type] ?? buildWindow;
+    group.add(builder(opening, materials));
   });
 
   [[materials.cladding, CLADDING_THICKNESS, -CLADDING_THICKNESS], [materials.lining, LINING_THICKNESS, -CLADDING_THICKNESS - LINING_THICKNESS]]
@@ -537,9 +512,137 @@ function buildAirco({ wall, x1, y1, x2, y2 }, { length, depth }, materials) {
   return group;
 }
 
+/** From the wall an item stands against into the room, in the unit's x and z. */
+const TO_ROOM = { back: [0, 1], front: [0, -1], left: [1, 0], right: [-1, 0] };
+
+/** The centre and size of an item's footprint in the unit's coordinates, and the direction from its wall into the room. */
+function footprint({ wall, x1, y1, x2, y2 }, { length, depth }) {
+  const [inX, inZ] = TO_ROOM[wall];
+
+  return { x: (x1 + x2) / 2 - length / 2, z: (y1 + y2) / 2 - depth / 2, sizeX: x2 - x1, sizeZ: y2 - y1, inX, inZ };
+}
+
+/**
+ * An electric heater low on its wall: a white panel with a grille on top.
+ */
+function buildHeater(item, dimensions, materials) {
+  const { x, z, sizeX, sizeZ } = footprint(item, dimensions);
+  const group = new Group();
+  group.add(
+    box(sizeX, 0.55, sizeZ, x, BOTTOM_RAIL + 0.15 + 0.275, z, materials.ceramic),
+    box(Math.max(sizeX - 0.06, 0.02), 0.01, Math.max(sizeZ - 0.06, 0.02), x, BOTTOM_RAIL + 0.15 + 0.555, z, materials.steel),
+  );
+
+  return group;
+}
+
+/**
+ * A cabinet base with a top: a counter at standing height, or a worktop at table height.
+ */
+function buildCounter(item, dimensions, materials, height) {
+  const { x, z, sizeX, sizeZ, inX, inZ } = footprint(item, dimensions);
+  const group = new Group();
+  group.add(
+    box(sizeX - 0.04 * Math.abs(inX), height - 0.04, sizeZ - 0.04 * Math.abs(inZ), x - inX * 0.02, BOTTOM_RAIL + (height - 0.04) / 2, z - inZ * 0.02, materials.cabinet),
+    box(sizeX, 0.04, sizeZ, x, BOTTOM_RAIL + height - 0.02, z, materials.worktop),
+  );
+
+  return group;
+}
+
+/**
+ * A tall storage cabinet with two doors.
+ */
+function buildCabinet(item, dimensions, materials) {
+  const { x, z, sizeX, sizeZ, inX, inZ } = footprint(item, dimensions);
+  const height = 2.0;
+  const along = inX === 0 ? [1, 0] : [0, 1];
+  const front = [x + inX * (sizeX / 2 + 0.005), z + inZ * (sizeZ / 2 + 0.005)];
+  const group = new Group();
+  group.add(
+    box(sizeX, height, sizeZ, x, BOTTOM_RAIL + height / 2, z, materials.cabinet),
+    box(along[0] ? 0.01 : 0.012, height - 0.1, along[1] ? 0.01 : 0.012, front[0], BOTTOM_RAIL + height / 2, front[1], materials.partition),
+  );
+  [-1, 1].forEach((side) => {
+    group.add(box(0.02, 0.15, 0.02, front[0] + along[0] * side * 0.06, BOTTOM_RAIL + 1.05, front[1] + along[1] * side * 0.06, materials.handle));
+  });
+
+  return group;
+}
+
+/**
+ * A desk: a top on four steel legs.
+ */
+function buildDesk(item, dimensions, materials) {
+  const { x, z, sizeX, sizeZ } = footprint(item, dimensions);
+  const height = 0.75;
+  const group = new Group();
+  group.add(box(sizeX, 0.03, sizeZ, x, BOTTOM_RAIL + height - 0.015, z, materials.worktop));
+  [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([signX, signZ]) => {
+    group.add(box(0.04, height - 0.03, 0.04, x + signX * (sizeX / 2 - 0.05), BOTTOM_RAIL + (height - 0.03) / 2, z + signZ * (sizeZ / 2 - 0.05), materials.steel));
+  });
+
+  return group;
+}
+
+/**
+ * An office chair facing the wall of its desk or counter: seat, backrest on the far side and a column with a base.
+ */
+function buildChair(item, dimensions, materials) {
+  const { x, z, inX, inZ } = footprint(item, dimensions);
+  const group = new Group();
+  group.add(
+    new Mesh(new CylinderGeometry(0.03, 0.03, 0.4, 8), materials.steel),
+    new Mesh(new CylinderGeometry(0.28, 0.28, 0.03, 16), materials.hob),
+  );
+  group.children[0].position.set(x, BOTTOM_RAIL + 0.23, z);
+  group.children[1].position.set(x, BOTTOM_RAIL + 0.03, z);
+  group.add(
+    box(0.48, 0.07, 0.48, x, BOTTOM_RAIL + 0.47, z, materials.hob),
+    box(inX === 0 ? 0.44 : 0.05, 0.45, inX === 0 ? 0.05 : 0.44, x + inX * 0.22, BOTTOM_RAIL + 0.75, z + inZ * 0.22, materials.hob),
+  );
+
+  return group;
+}
+
+/**
+ * A wall socket (white) or a network point (blue) on the wall.
+ */
+function buildConnection(item, dimensions, materials) {
+  const { x, z, inX, inZ } = footprint(item, dimensions);
+  const plateX = inX === 0 ? 0.08 : 0.015;
+  const plateZ = inX === 0 ? 0.015 : 0.08;
+
+  return box(plateX, 0.08, plateZ, x - inX * 0.02, BOTTOM_RAIL + 0.3, z - inZ * 0.02, item.type === 'network' ? materials.data : materials.ceramic);
+}
+
+/**
+ * A step in front of a door on the ground, in the wall's own coordinates (x along the wall, z outwards).
+ */
+function buildStep({ left, right }, ground, materials) {
+  const top = ground + STEP.height;
+
+  return box(STEP.width, STEP.height, STEP.depth, (left + right) / 2, (ground + top) / 2, STEP.depth / 2 + 0.02, materials.concrete);
+}
+
+/** The step outside a door, matching App\Support\FloorPlanRenderer::STEP. */
+const STEP = { width: 1.0, depth: 0.4, height: 0.15 };
+
 function buildInterior(configuration, dimensions, level, materials) {
   const group = new Group();
-  const builders = { toilet: buildToilet, kitchen: buildKitchen, airco: buildAirco };
+  const builders = {
+    toilet: buildToilet,
+    kitchen: buildKitchen,
+    airco: buildAirco,
+    heater: buildHeater,
+    counter: (item, size, all) => buildCounter(item, size, all, 1.1),
+    worktop: (item, size, all) => buildCounter(item, size, all, 0.9),
+    cabinet: buildCabinet,
+    desk: buildDesk,
+    chair: buildChair,
+    socket: buildConnection,
+    network: buildConnection,
+  };
   interiorLayout(configuration, dimensions, level).items.forEach((item) => group.add(builders[item.type](item, dimensions, materials)));
 
   return group;
@@ -574,6 +677,11 @@ function buildUnit(configuration, dimensions, materials) {
       if (floor > 0 && configuration.stairs) {
         openings(slots, segment).filter(({ type }) => type === 'door').forEach(({ left, right, bottom }) => {
           group.add(buildStairs((left + right) / 2, dimensions[wall.width], bottom, -body.position.y, materials));
+        });
+      }
+      if (floor === 0 && configuration.steps) {
+        openings(slots, segment).filter(({ type }) => type === 'door').forEach((door) => {
+          group.add(buildStep(door, -body.position.y, materials));
         });
       }
     });
