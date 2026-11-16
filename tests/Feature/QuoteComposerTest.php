@@ -314,4 +314,20 @@ class QuoteComposerTest extends TestCase
         $this->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3'], 'locale' => 'de'])->assertSessionHasErrors('locale');
         $this->assertSame('nl', app()->getLocale());
     }
+
+    public function test_editing_the_unit_does_not_use_up_the_limit_for_sending(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+        $this->actingAs(User::factory()->admin()->create());
+
+        // Every change in the configurator asks for a new floor plan.
+        for ($request = 0; $request < 40; $request++) {
+            $this->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3']])->assertOk();
+        }
+
+        $this->post(route('quote-composer.send'), $this->quoteInput(User::factory()->create()))
+            ->assertRedirect(route('quote-composer'));
+        Mail::assertSent(QuoteSent::class);
+    }
 }
