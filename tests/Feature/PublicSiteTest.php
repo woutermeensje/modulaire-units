@@ -231,8 +231,8 @@ class PublicSiteTest extends TestCase
 
     public function test_configured_units_offer_a_3d_view(): void
     {
-        Unit::factory()->create(['slug' => 'met-configuratie', 'configuration' => UnitConfiguration::defaults('3x3')]);
-        Unit::factory()->create(['slug' => 'zonder-configuratie', 'configuration' => null]);
+        $configured = Unit::factory()->create(['slug' => 'met-configuratie', 'configuration' => UnitConfiguration::defaults('3x3')]);
+        $unconfigured = Unit::factory()->create(['slug' => 'zonder-configuratie', 'configuration' => null]);
 
         $this->get('/units/met-configuratie/')
             ->assertOk()
@@ -244,7 +244,12 @@ class PublicSiteTest extends TestCase
             ->assertSee('href="'.e(route('unit-composer.public').'/?'.http_build_query(['samenstelling' => UnitConfiguration::toShareCode(UnitConfiguration::defaults('3x3'))])).'"', false)
             ->assertSee('"dimensions":{"length":3,"depth":3,"floors":1}', false);
 
-        $this->get('/units/zonder-configuratie/')->assertOk()->assertDontSee('data-unit-card-viewer', false)->assertSee('id="mh-open-gallery"', false);
+        $this->get('/units/zonder-configuratie/')
+            ->assertOk()
+            ->assertDontSee('Draaibare 3D-weergave van '.$unconfigured->title)
+            ->assertSee('id="mh-open-gallery"', false)
+            ->assertSee('Draaibare 3D-weergave van '.$configured->title)
+            ->assertSee('<a class="mh-related-name" href="'.$configured->url().'">', false);
 
         Unit::factory()->create(['slug' => 'gekoppeld', 'configuration' => UnitConfiguration::normalize(['size' => '6x3', 'modules' => 3])]);
         $this->get('/units/gekoppeld/')->assertOk()->assertSee('"dimensions":{"length":6,"depth":9,"floors":1}', false);

@@ -15,6 +15,9 @@
     // The quote composer (account/offerte-samenstellen, admins only) also offers what was taken out of the customer's
     // configurator: the use of the unit, connections, furniture and a step; see Portal\QuoteComposerController.
     $quoteExtras ??= false;
+    // In the quote composer the configurator stands in a form that sends the quote; the browser then makes the images
+    // of the unit for the PDF (3D views and the floor plan), see unit-configurator.js.
+    $quoteForm ??= false;
     // The public composer (/unit-samensteller/ and the home page) leaves the interior out for now; see partials/unit-composer.
     $offersInterior ??= true;
     $isConfigured = $composer || filled($value['size'] ?? null);
@@ -323,6 +326,15 @@
                 <i class="ph ph-arrow-counter-clockwise"></i> {{ __('Automatische indeling') }}
             </button>
         </div>
+        @if ($quoteForm)
+            {{-- Filled by the browser just before the form is sent: the 3D views and the floor plan for the PDF. --}}
+            <input type="checkbox" data-configurator-photos checked hidden>
+            <p class="portal-help" role="status" data-configurator-photos-status></p>
+            @foreach (array_keys(UnitRenderer::VIEWS) as $view)
+                <input type="file" name="images[{{ $view }}]" accept="image/jpeg" hidden data-configurator-photo="{{ $view }}">
+            @endforeach
+            <input type="file" name="images[plan]" accept="image/png" hidden data-configurator-plan-image>
+        @endif
         @if ($composer && ! $storeUrl)
             <div class="unit-configurator__share">
                 <input class="portal-input" readonly value="{{ request()->fullUrl() }}" aria-label="{{ __('Link naar deze samenstelling') }}" data-configurator-share-url>
@@ -339,7 +351,17 @@
             @endforeach
         @endif
     </div>
-    @if (! $storeUrl && ($quoteUrl ?? null))
+    @if ($quoteForm)
+        {{-- Always in reach at the bottom of the page while composing the quote. --}}
+        <div class="unit-quote-bar" data-configurator-quote-bar>
+            <button type="submit" class="unit-quote-bar__link" formaction="{{ $pdfPreviewUrl }}" formtarget="_blank">
+                <i class="ph ph-file-pdf"></i> <span>{{ __('Voorbeeld PDF') }}</span>
+            </button>
+            <button type="submit" class="unit-quote-bar__button" data-confirm="{{ __('De offerte wordt nu naar de opdrachtgever gemaild. Doorgaan?') }}">
+                <i class="ph ph-paper-plane-tilt"></i> <span>{{ __('Offerte versturen') }}</span>
+            </button>
+        </div>
+    @elseif (! $storeUrl && ($quoteUrl ?? null))
         {{-- Appears at the bottom of the page as soon as the unit is edited; see resetQuote() in unit-configurator.js. --}}
         <div class="unit-quote-bar" data-configurator-quote-bar hidden>
             <a href="{{ SiteUrl::route('quote.show') }}" class="unit-quote-bar__link" data-configurator-quote-link hidden>{{ __('Bekijk offerte') }}</a>

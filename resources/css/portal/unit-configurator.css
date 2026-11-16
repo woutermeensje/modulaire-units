@@ -673,9 +673,10 @@
 }
 
 /* Furniture and connections ordered in numbers: a label with a minus/plus stepper. */
+/* One item per line, so long names such as "Netwerkaansluiting (UTP)" fit next to their stepper. */
 .unit-configurator__counts {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: minmax(0, 420px);
   gap: 8px;
 }
 
@@ -915,7 +916,7 @@ body.has-quote-bar {
 }
 
 .unit-quote-bar .unit-quote-bar__button,
-.unit-quote-bar__link {
+.unit-quote-bar .unit-quote-bar__link {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -940,7 +941,7 @@ body.has-quote-bar {
   cursor: default;
 }
 
-.unit-quote-bar__link {
+.unit-quote-bar .unit-quote-bar__link {
   border: 1px solid var(--color-primary);
   background: #ffffff;
   color: var(--color-primary);
@@ -953,7 +954,7 @@ body.has-quote-bar {
   }
 
   .unit-quote-bar .unit-quote-bar__button,
-  .unit-quote-bar__link {
+  .unit-quote-bar .unit-quote-bar__link {
     padding: 0 16px;
     font-size: 15px;
   }

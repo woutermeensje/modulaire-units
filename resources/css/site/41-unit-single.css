@@ -513,6 +513,21 @@
         display: block;
     }
 
+    .mhu-single-page .mh-related-name {
+        text-decoration: none;
+    }
+
+    .mhu-single-page .mh-related-name:hover,
+    .mhu-single-page .mh-related-name:focus-visible {
+        text-decoration: underline;
+    }
+
+    /* The rotatable 3D view of a related unit: same 3:2 block as on /modulaire-units/, full card width. */
+    .mhu-single-page .mh-related-item > .mh-unit-3d {
+        width: 100%;
+        flex-shrink: 0;
+    }
+
     .mhu-single-page .mh-related-cats {
         font-size: var(--text-sm);
         color: #888;

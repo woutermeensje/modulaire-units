@@ -19,6 +19,8 @@
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; line-height: 1.5; color: #1f2a33; }
         h1 { margin: 0 0 4mm; font-size: 19pt; line-height: 1.25; color: #25486e; }
         h2 { margin: 0 0 3mm; font-size: 12pt; color: #25486e; }
+        /* The list starts on a page of its own, so its heading never stays behind under the drawings. */
+        .specification-page { page-break-before: always; }
         .header { width: 100%; margin-bottom: 12mm; border-collapse: collapse; }
         .header td { vertical-align: top; padding: 0; }
         .brand img { width: 13mm; vertical-align: middle; }
@@ -115,7 +117,8 @@
         </div>
     @endisset
 
-    <h2>Specificatie</h2>
+    <div class="specification-page">
+    <h2>Specificatie: {{ $quote->title }}</h2>
     <table class="specification">
         @foreach ($specification as $section => $lines)
             <tr>
@@ -134,5 +137,6 @@
             </tr>
         @endforeach
     </table>
+    </div>
 </body>
 </html>

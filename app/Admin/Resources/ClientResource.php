@@ -52,7 +52,7 @@ class ClientResource extends UserResource
                 Field::make('last_name', 'Achternaam')->half(),
                 Field::make('company_name', 'Bedrijfsnaam')->half(),
                 Field::make('email', 'E-mailadres')->required()->half(),
-                Field::make('phone', 'Telefoonnummer')->half()->help($record?->exists ? null : 'Er wordt geen account-mail verstuurd. De opdrachtgever kan later zelf inloggen via "Wachtwoord vergeten".'),
+                Field::make('phone', 'Telefoonnummer')->half()->help('Er wordt geen account-mail verstuurd. Wie zelf wil inloggen, kiest een wachtwoord via "Wachtwoord vergeten".'),
             ],
         ];
     }

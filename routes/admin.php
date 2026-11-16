@@ -50,7 +50,12 @@ Route::middleware('auth')->group(function (): void {
     Route::get('account/unit-samenstellen', PortalUnitComposerController::class)->name('unit-composer');
     Route::post('account/unit-samenstellen/voorbeeld', UnitPreviewController::class)->middleware('throttle:120,1')->name('unit-composer.preview');
     Route::post('account/unit-samenstellen', [ComposedUnitController::class, 'store'])->middleware(EnsureUserIsAdmin::class)->name('unit-composer.store');
-    Route::get('account/offerte-samenstellen', QuoteComposerController::class)->middleware(EnsureUserIsAdmin::class)->name('quote-composer');
+    Route::middleware(EnsureUserIsAdmin::class)->group(function (): void {
+        Route::get('account/offerte-samenstellen', QuoteComposerController::class)->name('quote-composer');
+        Route::post('account/offerte-samenstellen/voorbeeld-pdf', [QuoteComposerController::class, 'preview'])->name('quote-composer.pdf-preview');
+        Route::post('account/offerte-samenstellen', [QuoteComposerController::class, 'send'])->middleware('throttle:20,1')->name('quote-composer.send');
+        Route::get('account/offertes/{quote}/pdf', [QuoteComposerController::class, 'pdf'])->name('quotes.pdf');
+    });
     Route::patch('account/units/{unit}/status', [ComposedUnitController::class, 'updateStatus'])->middleware(EnsureUserIsAdmin::class)->name('composed-units.status');
 });
 

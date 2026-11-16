@@ -11,6 +11,35 @@ const appendFields = (root, body) => root.querySelectorAll(FIELDS).forEach((inpu
   (input.multiple ? [...input.selectedOptions].map((option) => option.value) : [input.value]).forEach((value) => body.append(input.name, value));
 });
 
+// Draws an SVG (the floor plan) on a white canvas as a PNG of the given width, for the quote PDF: dompdf can't draw
+// the floor plan's SVG itself.
+const svgToPng = (svg, width) => new Promise((resolve, reject) => {
+  const element = new DOMParser().parseFromString(svg, 'image/svg+xml').documentElement;
+  const [, , viewWidth, viewHeight] = element.getAttribute('viewBox').split(/[\s,]+/).map(Number);
+  const height = Math.round((width * viewHeight) / viewWidth);
+  element.setAttribute('width', width);
+  element.setAttribute('height', height);
+
+  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(element)], { type: 'image/svg+xml' }));
+  const image = new Image();
+  image.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, width, height);
+    context.drawImage(image, 0, 0, width, height);
+    URL.revokeObjectURL(url);
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('No PNG'))), 'image/png');
+  };
+  image.onerror = () => {
+    URL.revokeObjectURL(url);
+    reject(new Error('The floor plan could not be drawn'));
+  };
+  image.src = url;
+});
+
 // The left and right walls run along every coupled unit; the front and back walls belong to one unit each.
 const SIDE_WALLS = ['left', 'right'];
 
@@ -180,6 +209,16 @@ function initConfigurator(root) {
   const quoteBar = root.querySelector('[data-configurator-quote-bar]');
   const quoteButtons = [...root.querySelectorAll('[data-configurator-quote-add]')];
   const quoteLinks = [...root.querySelectorAll('[data-configurator-quote-link]')];
+  if (quoteBar && !quoteBar.hidden) {
+    document.body.classList.add('has-quote-bar');
+  }
+  root.querySelectorAll('[data-confirm]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      if (!window.confirm(button.dataset.confirm)) {
+        event.preventDefault();
+      }
+    });
+  });
   const setQuoteLabel = (text) => quoteButtons.forEach((button) => { button.querySelector('span').textContent = text; });
   const resetQuote = () => {
     if (!quote) {
@@ -402,6 +441,8 @@ function initConfigurator(root) {
     updateViewer();
     updateShareUrl();
     resetQuote();
+    // Images made for an earlier version of the unit no longer fit; they are made again when the form is sent.
+    photosAttached = false;
     clearTimeout(timer);
     timer = setTimeout(async () => {
       if (!sizeSelect.value) {
@@ -739,6 +780,30 @@ function initConfigurator(root) {
       // Without photos the server keeps the current 3D photos or falls back to the 2D drawings.
       console.error(error);
     }
+
+    // The quote composer also sends the floor plan, as a PNG for the PDF.
+    const planInput = root.querySelector('[data-configurator-plan-image]');
+    if (planInput) {
+      try {
+        const body = new FormData();
+        appendFields(root, body);
+        const response = await fetch(root.dataset.previewUrl, {
+          method: 'POST',
+          headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
+          body,
+        });
+        if (!response.ok) {
+          throw new Error(`Status ${response.status}`);
+        }
+        const transfer = new DataTransfer();
+        transfer.items.add(new File([await svgToPng(await response.text(), 2400)], 'plan.png', { type: 'image/png' }));
+        planInput.files = transfer.files;
+      } catch (error) {
+        // The PDF is then sent without the floor plan.
+        console.error(error);
+      }
+    }
+    photosStatus.textContent = '';
 
     photosAttached = true;
     form.requestSubmit(event.submitter);

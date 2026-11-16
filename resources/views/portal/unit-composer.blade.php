@@ -57,6 +57,74 @@
                     </div>
                 </section>
             </form>
+        @elseif ($sendUrl ?? null)
+            {{-- Admins make a quote for a client: see Portal\QuoteComposerController. --}}
+            <form method="POST" action="{{ $sendUrl }}" enctype="multipart/form-data" class="portal-form">
+                @csrf
+
+                <section class="card dash-section">
+                    <h2 class="card-title">Offerte</h2>
+                    <div class="portal-field">
+                        <label class="portal-label" for="title">Titel van de offerte</label>
+                        <input class="portal-input" id="title" name="title" value="{{ old('title') }}" maxlength="255" placeholder="Bijv. Offerte portiersloge 6 x 3 meter" required>
+                    </div>
+                    <div class="portal-field">
+                        <label class="portal-label" for="client_id">Opdrachtgever</label>
+                        <select class="portal-input" id="client_id" name="client_id" data-search-select>
+                            <option value="">Kies een opdrachtgever</option>
+                            @foreach ($clients as $client)
+                                <option value="{{ $client->id }}" @selected((string) old('client_id') === (string) $client->id)>{{ $client->company_name ? $client->company_name.' – '.$client->name : $client->name }} ({{ $client->email }})</option>
+                            @endforeach
+                        </select>
+                        <p class="portal-help">Staat de opdrachtgever er niet tussen? <a href="{{ route('admin.opdrachtgevers.create') }}">Voeg een opdrachtgever toe</a>.</p>
+                    </div>
+                    <div class="portal-field">
+                        <label class="portal-label" for="intro">Begeleidende tekst</label>
+                        <textarea class="portal-textarea" id="intro" name="intro" rows="8" data-quill="off" placeholder="Beste ..., hierbij de offerte voor ...">{{ old('intro') }}</textarea>
+                        <p class="portal-help">Staat bovenaan de PDF en in de mail.</p>
+                    </div>
+                </section>
+
+                <section class="card dash-section">
+                    @include('admin.fields.configurator', [
+                        'field' => \App\Admin\Field::make('configuration', 'Samenstelling', 'configurator'),
+                        'record' => null,
+                        'value' => $configuration,
+                        'composer' => true,
+                        'ai' => false,
+                        'previewUrl' => $previewUrl,
+                        'quoteExtras' => true,
+                        'quoteForm' => true,
+                        'pdfPreviewUrl' => $pdfPreviewUrl,
+                    ])
+                </section>
+            </form>
+
+            <section class="card dash-section">
+                <h2 class="card-title">Verstuurde offertes</h2>
+                @if ($quotes->isEmpty())
+                    <p class="portal-help">Nog geen offertes verstuurd.</p>
+                @else
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr><th>Nummer</th><th>Titel</th><th>Opdrachtgever</th><th>Verstuurd</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($quotes as $quote)
+                                    <tr>
+                                        <td>{{ $quote->number() }}</td>
+                                        <td>{{ $quote->title }}</td>
+                                        <td>{{ $quote->client->company_name ?: $quote->client->name }}</td>
+                                        <td>{{ $quote->sent_at?->format('d-m-Y H:i') }}</td>
+                                        <td><a href="{{ route('quotes.pdf', $quote) }}" target="_blank" rel="noopener"><i class="ph ph-file-pdf"></i> PDF</a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </section>
         @else
             <section class="card dash-section">
                 @include('admin.fields.configurator', [
@@ -68,7 +136,6 @@
                     'previewUrl' => $previewUrl,
                     'designUrl' => $designUrl ?? null,
                     'quoteUrl' => $quoteUrl ?? null,
-                    'quoteExtras' => $quoteExtras ?? false,
                 ])
             </section>
         @endif

@@ -86,18 +86,25 @@
                 <h2>{{ __('Gerelateerde units') }}</h2>
                 <div class="mh-related-grid">
                     @foreach ($relatedUnits as $related)
-                        <a href="{{ $related->url() }}" class="mh-related-item">
-                            <div class="mh-related-thumb">
-                                @if ($related->featured_image)
-                                    <img width="300" height="200" src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($related->featured_image, 'medium')) }}" alt="{{ $related->featured_image_alt ?: $related->title }}" loading="lazy">
-                                @endif
-                            </div>
-                            <span class="mh-related-name">{{ $related->title }}</span>
+                        {{-- A card, not one big link: the 3D view has its own buttons (floor plan, 3D, inside) and is turned by dragging. --}}
+                        @php($relatedViewer = $related->viewer())
+                        @php($relatedImage = $related->photo3d())
+                        <article class="mh-related-item">
+                            @if ($relatedViewer)
+                                @include('partials.unit-3d-view', ['unit' => $related, 'viewer' => $relatedViewer, 'poster' => $relatedImage])
+                            @else
+                                <a class="mh-related-thumb" href="{{ $related->url() }}" tabindex="-1" aria-hidden="true">
+                                    @if ($relatedImage)
+                                        <img width="300" height="200" src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($relatedImage, 'medium')) }}" alt="" loading="lazy">
+                                    @endif
+                                </a>
+                            @endif
+                            <a class="mh-related-name" href="{{ $related->url() }}">{{ $related->title }}</a>
                             @php($relatedTerms = $related->termsFor(\App\Models\UnitTerm::TYPE)->take(1)->merge($related->termsFor(\App\Models\UnitTerm::CONDITION)->take(1)))
                             @if ($relatedTerms->isNotEmpty())
                                 <span class="mh-related-cats">{{ $relatedTerms->pluck('name')->implode(' • ') }}</span>
                             @endif
-                        </a>
+                        </article>
                     @endforeach
                 </div>
             </div>
