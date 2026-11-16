@@ -38,7 +38,7 @@ final class ComposedUnit
      */
     public function summary(): string
     {
-        $openings = [UnitConfiguration::WINDOW => 0, UnitConfiguration::DOOR => 0, UnitConfiguration::HATCH => 0];
+        $openings = [UnitConfiguration::WINDOW => 0, UnitConfiguration::SINGLE_WINDOW => 0, UnitConfiguration::DOOR => 0, UnitConfiguration::HATCH => 0];
 
         foreach (array_keys(UnitConfiguration::LEVELS) as $level) {
             foreach ($this->configuration[$level] ?? [] as $wall => $slots) {
@@ -57,6 +57,7 @@ final class ComposedUnit
         return implode(', ', array_filter([
             __('Wanden :colour', ['colour' => $colour('cladding')]),
             trans_choice(':count raam|:count ramen', $openings[UnitConfiguration::WINDOW]),
+            $openings[UnitConfiguration::SINGLE_WINDOW] > 0 ? trans_choice(':count enkel raam|:count enkele ramen', $openings[UnitConfiguration::SINGLE_WINDOW]) : null,
             trans_choice(':count deur|:count deuren', $openings[UnitConfiguration::DOOR]),
             $openings[UnitConfiguration::HATCH] > 0 ? trans_choice(':count uitgifteluik|:count uitgifteluiken', $openings[UnitConfiguration::HATCH]) : null,
             ($this->configuration['steps'] ?? false) ? __('opstapje') : null,

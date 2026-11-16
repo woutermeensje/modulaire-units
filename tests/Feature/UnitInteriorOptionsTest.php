@@ -85,6 +85,26 @@ class UnitInteriorOptionsTest extends TestCase
         $this->assertEqualsWithDelta(1.9, $hatch['right'], 0.001);
     }
 
+    public function test_a_single_window_is_the_standard_office_window_in_one_slot(): void
+    {
+        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'walls' => ['front' => ['single_window', 'empty', 'window', 'window', 'empty', 'single_window']]]);
+
+        $this->assertSame(['single_window', 'empty', 'window', 'window', 'empty', 'single_window'], $configuration['walls']['front'], 'A single window is not paired.');
+
+        [$first, $wide, $last] = UnitConfiguration::openings($configuration['walls']['front'], 6);
+        $this->assertSame(['single_window', 'window', 'single_window'], [$first['type'], $wide['type'], $last['type']]);
+        $this->assertEqualsWithDelta(0.945, $first['right'] - $first['left'], 0.001);
+        $this->assertEqualsWithDelta(1.2, $first['top'] - $first['bottom'], 0.001);
+        $this->assertEqualsWithDelta(UnitConfiguration::POST_CLEARANCE, $first['left'], 0.001, 'It keeps clear of the corner post.');
+        $this->assertEqualsWithDelta(6 - UnitConfiguration::POST_CLEARANCE, $last['right'], 0.001);
+
+        $this->assertStringContainsString('945 / 1200', (new FloorPlanRenderer)->render($configuration));
+        $this->assertStringContainsString('2 enkele ramen', (new ComposedUnit($configuration))->summary());
+        $this->assertSame('front', $this->items(UnitConfiguration::normalize([...$configuration, 'furniture' => ['desk' => 1]]))['walls:desk:0']['wall'], 'A desk stands at a single window too.');
+
+        $this->get(route('unit-composer.public'))->assertSee('Enkel raam (94,5 cm)');
+    }
+
     public function test_heating_and_air_conditioning_can_be_combined_in_every_unit(): void
     {
         $configuration = UnitConfiguration::normalize(['size' => '6x3', 'modules' => 2, 'floors' => 2, 'interior' => ['airco', 'heater']]);

@@ -206,6 +206,7 @@ class UnitRenderer
             $svg .= match ($type) {
                 UnitConfiguration::WINDOW => $this->polygon($rect($left, $right, $bottom, $top), $glass, 'stroke="'.$openingFrame.'" stroke-width="3" stroke-linejoin="round"')
                     .$this->polygon($rect($middle - 0.02, $middle + 0.02, $bottom, $top), $openingFrame),
+                UnitConfiguration::SINGLE_WINDOW => $this->polygon($rect($left, $right, $bottom, $top), $glass, 'stroke="'.$openingFrame.'" stroke-width="3" stroke-linejoin="round"'),
                 UnitConfiguration::DOOR => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($frame, 1.25), 'stroke="'.$openingFrame.'" stroke-width="3" stroke-linejoin="round"')
                     .$this->polygon($rect($right - 0.18, $right - 0.1, 1.05, 1.13), '#d9d9d9'),
                 UnitConfiguration::HATCH => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($glass, 0.9), 'stroke="'.$openingFrame.'" stroke-width="4" stroke-linejoin="round"')

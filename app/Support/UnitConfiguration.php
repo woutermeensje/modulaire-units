@@ -82,6 +82,9 @@ class UnitConfiguration
 
     public const WINDOW = 'window';
 
+    /** The standard Containex office window: one slot wide, at the same height as the wide window. */
+    public const SINGLE_WINDOW = 'single_window';
+
     public const DOOR = 'door';
 
     /** A wind- and watertight pass-through hatch, e.g. for handing out access passes; a counter usually stands under it. */
@@ -91,19 +94,22 @@ class UnitConfiguration
     public const SLOTS = [
         self::EMPTY => 'Dicht',
         self::WINDOW => 'Raam',
+        self::SINGLE_WINDOW => 'Enkel raam',
         self::DOOR => 'Deur',
         self::HATCH => 'Uitgifteluik',
     ];
 
     /**
      * Outside sizes in metres of the window and door frames, the height their bottom stands at from the bottom of the
-     * wall (the floor is at 0.15), and how many 1 m slots they take. A window covers two neighbouring slots.
+     * wall (the floor is at 0.15), and how many 1 m slots they take. A window covers two neighbouring slots, a single
+     * window (945 x 1200 mm, the standard Containex office window) one.
      * The hatch has an indicative size: its sill is just above counter height.
      *
      * @var array<string, array{width: float, height: float, bottom: float, slots: int}>
      */
     public const OPENING_SIZES = [
         self::WINDOW => ['width' => 1.8, 'height' => 1.2, 'bottom' => 0.9, 'slots' => 2],
+        self::SINGLE_WINDOW => ['width' => 0.945, 'height' => 1.2, 'bottom' => 0.9, 'slots' => 1],
         self::DOOR => ['width' => 0.875, 'height' => 2.125, 'bottom' => 0.15, 'slots' => 1],
         self::HATCH => ['width' => 0.8, 'height' => 0.7, 'bottom' => 1.2, 'slots' => 1],
     ];

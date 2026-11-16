@@ -515,6 +515,8 @@ function initConfigurator(root) {
     if (current === 'window') {
       const group = windowGroups(slots).find((candidate) => candidate.includes(slot));
       group?.forEach((part) => setSlot(part, 'empty'));
+      setSlot(slot, 'single_window');
+    } else if (current === 'single_window') {
       setSlot(slot, 'door');
     } else if (current === 'door') {
       setSlot(slot, 'hatch');
@@ -532,7 +534,7 @@ function initConfigurator(root) {
       if (segment === 3 && index % 3 === 1 && free(index - 1) && free(index + 1)) {
         [index - 1, index, index + 1].forEach((position) => setSlot(slots[position], 'window'));
       } else if (partner === undefined) {
-        setSlot(slot, 'door');
+        setSlot(slot, 'single_window');
       } else {
         setSlot(slot, 'window');
         setSlot(slots[partner], 'window');

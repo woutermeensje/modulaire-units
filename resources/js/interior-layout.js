@@ -34,11 +34,11 @@ const POINTS = ['socket', 'network'];
 const AVOID = {
   toilet: ['door'],
   kitchen: ['door', 'hatch'],
-  airco: ['door', 'window', 'hatch'],
+  airco: ['door', 'window', 'single_window', 'hatch'],
   heater: ['door', 'hatch'],
   counter: ['door'],
   worktop: ['door', 'hatch'],
-  cabinet: ['door', 'window', 'hatch'],
+  cabinet: ['door', 'window', 'single_window', 'hatch'],
   desk: ['door', 'hatch'],
   chair: ['door'],
   socket: ['door', 'hatch'],
@@ -48,6 +48,7 @@ const AVOID = {
 // Window and door sizes and placement, matching App\Support\UnitConfiguration::OPENING_SIZES and openings().
 export const OPENING_SIZES = {
   window: { width: 1.8, height: 1.2, bottom: 0.9, slots: 2 },
+  single_window: { width: 0.945, height: 1.2, bottom: 0.9, slots: 1 },
   door: { width: 0.875, height: 2.125, bottom: 0.15, slots: 1 },
   hatch: { width: 0.8, height: 0.7, bottom: 1.2, slots: 1 },
 };
@@ -408,8 +409,8 @@ export function interiorLayout(configuration, { length, depth }, level) {
       airco: () => onSideWall(id, 'airco', ['right', 'left'], walls, length, depth, centre, others) ?? againstWall(id, 'airco', 'right', centre, length, depth),
       heater: () => onSideWall(id, 'heater', ['left', 'right'], walls, length, depth, centre, others)
         ?? alongWalls(id, 'heater', ['left', 'right', 'back', 'front'], walls, length, depth, others),
-      counter: () => atOpening(id, 'counter', [...centres('hatch'), ...centres('window')], walls, length, depth, others),
-      desk: () => atOpening(id, 'desk', centres('window'), walls, length, depth, others),
+      counter: () => atOpening(id, 'counter', [...centres('hatch'), ...centres('window'), ...centres('single_window')], walls, length, depth, others),
+      desk: () => atOpening(id, 'desk', [...centres('window'), ...centres('single_window')], walls, length, depth, others),
       chair: () => chair(id, index, walls, length, depth, others),
       worktop: () => alongWalls(id, 'worktop', ['back', 'front', 'left', 'right'], walls, length, depth, others),
       cabinet: () => alongWalls(id, 'cabinet', ['back', 'left', 'right', 'front'], walls, length, depth, others),

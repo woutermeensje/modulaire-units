@@ -29,6 +29,8 @@ class UnitDesigner
         Drie aangrenzende "window"-vakken zijn één raam precies in het midden ervan; zo zet je een raam midden in een
         kopgevel van 3 meter: ["window", "window", "window"]. Laat tussen losse ramen minstens één vak "empty".
         Een deur (87,5 cm breed) beslaat één vak.
+        Een vak kan ook "single_window" zijn: een enkel, standaard kantoorraam van 94,5 cm breed dat één vak beslaat. Gebruik
+        het als er om een klein of smal raam gevraagd wordt, of waar voor een raam van 180 cm geen twee vakken vrij zijn.
         Een vak kan ook "hatch" zijn: een wind- en waterdicht uitgifteluik (80 cm breed), bijv. voor een portiersloge of
         het uitgeven van passen; een luik beslaat één vak en is geen raam.
         - front (voorzijde) is de lange zijde van de voorste unit, back (achterzijde) die van de achterste unit:

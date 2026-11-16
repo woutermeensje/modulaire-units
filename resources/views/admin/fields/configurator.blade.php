@@ -21,7 +21,7 @@
             $slotCounts[$size][$wall] = UnitConfiguration::slotCount($size, $wall);
         }
     }
-    $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::DOOR => 'ph-door', UnitConfiguration::HATCH => 'ph-storefront'];
+    $slotIcons = [UnitConfiguration::EMPTY => 'ph-square', UnitConfiguration::WINDOW => 'ph-app-window', UnitConfiguration::SINGLE_WINDOW => 'ph-browser', UnitConfiguration::DOOR => 'ph-door', UnitConfiguration::HATCH => 'ph-storefront'];
     $interiorOptions = [
         'airco' => ['icon' => 'ph-snowflake', 'help' => __('Airco-unit aan de wand, voor koelen en verwarmen')],
         'heater' => ['icon' => 'ph-thermometer-hot', 'help' => __('Elektrische verwarming laag aan de wand')],
@@ -168,7 +168,7 @@
 
         <div class="unit-configurator__levels" data-configurator-body @unless ($isConfigured) hidden @endunless>
             <ul class="unit-plan-legend" aria-label="{{ __('Legenda') }}">
-                @foreach ([UnitConfiguration::EMPTY => 'Dicht', UnitConfiguration::WINDOW => 'Raam (180 cm)', UnitConfiguration::DOOR => 'Deur (87,5 cm)', UnitConfiguration::HATCH => 'Uitgifteluik (80 cm, wind- en waterdicht)'] as $slot => $legendLabel)
+                @foreach ([UnitConfiguration::EMPTY => 'Dicht', UnitConfiguration::WINDOW => 'Raam (180 cm)', UnitConfiguration::SINGLE_WINDOW => 'Enkel raam (94,5 cm)', UnitConfiguration::DOOR => 'Deur (87,5 cm)', UnitConfiguration::HATCH => 'Uitgifteluik (80 cm, wind- en waterdicht)'] as $slot => $legendLabel)
                     <li class="unit-plan-legend__item">
                         <span class="unit-plan-legend__icon unit-slot--{{ $slot }}"><i class="ph {{ $slotIcons[$slot] }}"></i></span>
                         {{ __($legendLabel) }}

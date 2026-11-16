@@ -204,7 +204,7 @@ function createMaterials(colors, ribs) {
   };
 }
 
-function buildWindow({ left, right, bottom, top }, materials) {
+function buildWindow({ type, left, right, bottom, top }, materials) {
   const width = right - left;
   const height = top - bottom;
   const centerX = (left + right) / 2;
@@ -217,8 +217,11 @@ function buildWindow({ left, right, bottom, top }, materials) {
     box(0.05, height, 0.08, right - 0.025, centerY, -0.02, materials.openingFrame),
     box(width, 0.05, 0.08, centerX, bottom + 0.025, -0.02, materials.openingFrame),
     box(width, 0.05, 0.08, centerX, top - 0.025, -0.02, materials.openingFrame),
-    box(0.04, height, 0.06, centerX, centerY, -0.02, materials.openingFrame),
   );
+  // A wide window has a mullion in the middle; a single window is one pane.
+  if (type === 'window') {
+    group.add(box(0.04, height, 0.06, centerX, centerY, -0.02, materials.openingFrame));
+  }
 
   return group;
 }
