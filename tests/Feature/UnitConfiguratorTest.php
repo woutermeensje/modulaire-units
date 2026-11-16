@@ -514,7 +514,8 @@ class UnitConfiguratorTest extends TestCase
     {
         $this->assertSame(['Wit', 'Antraciet', 'Blauw', 'Grijs'], array_values(UnitConfiguration::COLORS));
         $this->assertSame('#0e4c92', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#1a5aa0']])['colors']['cladding']);
-        $this->assertSame('#777c7e', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#808080']])['colors']['cladding']);
+        $this->assertSame('#c5c7c4', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#c0c0c0']])['colors']['cladding']);
+        $this->assertSame('#c5c7c4', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#777c7e']])['colors']['cladding'], 'The old grey becomes the new one.');
 
         $configuration = UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#3d4a52', 'frame' => '#2255aa']]);
 

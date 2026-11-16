@@ -38,6 +38,9 @@ function initConfigurator(root) {
   const floors = () => Number(floorsSelect.value) || 1;
   const slotCount = (size, wall) => counts[size][wall] * (SIDE_WALLS.includes(wall) ? modules() : 1);
 
+  // Only in the quote composer (account/offerte-samenstellen): the use of the unit and a step in front of the doors.
+  const usageSelect = root.querySelector('[data-configurator-usage]');
+  const stepsToggle = root.querySelector('[data-configurator-steps]');
   const interiorInputs = [...root.querySelectorAll('[name="configuration[interior][]"]')];
   const amountInputs = [...root.querySelectorAll('[data-configurator-amount]')];
   const tentativeInputs = [...root.querySelectorAll('[name="configuration[tentative][]"]')];
@@ -93,9 +96,11 @@ function initConfigurator(root) {
       colors: { cladding: color('cladding'), frame: color('cladding') },
       background: field('background'),
       ...(interior.length ? { interior } : {}),
+      ...(usageSelect?.selectedOptions.length ? { usage: [...usageSelect.selectedOptions].map((option) => option.value) } : {}),
       ...(Object.keys(furniture).length ? { furniture } : {}),
       ...(Object.keys(connections).length ? { connections } : {}),
       ...(tentative.length ? { tentative } : {}),
+      ...(stepsToggle?.checked ? { steps: true } : {}),
       ...(Object.keys(positions).length ? { positions } : {}),
     };
   };
@@ -279,7 +284,9 @@ function initConfigurator(root) {
       input.disabled = !isChosen;
       input.closest('[data-tentative-for]').hidden = !isChosen;
     });
-    tentativeBox.hidden = !sizeSelect.value || chosen.size === 0;
+    if (tentativeBox) {
+      tentativeBox.hidden = !sizeSelect.value || chosen.size === 0;
+    }
   };
 
   // The interior on the floor of the top view: every item as a block that can be dragged, or moved with the arrow
@@ -631,6 +638,9 @@ function initConfigurator(root) {
       const [, group, item] = input.name.match(/^configuration\[(\w+)\]\[(\w+)\]$/);
       setAmount(input, configuration[group]?.[item] ?? 0);
     });
+    if (stepsToggle) {
+      stepsToggle.checked = configuration.steps ?? false;
+    }
     updateTentative();
     tentativeInputs.forEach((input) => { input.checked = (configuration.tentative ?? []).includes(input.value); });
     clearPositions();
@@ -744,6 +754,11 @@ function initConfigurator(root) {
     refreshPreview();
   }));
   tentativeInputs.forEach((input) => input.addEventListener('change', refreshPreview));
+  stepsToggle?.addEventListener('change', refreshPreview);
+  usageSelect?.addEventListener('change', () => {
+    updateShareUrl();
+    resetQuote();
+  });
 
   amountInputs.forEach((input) => {
     input.addEventListener('change', () => {

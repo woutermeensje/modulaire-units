@@ -50,7 +50,7 @@ class UnitDesigner
         Een verdieping heeft voor de trap minstens één deur nodig.
 
         Kleuren zijn hexcodes: cladding is de kleur van de wanden; het stalen frame krijgt automatisch dezelfde kleur en de
-        kozijnen zijn altijd wit. Er zijn vier kleuren: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw) en "#777c7e" (grijs).
+        kozijnen zijn altijd wit. Er zijn vier kleuren: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw) en "#c5c7c4" (lichtgrijs).
         Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
         interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "heater"
         (elektrische verwarming laag aan de wand in elke unit; te combineren met airco), "toilet" (toiletruimte met fonteintje)

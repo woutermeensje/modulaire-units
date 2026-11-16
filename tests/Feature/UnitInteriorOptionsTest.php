@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Submission;
+use App\Models\User;
 use App\Support\ComposedUnit;
 use App\Support\FloorPlanRenderer;
 use App\Support\InteriorLayout;
@@ -245,9 +246,9 @@ class UnitInteriorOptionsTest extends TestCase
         $this->assertStringNotContainsString('#b3b1ab', $withoutStep);
     }
 
-    public function test_the_composer_offers_the_new_options_but_no_furniture_or_connections(): void
+    public function test_the_account_composer_offers_the_new_options_but_no_furniture_or_connections(): void
     {
-        $this->get(route('unit-composer.public'))
+        $this->actingAs(User::factory()->create())->get(route('unit-composer'))
             ->assertOk()
             ->assertSee('name="configuration[interior][]" value="heater"', false)
             ->assertDontSee('name="configuration[furniture][counter]"', false)

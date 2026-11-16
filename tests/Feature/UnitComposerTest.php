@@ -77,9 +77,7 @@ class UnitComposerTest extends TestCase
             ->assertSee('aria-label="Legenda"', false)
             ->assertSee('Raam (180 cm)')
             ->assertSee('Deur (87,5 cm)')
-            ->assertSee('name="configuration[interior][]" value="airco"', false)
-            ->assertSee('name="configuration[interior][]" value="toilet"', false)
-            ->assertSee('name="configuration[interior][]" value="kitchen"', false)
+            ->assertDontSee('name="configuration[interior][]"', false)
             ->assertSee('data-configurator-view="interior"', false)
             ->assertDontSee('id="configuration_background"', false);
 
@@ -168,5 +166,21 @@ class UnitComposerTest extends TestCase
         $this->postJson(route('unit-composer.quote'), ['configuration' => ['size' => '3x3', 'usage' => ['kantoor', 'kantine']]])->assertOk();
 
         $this->get('/mijn-offerte/')->assertSee('gebruik: kantoor, kantine');
+    }
+
+    public function test_the_public_composer_leaves_the_interior_out_for_now(): void
+    {
+        $encoded = UnitConfiguration::toShareCode(UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['airco', 'toilet'], 'tentative' => ['airco']]));
+
+        $this->get('/unit-samensteller/?'.UnitConfiguration::SHARE_KEY.'='.$encoded)
+            ->assertOk()
+            ->assertDontSee('name="configuration[interior][]"', false)
+            ->assertDontSee('data-configurator-tentative', false)
+            ->assertDontSee('Klimaat &amp; verwarming', false)
+            ->assertDontSee('Sanitair &amp; keuken', false);
+
+        $this->actingAs(User::factory()->create())->get(route('unit-composer'))
+            ->assertOk()
+            ->assertSee('name="configuration[interior][]"', false);
     }
 }

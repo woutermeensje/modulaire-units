@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\AccountController;
 use App\Http\Controllers\Portal\ComposedUnitController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\QuoteComposerController;
 use App\Http\Controllers\Portal\UnitComposerController as PortalUnitComposerController;
 use App\Http\Controllers\Portal\UsedListingController;
 use App\Http\Middleware\EnsureUserIsAdmin;
@@ -49,6 +50,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('account/unit-samenstellen', PortalUnitComposerController::class)->name('unit-composer');
     Route::post('account/unit-samenstellen/voorbeeld', UnitPreviewController::class)->middleware('throttle:120,1')->name('unit-composer.preview');
     Route::post('account/unit-samenstellen', [ComposedUnitController::class, 'store'])->middleware(EnsureUserIsAdmin::class)->name('unit-composer.store');
+    Route::get('account/offerte-samenstellen', QuoteComposerController::class)->middleware(EnsureUserIsAdmin::class)->name('quote-composer');
     Route::patch('account/units/{unit}/status', [ComposedUnitController::class, 'updateStatus'])->middleware(EnsureUserIsAdmin::class)->name('composed-units.status');
 });
 

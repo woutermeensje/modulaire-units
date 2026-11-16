@@ -63,6 +63,7 @@
                     'previewUrl' => $previewUrl,
                     'designUrl' => $designUrl ?? null,
                     'quoteUrl' => $quoteUrl ?? null,
+                    'quoteExtras' => $quoteExtras ?? false,
                 ])
             </section>
         @endif

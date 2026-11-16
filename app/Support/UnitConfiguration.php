@@ -139,7 +139,7 @@ class UnitConfiguration
     ];
 
     /**
-     * The colours the walls can have: hex code => name (white RAL 9010, anthracite RAL 7016, blue RAL 5010 and a mid grey).
+     * The colours the walls can have: hex code => name (white RAL 9010, anthracite RAL 7016, blue RAL 5010 and a light grey).
      *
      * @var array<string, string>
      */
@@ -147,7 +147,17 @@ class UnitConfiguration
         '#f2f0e8' => 'Wit',
         '#383e42' => 'Antraciet',
         '#0e4c92' => 'Blauw',
-        '#777c7e' => 'Grijs',
+        '#c5c7c4' => 'Grijs',
+    ];
+
+    /**
+     * Colours that were replaced, so units and share links that still have them keep the colour they were meant to have:
+     * old hex code => current hex code. The grey was a darker mid grey until November 2026.
+     *
+     * @var array<string, string>
+     */
+    public const REPLACED_COLORS = [
+        '#777c7e' => '#c5c7c4',
     ];
 
     /**
@@ -660,6 +670,7 @@ class UnitConfiguration
      */
     private static function nearestColor(string $hex): string
     {
+        $hex = self::REPLACED_COLORS[strtolower($hex)] ?? $hex;
         $channels = fn (string $hex): array => array_map('hexdec', str_split(ltrim($hex, '#'), 2));
         $target = $channels($hex);
 

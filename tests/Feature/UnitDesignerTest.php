@@ -44,7 +44,7 @@ class UnitDesignerTest extends TestCase
                 'left' => ['window', 'empty', 'empty'],
                 'right' => ['empty', 'empty', 'empty'],
             ],
-            'colors' => ['cladding' => '#C9CDCF', 'frame' => 'zwart'],
+            'colors' => ['cladding' => '#EDEBE3', 'frame' => 'zwart'],
             'background' => 'site',
             'title' => ' Kantoorunit 6x3 ',
             'meta_description' => str_repeat('a', 200),
