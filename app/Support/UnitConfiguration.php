@@ -117,6 +117,16 @@ class UnitConfiguration
     /** Clear opening in metres of the door frame. */
     public const DOOR_CLEAR = ['width' => 0.811, 'height' => 2.093];
 
+    /**
+     * Walls with fixed places instead of free slots, by the number of slots per unit: the long walls of a 6 m unit have
+     * two places, each centred 1 m from the middle of the wall, that each hold one opening (or nothing). A place is
+     * [leader, follower]: the slot that shows the choice in the configurator and the slot next to it on the side of the
+     * middle. Both get the same value; the slots at the wall ends stay empty.
+     *
+     * @var array<int, list<array{int, int}>>
+     */
+    public const PLACES = [6 => [[1, 2], [4, 3]]];
+
     /** Distance in metres openings keep from wall ends and from seams between coupled units, where the frame posts stand. */
     public const POST_CLEARANCE = 0.12;
 
@@ -394,10 +404,12 @@ class UnitConfiguration
         foreach (array_slice(array_keys(self::LEVELS), 0, $floors) as $level) {
             foreach (array_keys(self::WALLS) as $wall) {
                 $slots = array_values((array) ($input[$level][$wall] ?? []));
-                $levels[$level][$wall] = self::pairWindows(array_map(
+                $slots = array_map(
                     fn (int $index): string => self::pick($slots[$index] ?? null, self::SLOTS, self::EMPTY),
                     range(0, self::slotCount($size, $wall, $modules) - 1),
-                ), self::slotCount($size, $wall));
+                );
+                $segment = self::slotCount($size, $wall);
+                $levels[$level][$wall] = self::places($segment) === [] ? self::pairWindows($slots, $segment) : self::fillPlaces($slots, $segment);
             }
         }
 
@@ -488,6 +500,7 @@ class UnitConfiguration
      *
      * Neighbouring window slots form windows of two slots, from left to right; when a run of window slots has an odd
      * length its last window takes three slots, so a window of three slots sits centred on the middle one.
+     * A wall with fixed places (see PLACES) has one opening centred on each place that holds one.
      *
      * @param  list<string>  $slots  Normalized slots of one wall.
      * @param  int  $segment  Slots per unit along this wall, see slotCount() for a single unit.
@@ -496,6 +509,20 @@ class UnitConfiguration
     public static function openings(array $slots, int $segment): array
     {
         $openings = [];
+
+        foreach (self::places($segment) as [$leader, $follower]) {
+            $size = self::OPENING_SIZES[$slots[$leader] ?? self::EMPTY] ?? null;
+            if ($size !== null) {
+                $left = ($leader + $follower + 1) / 2 - $size['width'] / 2;
+                $left = min(max($left, self::POST_CLEARANCE), $segment - self::POST_CLEARANCE - $size['width']);
+                $openings[] = ['type' => $slots[$leader], 'left' => $left, 'right' => $left + $size['width'], 'bottom' => $size['bottom'], 'top' => $size['bottom'] + $size['height']];
+            }
+        }
+
+        if (self::places($segment) !== []) {
+            return $openings;
+        }
+
         $index = 0;
 
         while ($index < count($slots)) {
@@ -548,6 +575,39 @@ class UnitConfiguration
         }
 
         return $spans;
+    }
+
+    /**
+     * The fixed places of a wall, see PLACES; empty when its slots can be filled freely.
+     *
+     * @return list<array{int, int}>
+     */
+    public static function places(int $segment): array
+    {
+        return self::PLACES[$segment] ?? [];
+    }
+
+    /**
+     * Put one opening in each fixed place of a wall: the first one found in the place itself or in the slot at the wall
+     * end next to it, so older layouts with free slots keep their openings as well as they can.
+     *
+     * @param  list<string>  $slots
+     * @return list<string>
+     */
+    private static function fillPlaces(array $slots, int $segment): array
+    {
+        $filled = array_fill(0, count($slots), self::EMPTY);
+
+        foreach (self::places($segment) as [$leader, $follower]) {
+            $outer = $leader < $follower ? $leader - 1 : $leader + 1;
+            $type = collect([$leader, $follower, $outer])
+                ->map(fn (int $index): string => $slots[$index] ?? self::EMPTY)
+                ->first(fn (string $slot): bool => $slot !== self::EMPTY, self::EMPTY);
+            $filled[$leader] = $type;
+            $filled[$follower] = $type;
+        }
+
+        return $filled;
     }
 
     /**

@@ -31,6 +31,10 @@ class UnitDesigner
         Een deur (87,5 cm breed) beslaat één vak.
         Een vak kan ook "single_window" zijn: een enkel, standaard kantoorraam van 94,5 cm breed dat één vak beslaat. Gebruik
         het als er om een klein of smal raam gevraagd wordt, of waar voor een raam van 180 cm geen twee vakken vrij zijn.
+        De lange gevels (front en back) van een 6x3 hebben geen vrije vakken maar twee vaste plekken, elk 1 meter uit het
+        midden: vak 2+3 en vak 4+5 (van links). Elke plek heeft één opening of niets; geef beide vakken van een plek dezelfde
+        waarde en laat vak 1 en 6 "empty". Bijv. twee ramen: ["empty", "window", "window", "window", "window", "empty"];
+        een enkel raam en een deur: ["empty", "single_window", "single_window", "door", "door", "empty"].
         Een vak kan ook "hatch" zijn: een wind- en waterdicht uitgifteluik (80 cm breed), bijv. voor een portiersloge of
         het uitgeven van passen; een luik beslaat één vak en is geen raam.
         - front (voorzijde) is de lange zijde van de voorste unit, back (achterzijde) die van de achterste unit:

@@ -39,7 +39,7 @@ class UnitDesignerTest extends TestCase
         $this->fakeClaude([
             'size' => '6x3',
             'walls' => [
-                'front' => ['window', 'window', 'door', 'empty', 'window', 'window', 'window'],
+                'front' => ['empty', 'window', 'window', 'door', 'door', 'empty', 'window'],
                 'back' => ['empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
                 'left' => ['window', 'empty', 'empty'],
                 'right' => ['empty', 'empty', 'empty'],
@@ -52,7 +52,7 @@ class UnitDesignerTest extends TestCase
 
         $design = app(UnitDesigner::class)->design('6x3 kantoor, lichtgrijs', UnitConfiguration::defaults('3x3'));
 
-        $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $design['configuration']['walls']['front']);
+        $this->assertSame(['empty', 'window', 'window', 'door', 'door', 'empty'], $design['configuration']['walls']['front']);
         $this->assertSame('#f2f0e8', $design['configuration']['colors']['cladding']);
         $this->assertSame('#f2f0e8', $design['configuration']['colors']['frame'], 'The frame has the colour of the walls.');
         $this->assertSame('Kantoorunit 6x3', $design['title']);

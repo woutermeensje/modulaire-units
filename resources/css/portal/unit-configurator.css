@@ -303,6 +303,12 @@
   color: var(--color-secondary-strong);
 }
 
+/* On a wall with fixed places only the block of each place shows; the other slots keep their room but stay invisible. */
+.unit-slot[data-place="spacer"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* The slots of one window are drawn as one button, joined on the sides where they meet in the plan. */
 .unit-plan__wall--front .unit-slot--pair-start,
 .unit-plan__wall--front .unit-slot--pair-middle { border-right-style: dashed; border-top-right-radius: 0; border-bottom-right-radius: 0; }

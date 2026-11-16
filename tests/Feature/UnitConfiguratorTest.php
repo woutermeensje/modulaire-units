@@ -37,7 +37,7 @@ class UnitConfiguratorTest extends TestCase
             'configuration' => [
                 'size' => '6x3',
                 'walls' => [
-                    'front' => ['window', 'window', 'door', 'empty', 'window', 'window'],
+                    'front' => ['empty', 'window', 'window', 'door', 'door', 'empty'],
                     'back' => ['empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
                     'left' => ['empty', 'window', 'empty'],
                     'right' => ['empty', 'empty', 'empty'],
@@ -49,7 +49,7 @@ class UnitConfiguratorTest extends TestCase
 
         $unit = Unit::query()->where('slug', 'kantoorunit-6x3')->sole();
         $this->assertSame('6x3', $unit->configuration['size']);
-        $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $unit->configuration['walls']['front']);
+        $this->assertSame(['empty', 'window', 'window', 'door', 'door', 'empty'], $unit->configuration['walls']['front']);
         $this->assertSame(['empty', 'window', 'window'], $unit->configuration['walls']['left'], 'A window takes the free slot next to it.');
         $this->assertSame('#0e4c92', $unit->configuration['colors']['cladding']);
         $this->assertSame('#0e4c92', $unit->configuration['colors']['frame'], 'The frame follows the walls, whatever was sent.');
@@ -116,7 +116,7 @@ class UnitConfiguratorTest extends TestCase
         $configuration = UnitConfiguration::normalize([
             'size' => '6x3',
             'walls' => [
-                'front' => ['window', 'window', 'door', 'empty', 'window', 'window'],
+                'front' => ['empty', 'window', 'window', 'door', 'door', 'empty'],
                 'back' => ['door', 'empty', 'empty', 'empty', 'empty', 'empty'],
                 'left' => ['window', 'window', 'empty'],
                 'right' => ['empty', 'empty', 'empty'],
@@ -125,8 +125,8 @@ class UnitConfiguratorTest extends TestCase
 
         $svg = (new UnitRenderer)->render($configuration);
 
-        $this->assertSame(3, substr_count($svg, 'fill="#c4def0"') + substr_count($svg, 'fill="#9fbfd2"'));
-        $this->assertSame(2, substr_count($svg, 'fill="#d9d9d9"'));
+        $this->assertSame(2, substr_count($svg, 'fill="#c4def0"') + substr_count($svg, 'fill="#9fbfd2"'));
+        $this->assertSame(2, substr_count($svg, 'fill="#d9d9d9"'), 'The door in the corner of the back wall moves to its first place.');
     }
 
     public function test_renders_become_the_featured_image_of_a_unit_without_photo(): void
@@ -389,14 +389,14 @@ class UnitConfiguratorTest extends TestCase
         ]);
 
         $this->assertSame(2, $stacked['floors']);
-        $this->assertSame('door', $stacked['walls']['front'][0]);
-        $this->assertSame(array_fill(0, 6, 'window'), $stacked['upper_walls']['front']);
+        $this->assertSame('door', $stacked['walls']['front'][1]);
+        $this->assertSame(['empty', 'window', 'window', 'window', 'window', 'empty'], $stacked['upper_walls']['front']);
         $this->assertCount(12, $stacked['upper_walls']['left']);
         $this->assertSame('8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)', UnitConfiguration::label($stacked));
         $this->assertSame(UnitConfiguration::MAX_FLOORS, UnitConfiguration::normalize(['size' => '3x3', 'floors' => 9])['floors']);
 
         $svg = (new UnitRenderer)->renderView($stacked, 'front');
-        $this->assertSame(3, substr_count($svg, 'fill="#c4def0"'), 'Six window slots make three windows of 1.8 m.');
+        $this->assertSame(2, substr_count($svg, 'fill="#c4def0"'), 'The long wall has two places, each with a window of 1.8 m.');
         $this->assertStringContainsString('aria-label="8 units van 6 x 3 meter in 2 lagen (6 x 12 meter)"', $svg);
     }
 

@@ -93,7 +93,7 @@ class QuoteFlowTest extends TestCase
             ->assertSee('Eigen samenstelling: 2 gekoppelde units van 6 x 3 meter (6 x 6 meter)')
             ->assertSee('1 raam, 1 deur')
             ->assertSee('value="2"', false)
-            ->assertSee('samenstelling='.$share, false)
+            ->assertSee('samenstelling='.urlencode($share), false)
             ->assertSee('class="mh-qp__thumb mh-qp__thumb--composition"', false)
             ->assertSee('src="data:image/svg+xml;base64,', false);
 
@@ -104,7 +104,7 @@ class QuoteFlowTest extends TestCase
         $this->assertSame('samenstelling', $item['type']);
         $this->assertSame(2, $item['quantity']);
         $this->assertStringContainsString('Eigen samenstelling: 2 gekoppelde units', $item['title']);
-        $this->assertStringContainsString('/unit-samensteller?samenstelling='.$share, $item['url']);
+        $this->assertStringContainsString('/unit-samensteller?samenstelling='.urlencode($share), $item['url']);
     }
 
     public function test_compositions_can_be_updated_and_removed(): void

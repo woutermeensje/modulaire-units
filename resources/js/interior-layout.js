@@ -54,6 +54,10 @@ export const OPENING_SIZES = {
 };
 export const POST_CLEARANCE = 0.12;
 
+// Walls with two fixed places instead of free slots, matching App\Support\UnitConfiguration::PLACES: [leader, follower].
+export const PLACES = { 6: [[1, 2], [4, 3]] };
+export const places = (segment) => PLACES[segment] ?? [];
+
 const SOCKET_STEP = 0.5;
 const EPSILON = 0.001;
 const W = INTERIOR_WALL;
@@ -65,6 +69,22 @@ const isFrontOrBack = (wall) => wall === 'front' || wall === 'back';
  */
 export function openings(slots, segment) {
   const result = [];
+
+  if (places(segment).length) {
+    places(segment).forEach(([leader, follower]) => {
+      const type = slots[leader];
+      const size = OPENING_SIZES[type];
+      if (!size) {
+        return;
+      }
+      let left = (leader + follower + 1) / 2 - size.width / 2;
+      left = Math.min(Math.max(left, POST_CLEARANCE), segment - POST_CLEARANCE - size.width);
+      result.push({ type, left, right: left + size.width, bottom: size.bottom, top: size.bottom + size.height });
+    });
+
+    return result;
+  }
+
   let index = 0;
 
   while (index < slots.length) {

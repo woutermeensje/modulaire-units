@@ -17,7 +17,7 @@ class UnitInteriorOptionsTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * The request of Heras B.V.: a 6x3 gatehouse in anthracite with four windows, a door and a wind- and watertight
+     * The request of Heras B.V.: a 6x3 gatehouse in anthracite with three windows, a door and a wind- and watertight
      * hatch for handing out access passes, heating and air conditioning, a counter with a chair, sockets, a network
      * point, a step at the door and a toilet that is not certain yet.
      *
@@ -27,7 +27,7 @@ class UnitInteriorOptionsTest extends TestCase
         'size' => '6x3',
         'modules' => 1,
         'walls' => [
-            'front' => ['window', 'window', 'hatch', 'empty', 'window', 'window'],
+            'front' => ['empty', 'window', 'window', 'hatch', 'hatch', 'empty'],
             'back' => ['empty', 'window', 'window', 'window', 'window', 'empty'],
             'right' => ['empty', 'door', 'empty'],
             'left' => ['empty', 'empty', 'empty'],
@@ -85,18 +85,31 @@ class UnitInteriorOptionsTest extends TestCase
         $this->assertEqualsWithDelta(1.9, $hatch['right'], 0.001);
     }
 
-    public function test_a_single_window_is_the_standard_office_window_in_one_slot(): void
+    public function test_the_long_walls_of_a_6x3_have_two_places_one_metre_from_the_middle(): void
     {
-        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'walls' => ['front' => ['single_window', 'empty', 'window', 'window', 'empty', 'single_window']]]);
+        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'walls' => [
+            'front' => ['empty', 'single_window', 'single_window', 'window', 'window', 'empty'],
+            'back' => ['window', 'window', 'door', 'empty', 'empty', 'hatch'],
+        ]]);
 
-        $this->assertSame(['single_window', 'empty', 'window', 'window', 'empty', 'single_window'], $configuration['walls']['front'], 'A single window is not paired.');
+        $this->assertSame(['empty', 'single_window', 'single_window', 'window', 'window', 'empty'], $configuration['walls']['front']);
+        $this->assertSame(['empty', 'window', 'window', 'hatch', 'hatch', 'empty'], $configuration['walls']['back'], 'An older free layout keeps the opening nearest each place.');
 
-        [$first, $wide, $last] = UnitConfiguration::openings($configuration['walls']['front'], 6);
-        $this->assertSame(['single_window', 'window', 'single_window'], [$first['type'], $wide['type'], $last['type']]);
-        $this->assertEqualsWithDelta(0.945, $first['right'] - $first['left'], 0.001);
-        $this->assertEqualsWithDelta(1.2, $first['top'] - $first['bottom'], 0.001);
-        $this->assertEqualsWithDelta(UnitConfiguration::POST_CLEARANCE, $first['left'], 0.001, 'It keeps clear of the corner post.');
-        $this->assertEqualsWithDelta(6 - UnitConfiguration::POST_CLEARANCE, $last['right'], 0.001);
+        [$single, $wide] = UnitConfiguration::openings($configuration['walls']['front'], 6);
+        $this->assertSame(['single_window', 'window'], [$single['type'], $wide['type']]);
+        $this->assertEqualsWithDelta(2.0, ($single['left'] + $single['right']) / 2, 0.001, 'Each place is centred 1 m from the middle of the wall.');
+        $this->assertEqualsWithDelta(4.0, ($wide['left'] + $wide['right']) / 2, 0.001);
+        $this->assertEqualsWithDelta(0.945, $single['right'] - $single['left'], 0.001);
+        $this->assertEqualsWithDelta(1.2, $single['top'] - $single['bottom'], 0.001);
+
+        $this->assertSame([], UnitConfiguration::places(3), 'Short walls and 3x3 units keep their free slots.');
+        $this->assertSame(['single_window', 'empty', 'empty'], UnitConfiguration::normalize(['size' => '6x3', 'walls' => ['left' => ['single_window', 'empty', 'empty']]])['walls']['left'], 'A single window is not paired.');
+        $this->assertSame(['empty', 'empty', 'empty', 'empty', 'empty', 'empty'], UnitConfiguration::normalize(['size' => '6x3'])['walls']['front']);
+    }
+
+    public function test_a_single_window_is_the_standard_office_window(): void
+    {
+        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'walls' => ['front' => ['empty', 'single_window', 'single_window', 'single_window', 'single_window', 'empty']]]);
 
         $this->assertStringContainsString('945 / 1200', (new FloorPlanRenderer)->render($configuration));
         $this->assertStringContainsString('2 enkele ramen', (new ComposedUnit($configuration))->summary());
@@ -122,7 +135,7 @@ class UnitInteriorOptionsTest extends TestCase
         $chair = $items['walls:chair:0'];
 
         $this->assertSame('front', $counter['wall']);
-        $this->assertEqualsWithDelta(2.5, ($counter['x1'] + $counter['x2']) / 2, 0.001, 'The hatch in the third slot of the front wall is centred at 2.5 m.');
+        $this->assertEqualsWithDelta(4.0, ($counter['x1'] + $counter['x2']) / 2, 0.001, 'The hatch in the second place of the front wall is centred at 4 m.');
         $this->assertSame('front', $chair['wall']);
         $this->assertLessThan($counter['y1'], $chair['y1'], 'The chair stands on the room side of the counter.');
     }
@@ -131,11 +144,11 @@ class UnitInteriorOptionsTest extends TestCase
     {
         $items = $this->items(UnitConfiguration::normalize([
             ...self::HERAS,
-            'walls' => [...self::HERAS['walls'], 'front' => ['hatch', 'window', 'window', 'window', 'window', 'empty']],
+            'walls' => [...self::HERAS['walls'], 'front' => ['empty', 'window', 'window', 'window', 'window', 'empty'], 'left' => ['empty', 'hatch', 'empty']],
+            'interior' => ['airco', 'heater'],
         ]));
 
-        $this->assertSame('front', $items['walls:counter:0']['wall']);
-        $this->assertEqualsWithDelta(0.1, $items['walls:counter:0']['x1'], 0.001, 'The hatch is in the corner, so the counter stands against the left wall.');
+        $this->assertSame('left', $items['walls:counter:0']['wall'], 'The counter stands inside the hatch in the left wall.');
         $this->assertNotSame('left', $items['walls:heater:0']['wall'], 'The heater keeps clear of the counter.');
     }
 
@@ -147,9 +160,9 @@ class UnitInteriorOptionsTest extends TestCase
         ]));
 
         $this->assertSame('front', $items['walls:desk:0']['wall']);
-        $this->assertEqualsWithDelta(1.02, ($items['walls:desk:0']['x1'] + $items['walls:desk:0']['x2']) / 2, 0.001, 'The desk takes the first window, clear of the corner post.');
-        $this->assertEqualsWithDelta(1.02, ($items['walls:chair:0']['x1'] + $items['walls:chair:0']['x2']) / 2, 0.001);
-        $this->assertEqualsWithDelta(2.5, ($items['walls:chair:1']['x1'] + $items['walls:chair:1']['x2']) / 2, 0.001);
+        $this->assertEqualsWithDelta(2.0, ($items['walls:desk:0']['x1'] + $items['walls:desk:0']['x2']) / 2, 0.001, 'The desk takes the window in the first place.');
+        $this->assertEqualsWithDelta(2.0, ($items['walls:chair:0']['x1'] + $items['walls:chair:0']['x2']) / 2, 0.001);
+        $this->assertEqualsWithDelta(4.0, ($items['walls:chair:1']['x1'] + $items['walls:chair:1']['x2']) / 2, 0.001);
     }
 
     public function test_sockets_stay_clear_of_doors_and_the_toilet(): void
@@ -193,9 +206,9 @@ class UnitInteriorOptionsTest extends TestCase
 
     public function test_a_dragged_chair_does_not_push_the_counter_away_from_the_hatch(): void
     {
-        $items = $this->items(UnitConfiguration::normalize([...self::HERAS, 'positions' => ['walls:chair:0' => ['x' => 2.5, 'y' => 2.3]]]));
+        $items = $this->items(UnitConfiguration::normalize([...self::HERAS, 'positions' => ['walls:chair:0' => ['x' => 4.0, 'y' => 2.3]]]));
 
-        $this->assertEqualsWithDelta(2.5, ($items['walls:counter:0']['x1'] + $items['walls:counter:0']['x2']) / 2, 0.001);
+        $this->assertEqualsWithDelta(4.0, ($items['walls:counter:0']['x1'] + $items['walls:counter:0']['x2']) / 2, 0.001);
     }
 
     public function test_dragged_positions_are_kept_within_the_unit(): void
@@ -276,7 +289,7 @@ class UnitInteriorOptionsTest extends TestCase
         $item = Submission::query()->sole()->items[0];
         $this->assertSame(ComposedUnit::TYPE, $item['type']);
         $this->assertStringContainsString('Modulaire unit van 6 x 3 meter', $item['title']);
-        $this->assertStringContainsString('Wanden antraciet, 4 ramen, 1 deur, 1 uitgifteluik, opstapje', $item['title']);
+        $this->assertStringContainsString('Wanden antraciet, 3 ramen, 1 deur, 1 uitgifteluik, opstapje', $item['title']);
         $this->assertStringContainsString('inrichting: airco, verwarming, sanitair (optioneel)', $item['title']);
         $this->assertStringContainsString('meubilair: 1× bureaustoel, 1× uitgiftebalie', $item['title']);
         $this->assertStringContainsString('elektra: 4× wandcontactdoos, 1× netwerkaansluiting (utp)', $item['title']);

@@ -1,5 +1,5 @@
 import { windowSpans } from '../window-spans';
-import { interiorLayout, plannedItems } from '../interior-layout';
+import { interiorLayout, plannedItems, places } from '../interior-layout';
 import { setSelectValue } from './search-select';
 import { t } from '../site/i18n';
 
@@ -465,6 +465,9 @@ function initConfigurator(root) {
   const windowGroups = (slots) => {
     const groups = [];
     const segment = slots.length ? segmentOf(slots[0]) : 1;
+    if (places(segment).length) {
+      return groups;
+    }
     let index = 0;
 
     while (index < slots.length) {
@@ -490,7 +493,52 @@ function initConfigurator(root) {
 
     return groups;
   };
+  // A wall with fixed places (the long walls of a 6 m unit) only shows one block per place; the other slots stay
+  // invisible but keep their value. Each place holds the same opening in both its slots, as UnitConfiguration::fillPlaces().
+  const applyPlaces = () => {
+    // A wall that loses its places (another size) keeps only the opening of each place, not a copy next to it.
+    root.querySelectorAll('[data-configurator-slot][data-place]').forEach((slot) => {
+      if (slot.dataset.place === 'spacer' && !places(segmentOf(slot)).length) {
+        setSlot(slot, 'empty');
+      }
+      delete slot.dataset.place;
+    });
+    const walls = new Set([...root.querySelectorAll('[data-configurator-slot]')].map((slot) => `${slot.dataset.level}|${slot.dataset.wall}`));
+    walls.forEach((key) => {
+      const [level, wall] = key.split('|');
+      const first = root.querySelector(`[data-configurator-slot][data-level="${level}"][data-wall="${wall}"]`);
+      const slots = wallSlots(first);
+      const wallPlaces = places(slots.length ? segmentOf(slots[0]) : 0);
+      if (!wallPlaces.length) {
+        return;
+      }
+      const types = wallPlaces.map(([leader, follower]) => {
+        const outer = leader < follower ? leader - 1 : leader + 1;
+        return [leader, follower, outer].map((index) => (slots[index] ? slotValue(slots[index]) : 'empty')).find((value) => value !== 'empty') ?? 'empty';
+      });
+      slots.forEach((slot) => {
+        slot.dataset.place = 'spacer';
+        if (slotValue(slot) !== 'empty') {
+          setSlot(slot, 'empty');
+        }
+      });
+      wallPlaces.forEach(([leader, follower], position) => {
+        setSlot(slots[leader], types[position]);
+        setSlot(slots[follower], types[position]);
+        slots[leader].dataset.place = 'leader';
+      });
+    });
+  };
+  const placeOf = (slot) => {
+    const slots = wallSlots(slot);
+    const index = slots.indexOf(slot);
+    const place = places(segmentOf(slot)).find(([leader]) => leader === index);
+
+    return place ? [slots[place[0]], slots[place[1]]] : null;
+  };
+
   const markWindowPairs = () => {
+    applyPlaces();
     root.querySelectorAll('.unit-slot--pair-start, .unit-slot--pair-middle, .unit-slot--pair-end').forEach((slot) => {
       slot.classList.remove('unit-slot--pair-start', 'unit-slot--pair-middle', 'unit-slot--pair-end');
     });
@@ -507,10 +555,22 @@ function initConfigurator(root) {
     });
   };
 
+  // In a fixed place one click goes to the next opening: closed, window, single window, hatch, door.
+  const PLACE_CYCLE = ['empty', 'window', 'single_window', 'hatch', 'door'];
   const cycleSlot = (slot) => {
     const slots = wallSlots(slot);
     const index = slots.indexOf(slot);
     const current = slotValue(slot);
+
+    if (places(segmentOf(slot)).length) {
+      const place = placeOf(slot);
+      if (place) {
+        const next = PLACE_CYCLE[(PLACE_CYCLE.indexOf(current) + 1) % PLACE_CYCLE.length];
+        place.forEach((part) => setSlot(part, next));
+      }
+
+      return;
+    }
 
     if (current === 'window') {
       const group = windowGroups(slots).find((candidate) => candidate.includes(slot));
