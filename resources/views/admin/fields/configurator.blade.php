@@ -142,14 +142,6 @@
                     @endif
                 </fieldset>
             @endforeach
-            <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>
-                <legend class="portal-label">{{ __('Toegang') }}</legend>
-                <input type="hidden" name="configuration[steps]" value="0">
-                <label class="portal-checkbox">
-                    <input type="checkbox" name="configuration[steps]" value="1" data-configurator-steps @checked($configuration['steps'] ?? false)>
-                    {{ __('Opstapje voor de deuren op de begane grond') }}
-                </label>
-            </fieldset>
             <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body data-configurator-tentative @unless ($isConfigured && $chosen) hidden @endunless>
                 <legend class="portal-label">{{ __('Nog niet zeker') }}</legend>
                 <div class="unit-configurator__swatches">

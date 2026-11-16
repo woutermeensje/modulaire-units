@@ -252,7 +252,7 @@ class UnitInteriorOptionsTest extends TestCase
             ->assertSee('name="configuration[interior][]" value="heater"', false)
             ->assertDontSee('name="configuration[furniture][counter]"', false)
             ->assertDontSee('name="configuration[connections][network]"', false)
-            ->assertSee('name="configuration[steps]"', false)
+            ->assertDontSee('name="configuration[steps]"', false)
             ->assertSee('name="configuration[tentative][]" value="toilet"', false)
             ->assertSee('Uitgifteluik (80 cm, wind- en waterdicht)')
             ->assertSee('data-configurator-positions-reset', false);

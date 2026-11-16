@@ -56,7 +56,7 @@ class UnitDesigner
         (elektrische verwarming laag aan de wand in elke unit; te combineren met airco), "toilet" (toiletruimte met fonteintje)
         en "kitchen" (keukentje). Verlichting zit er altijd in. Kies alleen wat gevraagd wordt
         of duidelijk bij het gebruik hoort; anders een lege lijst. Waar het komt te staan wordt automatisch bepaald.
-        steps zet een opstapje voor de deuren op de begane grond. tentative is een lijst met keuzes uit interior
+        tentative is een lijst met keuzes uit interior
         die de klant nog niet zeker weet (bijv. "toilet als optie"); anders een lege lijst.
         Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 
@@ -172,12 +172,11 @@ class UnitDesigner
                 ],
                 'background' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::BACKGROUNDS)],
                 'interior' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::INTERIOR)], 'description' => 'Inrichting; verlichting zit er altijd in'],
-                'steps' => ['type' => 'boolean', 'description' => 'Opstapje voor de deuren op de begane grond'],
                 'tentative' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::INTERIOR)], 'description' => 'Keuzes die nog niet zeker zijn'],
                 'title' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'steps', 'tentative', 'title', 'meta_description'],
+            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'tentative', 'title', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

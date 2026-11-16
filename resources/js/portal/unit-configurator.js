@@ -41,7 +41,6 @@ function initConfigurator(root) {
   const interiorInputs = [...root.querySelectorAll('[name="configuration[interior][]"]')];
   const amountInputs = [...root.querySelectorAll('[data-configurator-amount]')];
   const tentativeInputs = [...root.querySelectorAll('[name="configuration[tentative][]"]')];
-  const stepsToggle = root.querySelector('[data-configurator-steps]');
   const positionsBox = root.querySelector('[data-configurator-positions]');
   const positionsReset = root.querySelector('[data-configurator-positions-reset]');
 
@@ -97,7 +96,6 @@ function initConfigurator(root) {
       ...(Object.keys(furniture).length ? { furniture } : {}),
       ...(Object.keys(connections).length ? { connections } : {}),
       ...(tentative.length ? { tentative } : {}),
-      ...(stepsToggle?.checked ? { steps: true } : {}),
       ...(Object.keys(positions).length ? { positions } : {}),
     };
   };
@@ -633,9 +631,6 @@ function initConfigurator(root) {
       const [, group, item] = input.name.match(/^configuration\[(\w+)\]\[(\w+)\]$/);
       setAmount(input, configuration[group]?.[item] ?? 0);
     });
-    if (stepsToggle) {
-      stepsToggle.checked = configuration.steps ?? false;
-    }
     updateTentative();
     tentativeInputs.forEach((input) => { input.checked = (configuration.tentative ?? []).includes(input.value); });
     clearPositions();
@@ -749,7 +744,6 @@ function initConfigurator(root) {
     refreshPreview();
   }));
   tentativeInputs.forEach((input) => input.addEventListener('change', refreshPreview));
-  stepsToggle?.addEventListener('change', refreshPreview);
 
   amountInputs.forEach((input) => {
     input.addEventListener('change', () => {
