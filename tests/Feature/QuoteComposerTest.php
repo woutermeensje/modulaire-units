@@ -330,4 +330,37 @@ class QuoteComposerTest extends TestCase
             ->assertRedirect(route('quote-composer'));
         Mail::assertSent(QuoteSent::class);
     }
+
+    public function test_a_quote_that_could_not_be_sent_is_not_kept(): void
+    {
+        Storage::fake('local');
+        Mail::shouldReceive('to')->andThrow(new \RuntimeException('SMTP is down'));
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->actingAs(User::factory()->admin()->create())->post(route('quote-composer.send'), $this->quoteInput(User::factory()->create()));
+            $this->fail('The error should come through.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('SMTP is down', $exception->getMessage());
+        }
+
+        $this->assertSame(0, Quote::count());
+        $this->assertSame([], Storage::disk('local')->allFiles('quotes'));
+    }
+
+    public function test_the_pdf_has_the_logo_without_needing_the_public_folder(): void
+    {
+        $quote = Quote::factory()->create();
+
+        $html = view('pdf.quote', [
+            'quote' => $quote,
+            'specification' => [],
+            'images' => [],
+            'logo' => 'data:image/png;base64,AAAA',
+        ])->render();
+
+        $this->assertStringContainsString('src="data:image/png;base64,AAAA"', $html);
+        $this->assertStringNotContainsString(public_path(), $html);
+        $this->assertFileExists(resource_path('images/quote-logo.png'));
+    }
 }

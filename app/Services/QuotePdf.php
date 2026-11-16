@@ -32,7 +32,19 @@ class QuotePdf
             'quote' => $quote,
             'specification' => (new QuoteSpecification(UnitConfiguration::normalize($quote->configuration)))->sections(),
             'images' => $images,
+            'logo' => $this->logo(),
         ])->setPaper('a4')->output());
+    }
+
+    /**
+     * The icon of the logo as a data URI. It lives in resources/ and not in public/, as public files are not always on
+     * the server that makes the PDF; without it the PDF is made with the name only.
+     */
+    private function logo(): ?string
+    {
+        $path = resource_path('images/quote-logo.png');
+
+        return is_file($path) ? 'data:image/png;base64,'.base64_encode((string) file_get_contents($path)) : null;
     }
 
     /**

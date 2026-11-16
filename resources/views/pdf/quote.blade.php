@@ -5,6 +5,7 @@
      * @var \App\Models\Quote $quote
      * @var array<string, array<int, string>> $specification
      * @var array<string, string> $images
+     * @var string|null $logo
      */
     $client = $quote->client;
     $siteName = \App\Models\Setting::get('site_name');
@@ -53,7 +54,9 @@
     <table class="header">
         <tr>
             <td class="brand">
-                <img src="{{ public_path('images/favicon-270x270.png') }}" alt="">
+                @if ($logo ?? null)
+                    <img src="{{ $logo }}" alt="">
+                @endif
                 <span class="modulaire">Modulaire</span><span class="huisvesting">Huisvesting</span>
             </td>
             <td class="company">

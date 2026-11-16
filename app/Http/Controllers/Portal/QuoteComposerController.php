@@ -13,8 +13,11 @@ use App\Support\UnitConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Throwable;
 
 /**
  * The quote tool, for admins only: compose a unit with everything that was taken out of the customer's composer
@@ -58,16 +61,28 @@ class QuoteComposerController extends Controller
     }
 
     /**
-     * Save the quote with its images and mail it to the client with the PDF attached.
+     * Save the quote with its images and mail it to the client with the PDF attached. If making the PDF or sending the
+     * mail fails, nothing is kept, so the quote doesn't show up as sent.
      */
     public function send(QuoteRequest $request, QuotePdf $pdf): RedirectResponse
     {
         $quote = $this->makeQuote($request);
-        $quote->sent_at = now();
-        $quote->save();
-        $pdf->storeImages($quote, $request->file('images', []));
 
-        Mail::to($quote->client)->locale($quote->locale)->send(new QuoteSent($quote, $pdf->render($quote)));
+        try {
+            DB::transaction(function () use ($quote, $request, $pdf): void {
+                $quote->sent_at = now();
+                $quote->save();
+                $pdf->storeImages($quote, $request->file('images', []));
+
+                Mail::to($quote->client)->locale($quote->locale)->send(new QuoteSent($quote, $pdf->render($quote)));
+            });
+        } catch (Throwable $exception) {
+            if ($quote->id !== null) {
+                Storage::disk('local')->deleteDirectory("quotes/{$quote->id}");
+            }
+
+            throw $exception;
+        }
 
         return redirect()->route('quote-composer')
             ->with('status', "\"{$quote->title}\" ({$quote->number()}) is verstuurd naar {$quote->client->email}.");
