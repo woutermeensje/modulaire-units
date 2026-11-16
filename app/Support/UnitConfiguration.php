@@ -121,7 +121,7 @@ class UnitConfiguration
 
     /**
      * The colours the walls and the frame can have: hex code => name (white RAL 9010, anthracite RAL 7016, blue RAL 5010,
-     * and the light blue of "Huisvesting" in the logo).
+     * the light blue of "Huisvesting" in the logo and a mid grey).
      *
      * @var array<string, string>
      */
@@ -130,6 +130,7 @@ class UnitConfiguration
         '#383e42' => 'Antraciet',
         '#0e4c92' => 'Blauw',
         '#4188aa' => 'Logoblauw',
+        '#777c7e' => 'Grijs',
     ];
 
     /** @var array{cladding: string, frame: string} */
