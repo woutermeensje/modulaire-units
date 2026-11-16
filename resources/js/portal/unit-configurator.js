@@ -787,6 +787,11 @@ function initConfigurator(root) {
       try {
         const body = new FormData();
         appendFields(root, body);
+        // The floor plan's texts in the language of the quote.
+        const locale = form.querySelector('[name="locale"]')?.value;
+        if (locale) {
+          body.append('locale', locale);
+        }
         const response = await fetch(root.dataset.previewUrl, {
           method: 'POST',
           headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },

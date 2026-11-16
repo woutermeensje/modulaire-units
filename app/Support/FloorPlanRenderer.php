@@ -240,7 +240,7 @@ class FloorPlanRenderer
         $along = $opening['from'] + $opening['width'] / 2;
         $out = $isDoor ? 1150 : ($opening['type'] === UnitConfiguration::HATCH ? 580 : 480);
         $lines = match ($opening['type']) {
-            UnitConfiguration::DOOR => [$this->millimetres($opening['width']).' × '.$this->millimetres($opening['height']), 'vrij '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['width'] * 1000).' × '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['height'] * 1000)],
+            UnitConfiguration::DOOR => [$this->millimetres($opening['width']).' × '.$this->millimetres($opening['height']), __('vrij').' '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['width'] * 1000).' × '.$this->millimetres(UnitConfiguration::DOOR_CLEAR['height'] * 1000)],
             UnitConfiguration::HATCH => [__('Luik'), $this->millimetres($opening['width']).' / '.$this->millimetres($opening['height'])],
             default => [$this->millimetres($opening['width']).' / '.$this->millimetres($opening['height'])],
         };

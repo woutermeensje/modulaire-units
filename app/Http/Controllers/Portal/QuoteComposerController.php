@@ -8,6 +8,7 @@ use App\Mail\QuoteSent;
 use App\Models\Quote;
 use App\Models\User;
 use App\Services\QuotePdf;
+use App\Support\Locale;
 use App\Support\UnitConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,6 +39,7 @@ class QuoteComposerController extends Controller
             'sendUrl' => route('quote-composer.send'),
             'pdfPreviewUrl' => route('quote-composer.pdf-preview'),
             'clients' => User::query()->where('is_admin', false)->orderBy('company_name')->orderBy('name')->get(['id', 'name', 'company_name', 'email']),
+            'locales' => [Locale::SOURCE => Locale::SOURCE_DETAILS['name']] + array_map(fn (array $details): string => $details['name'], Locale::TRANSLATIONS),
             'quotes' => Quote::query()->with('client')->latest()->limit(20)->get(),
         ]);
     }
@@ -65,7 +67,7 @@ class QuoteComposerController extends Controller
         $quote->save();
         $pdf->storeImages($quote, $request->file('images', []));
 
-        Mail::to($quote->client)->send(new QuoteSent($quote, $pdf->render($quote)));
+        Mail::to($quote->client)->locale($quote->locale)->send(new QuoteSent($quote, $pdf->render($quote)));
 
         return redirect()->route('quote-composer')
             ->with('status', "\"{$quote->title}\" ({$quote->number()}) is verstuurd naar {$quote->client->email}.");
@@ -90,6 +92,7 @@ class QuoteComposerController extends Controller
             'client_id' => $validated['client_id'],
             'created_by' => $request->user()->id,
             'title' => $validated['title'],
+            'locale' => $validated['locale'],
             'intro' => $validated['intro'] ?? null,
             'configuration' => UnitConfiguration::normalize($validated['configuration']),
         ]);

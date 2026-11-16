@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Quote;
+use App\Support\Locale;
 use App\Support\QuoteSpecification;
 use App\Support\UnitConfiguration;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -24,11 +25,14 @@ class QuotePdf
      */
     public function render(Quote $quote, ?array $images = null): string
     {
-        return Pdf::loadView('pdf.quote', [
+        $images ??= $this->storedImages($quote);
+
+        // Written in the language chosen for the quote, dates included.
+        return Locale::using($quote->locale ?? Locale::SOURCE, fn (): string => Pdf::loadView('pdf.quote', [
             'quote' => $quote,
             'specification' => (new QuoteSpecification(UnitConfiguration::normalize($quote->configuration)))->sections(),
-            'images' => $images ?? $this->storedImages($quote),
-        ])->setPaper('a4')->output();
+            'images' => $images,
+        ])->setPaper('a4')->output());
     }
 
     /**

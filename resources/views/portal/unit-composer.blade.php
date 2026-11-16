@@ -79,6 +79,15 @@
                         <p class="portal-help">Staat de opdrachtgever er niet tussen? <a href="{{ route('admin.opdrachtgevers.create') }}">Voeg een opdrachtgever toe</a>.</p>
                     </div>
                     <div class="portal-field">
+                        <label class="portal-label" for="locale">Taal van de offerte</label>
+                        <select class="portal-input" id="locale" name="locale" data-search-select>
+                            @foreach ($locales as $locale => $localeName)
+                                <option value="{{ $locale }}" @selected(old('locale', \App\Support\Locale::SOURCE) === $locale)>{{ $localeName }}</option>
+                            @endforeach
+                        </select>
+                        <p class="portal-help">De PDF en de mail komen in deze taal, met de specificatie en de datum. Schrijf de titel en de begeleidende tekst zelf in dezelfde taal.</p>
+                    </div>
+                    <div class="portal-field">
                         <label class="portal-label" for="intro">Begeleidende tekst</label>
                         <textarea class="portal-textarea" id="intro" name="intro" rows="8" data-quill="off" placeholder="Beste ..., hierbij de offerte voor ...">{{ old('intro') }}</textarea>
                         <p class="portal-help">Staat bovenaan de PDF en in de mail.</p>
@@ -108,13 +117,14 @@
                     <div class="table-wrap">
                         <table class="table">
                             <thead>
-                                <tr><th>Nummer</th><th>Titel</th><th>Opdrachtgever</th><th>Verstuurd</th><th></th></tr>
+                                <tr><th>Nummer</th><th>Titel</th><th>Taal</th><th>Opdrachtgever</th><th>Verstuurd</th><th></th></tr>
                             </thead>
                             <tbody>
                                 @foreach ($quotes as $quote)
                                     <tr>
                                         <td>{{ $quote->number() }}</td>
                                         <td>{{ $quote->title }}</td>
+                                        <td>{{ $locales[$quote->locale] ?? $quote->locale }}</td>
                                         <td>{{ $quote->client->company_name ?: $quote->client->name }}</td>
                                         <td>{{ $quote->sent_at?->format('d-m-Y H:i') }}</td>
                                         <td><a href="{{ route('quotes.pdf', $quote) }}" target="_blank" rel="noopener"><i class="ph ph-file-pdf"></i> PDF</a></td>

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Mail\QuoteSent;
 use App\Models\Quote;
 use App\Models\User;
+use App\Support\Locale;
 use App\Support\QuoteSpecification;
 use App\Support\UnitConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,6 +35,7 @@ class QuoteComposerTest extends TestCase
             ->assertSee('name="title"', false)
             ->assertSee('name="client_id"', false)
             ->assertSee('name="intro"', false)
+            ->assertSee('<option value="en" >English</option>', false)
             ->assertSee('name="images[plan]"', false)
             ->assertSee('Offerte versturen')
             ->assertDontSee('data-configurator-quote data-quote-url', false)
@@ -114,6 +116,7 @@ class QuoteComposerTest extends TestCase
     {
         return [
             'title' => 'Offerte portiersloge',
+            'locale' => 'nl',
             'client_id' => $client->id,
             'intro' => "Beste Jan,\n\nHierbij de offerte.",
             'configuration' => [
@@ -256,5 +259,59 @@ class QuoteComposerTest extends TestCase
             ->assertOk()
             ->assertSee('value="Piet"', false)
             ->assertSee('value="van den Berg"', false);
+    }
+
+    public function test_a_quote_can_be_written_in_english(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+        $client = User::factory()->create(['name' => 'John Smith']);
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->post(route('quote-composer.send'), $this->quoteInput($client, ['locale' => 'en', 'title' => 'Quote gatehouse', 'intro' => null]))
+            ->assertRedirect(route('quote-composer'));
+
+        $quote = Quote::sole();
+        $this->assertSame('en', $quote->locale);
+        $this->assertSame('nl', app()->getLocale(), 'The page language is restored after the PDF.');
+
+        Mail::assertSent(QuoteSent::class, fn (QuoteSent $mail): bool => $mail->locale === 'en');
+        $mail = (new QuoteSent($quote, '%PDF'))->locale('en');
+        $mail->assertSeeInHtml('Dear John,');
+        $mail->assertSeeInHtml('Please find quote '.$quote->number().' attached.');
+
+        $html = Locale::using('en', fn (): string => view('pdf.quote', [
+            'quote' => $quote,
+            'specification' => (new QuoteSpecification(UnitConfiguration::normalize($quote->configuration)))->sections(),
+            'images' => [],
+        ])->render());
+        $this->assertStringContainsString('Quote for', $html);
+        $this->assertStringContainsString('Specification: Quote gatehouse', $html);
+        $this->assertStringContainsString('Windows and doors', $html);
+        $this->assertStringContainsString('1× outside door (87.5 x 212.5 cm)', $html);
+        $this->assertStringContainsString('Step in front of the ground-floor doors', $html);
+        $this->assertStringContainsString('1× office chair (optional)', $html);
+        $this->assertStringContainsString('Outside dimensions 6.06 x 2.99 metres', $html);
+        $this->assertStringNotContainsString('Offertenummer', $html);
+    }
+
+    public function test_the_language_must_be_dutch_or_english(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->post(route('quote-composer.pdf-preview'), $this->quoteInput(User::factory()->create(), ['locale' => 'de']))
+            ->assertSessionHasErrors('locale');
+    }
+
+    public function test_the_floor_plan_for_the_pdf_is_drawn_in_the_language_of_the_quote(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+
+        $this->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3'], 'locale' => 'en'])
+            ->assertOk()
+            ->assertSee('Lighting')
+            ->assertDontSee('Verlichting');
+        $this->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3']])->assertSee('Verlichting');
+        $this->post(route('unit-composer.preview'), ['configuration' => ['size' => '3x3'], 'locale' => 'de'])->assertSessionHasErrors('locale');
+        $this->assertSame('nl', app()->getLocale());
     }
 }

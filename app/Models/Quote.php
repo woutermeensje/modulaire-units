@@ -18,13 +18,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @phpstan-import-type Configuration from UnitConfiguration
  */
-#[Fillable(['client_id', 'created_by', 'title', 'intro', 'configuration', 'images', 'sent_at'])]
+#[Fillable(['client_id', 'created_by', 'title', 'locale', 'intro', 'configuration', 'images', 'sent_at'])]
 class Quote extends Model
 {
     /** @use HasFactory<QuoteFactory> */
     use HasFactory;
 
-    /** The images of the unit in the PDF, in their order: key => caption. */
+    /** The images of the unit in the PDF, in their order: key => caption (translated with __()). */
     public const IMAGES = [
         'front' => 'Voorzijde en rechterzijde',
         'back' => 'Achterzijde en linkerzijde',

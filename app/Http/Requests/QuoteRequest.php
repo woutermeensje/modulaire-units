@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Quote;
+use App\Support\Locale;
 use App\Support\UnitConfiguration;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,6 +28,7 @@ class QuoteRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'client_id' => ['required', 'integer', Rule::exists('users', 'id')->where('is_admin', false)],
+            'locale' => ['required', Rule::in(Locale::all())],
             'intro' => ['nullable', 'string', 'max:10000'],
             'images' => ['nullable', 'array:'.implode(',', array_keys(Quote::IMAGES))],
             'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:10240'],
@@ -43,6 +45,7 @@ class QuoteRequest extends FormRequest
         return [
             'title' => 'titel',
             'client_id' => 'opdrachtgever',
+            'locale' => 'taal',
             'intro' => 'begeleidende tekst',
             'configuration.size' => 'afmeting',
         ];

@@ -10,7 +10,7 @@
     $siteName = \App\Models\Setting::get('site_name');
 @endphp
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <title>{{ $quote->title }}</title>
@@ -68,10 +68,10 @@
     <table class="meta">
         <tr>
             <td>
-                <div class="label">Offerte voor</div>
+                <div class="label">{{ __('Offerte voor') }}</div>
                 @if ($client->company_name)
                     <strong>{{ $client->company_name }}</strong><br>
-                    T.a.v. {{ $client->name }}<br>
+                    {{ __('T.a.v. :name', ['name' => $client->name]) }}<br>
                 @else
                     <strong>{{ $client->name }}</strong><br>
                 @endif
@@ -81,9 +81,9 @@
                 @endif
             </td>
             <td class="details">
-                <div class="label">Offertenummer</div>
+                <div class="label">{{ __('Offertenummer') }}</div>
                 {{ $quote->number() }}<br>
-                <div class="label" style="margin-top: 2mm">Datum</div>
+                <div class="label" style="margin-top: 2mm">{{ __('Datum') }}</div>
                 {{ ($quote->sent_at ?? now())->translatedFormat('j F Y') }}
             </td>
         </tr>
@@ -102,7 +102,7 @@
                     <td>
                         @isset($images[$key])
                             <img src="{{ $images[$key] }}" alt="">
-                            <div class="caption">{{ \App\Models\Quote::IMAGES[$key] }}</div>
+                            <div class="caption">{{ __(\App\Models\Quote::IMAGES[$key]) }}</div>
                         @endisset
                     </td>
                 @endforeach
@@ -113,12 +113,12 @@
     @isset($images['plan'])
         <div class="plan">
             <img src="{{ $images['plan'] }}" alt="">
-            <div class="caption">{{ \App\Models\Quote::IMAGES['plan'] }}</div>
+            <div class="caption">{{ __(\App\Models\Quote::IMAGES['plan']) }}</div>
         </div>
     @endisset
 
     <div class="specification-page">
-    <h2>Specificatie: {{ $quote->title }}</h2>
+    <h2>{{ __('Specificatie: :title', ['title' => $quote->title]) }}</h2>
     <table class="specification">
         @foreach ($specification as $section => $lines)
             <tr>
