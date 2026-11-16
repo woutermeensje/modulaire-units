@@ -394,6 +394,19 @@
         line-height: 1.2;
     }
 
+    .mhu-single-page .mh-price-card__label small {
+        font-size: inherit;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+
+    .mhu-single-page .mh-price-card__value small {
+        font-size: var(--text-xs);
+        font-weight: 400;
+        color: #555;
+    }
+
     .mhu-single-page .mh-price-block__toelichting {
         display: flex;
         align-items: flex-start;

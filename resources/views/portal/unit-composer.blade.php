@@ -30,7 +30,12 @@
                         <label class="portal-label" for="price_rent_week">Huurprijs per week</label>
                         <input class="portal-input" id="price_rent_week" name="price_rent_week" value="{{ old('price_rent_week') }}" maxlength="190" placeholder="Bijv. 75">
                     </div>
-                    <p class="portal-help">Op de website staat dit als "€ 75 per week"; het euroteken komt er vanzelf bij. De aanschafprijs staat altijd op aanvraag.</p>
+                    <p class="portal-help">Op de website staat dit als "€ 75 per week"; het euroteken komt er vanzelf bij.</p>
+                    <div class="portal-field">
+                        <label class="portal-label" for="price_buy_min">Koopprijs vanaf (incl. btw)</label>
+                        <input class="portal-input" id="price_buy_min" name="price_buy_min" value="{{ old('price_buy_min') }}" inputmode="numeric" placeholder="Bijv. 4500">
+                    </div>
+                    <p class="portal-help">Alleen hele euro's, zonder punt of euroteken. Op de website staat dit als vanafprijs "€ 4.500 incl. btw" en de unit komt in de Google-productfeed. Leeg laten = "Op aanvraag".</p>
                 </section>
 
                 <section class="card dash-section">

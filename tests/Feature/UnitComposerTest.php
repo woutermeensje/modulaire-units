@@ -183,4 +183,18 @@ class UnitComposerTest extends TestCase
             ->assertOk()
             ->assertSee('name="configuration[interior][]"', false);
     }
+
+    public function test_a_bar_to_add_the_unit_to_the_quote_is_ready_for_when_the_unit_is_edited(): void
+    {
+        $this->get('/unit-samensteller/')
+            ->assertOk()
+            ->assertSee('<div class="unit-quote-bar" data-configurator-quote-bar hidden>', false)
+            ->assertSee('Unit toevoegen aan offerte');
+
+        $this->actingAs(User::factory()->create())->get(route('unit-composer'))->assertSee('data-configurator-quote-bar', false);
+        $this->actingAs(User::factory()->admin()->create())->get(route('quote-composer'))->assertSee('data-configurator-quote-bar', false);
+
+        // Admins add a composed unit to the products instead, so they get no quote bar there.
+        $this->actingAs(User::factory()->admin()->create())->get(route('unit-composer'))->assertDontSee('data-configurator-quote-bar', false);
+    }
 }

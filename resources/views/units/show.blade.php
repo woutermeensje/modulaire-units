@@ -63,9 +63,9 @@
                             @if ($unit->buyPrice())
                                 <div class="mh-price-card">
                                     <div class="mh-price-card__header">
-                                        <span class="mh-price-card__label">{{ __('Kopen') }}</span>
+                                        <span class="mh-price-card__label">{{ __('Kopen') }}@if ($unit->hasBuyPrice()) <small>({{ __('vanafprijs') }})</small>@endif</span>
                                     </div>
-                                    <span class="mh-price-card__value">{{ $unit->buyPrice() }}</span>
+                                    <span class="mh-price-card__value">{{ $unit->buyPrice() }}@if ($unit->hasBuyPrice()) <small>{{ __('incl. btw') }}</small>@endif</span>
                                 </div>
                             @endif
                         </div>

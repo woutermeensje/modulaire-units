@@ -38,15 +38,7 @@ final class ComposedUnit
      */
     public function summary(): string
     {
-        $openings = [UnitConfiguration::WINDOW => 0, UnitConfiguration::SINGLE_WINDOW => 0, UnitConfiguration::DOOR => 0, UnitConfiguration::HATCH => 0];
-
-        foreach (array_keys(UnitConfiguration::LEVELS) as $level) {
-            foreach ($this->configuration[$level] ?? [] as $wall => $slots) {
-                foreach (UnitConfiguration::openings($slots, UnitConfiguration::slotCount($this->configuration['size'], $wall)) as $opening) {
-                    $openings[$opening['type']]++;
-                }
-            }
-        }
+        $openings = $this->openingCounts();
 
         $tentative = $this->configuration['tentative'] ?? [];
         $name = fn (string $key, array $labels): string => mb_strtolower(__($labels[$key])).(in_array($key, $tentative, true) ? ' ('.__('optioneel').')' : '');
@@ -67,6 +59,26 @@ final class ComposedUnit
             empty($this->configuration['connections']) ? null : __('elektra: :items', ['items' => $amounts($this->configuration['connections'], UnitConfiguration::CONNECTIONS)]),
             empty($this->configuration['usage']) ? null : __('gebruik: :items', ['items' => $names($this->configuration['usage'], UnitConfiguration::USAGES)]),
         ]));
+    }
+
+    /**
+     * How many windows, single windows, doors and hatches the unit has on all its layers together.
+     *
+     * @return array<string, int>
+     */
+    public function openingCounts(): array
+    {
+        $openings = [UnitConfiguration::WINDOW => 0, UnitConfiguration::SINGLE_WINDOW => 0, UnitConfiguration::DOOR => 0, UnitConfiguration::HATCH => 0];
+
+        foreach (array_keys(UnitConfiguration::LEVELS) as $level) {
+            foreach ($this->configuration[$level] ?? [] as $wall => $slots) {
+                foreach (UnitConfiguration::openings($slots, UnitConfiguration::slotCount($this->configuration['size'], $wall)) as $opening) {
+                    $openings[$opening['type']]++;
+                }
+            }
+        }
+
+        return $openings;
     }
 
     /**

@@ -166,6 +166,7 @@ class AdminCmsTest extends TestCase
         $this->actingAs($this->admin)->get(route('admin.units.create'))
             ->assertOk()
             ->assertSee('name="price_rent_week"', false)
+            ->assertSee('name="price_buy_min"', false)
             ->assertDontSee('name="price_buy"', false)
             ->assertDontSee('name="featured_image_upload"', false)
             ->assertDontSee('name="gallery_upload[]"', false)

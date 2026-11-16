@@ -886,3 +886,75 @@
   border-style: dashed;
   opacity: 0.6;
 }
+
+/* The bar at the bottom of the page that appears once the unit is edited, with the button to add it to the quote. */
+.unit-quote-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100px;
+  padding: 0 16px;
+  border-top: var(--border-default);
+  background: var(--color-bg-white, #ffffff);
+  box-shadow: 0 -6px 24px rgba(16, 36, 56, 0.12);
+}
+
+.unit-quote-bar[hidden] {
+  display: none;
+}
+
+/* Keeps the end of the page clear of the bar. */
+body.has-quote-bar {
+  padding-bottom: 100px;
+}
+
+.unit-quote-bar .unit-quote-bar__button,
+.unit-quote-bar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 28px;
+  border-radius: var(--radius-default);
+  font: 600 17px/1.2 'Work Sans', sans-serif;
+  cursor: pointer;
+}
+
+.unit-quote-bar .unit-quote-bar__button {
+  border: 0;
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.unit-quote-bar .unit-quote-bar__button:hover {
+  background: var(--color-primary-strong);
+}
+
+.unit-quote-bar .unit-quote-bar__button:disabled {
+  cursor: default;
+}
+
+.unit-quote-bar__link {
+  border: 1px solid var(--color-primary);
+  background: #ffffff;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .unit-quote-bar {
+    gap: 8px;
+  }
+
+  .unit-quote-bar .unit-quote-bar__button,
+  .unit-quote-bar__link {
+    padding: 0 16px;
+    font-size: 15px;
+  }
+}

@@ -62,7 +62,8 @@ class UnitResource extends Resource
                     ->help('Kies een afmeting en klik per gevel op een vak om te wisselen tussen dicht, raam en deur. Bij opslaan komen de afbeeldingen op de website: als hoofdfoto als de unit nog geen foto heeft, anders achteraan in de galerij. Kies of dat de 2D-tekeningen of de 3D-beelden zijn.'),
             ],
             'Prijzen' => [
-                Field::make('price_rent_week', 'Huurprijs per week')->half()->placeholder('Bijv. 75')->help('Op de website staat dit als "€ 75 per week". De aanschafprijs staat altijd op aanvraag.'),
+                Field::make('price_rent_week', 'Huurprijs per week')->half()->placeholder('Bijv. 75')->help('Op de website staat dit als "€ 75 per week".'),
+                Field::make('price_buy_min', 'Koopprijs vanaf (incl. btw)')->half()->placeholder('Bijv. 4500')->help('Alleen hele euro\'s, zonder punt of euroteken. Op de website staat dit als vanafprijs "€ 4.500 incl. btw" en de unit komt in de Google-productfeed. Leeg laten = "Op aanvraag".'),
             ],
             'Publicatie' => [
                 Field::make('status', 'Status', 'select')->options($this->statusOptions())->half(),
@@ -88,6 +89,7 @@ class UnitResource extends Resource
             'slug' => ['nullable', 'string', 'max:190', Rule::unique('units', 'slug')->ignore($record?->id)],
             'content' => ['nullable', 'string'],
             'price_rent_week' => ['nullable', 'string', 'max:190'],
+            'price_buy_min' => ['nullable', 'integer', 'min:1', 'max:10000000'],
             'terms' => ['array'],
             'terms.*' => ['nullable', 'integer', Rule::exists('unit_terms', 'id')],
             'status' => ['required', Rule::in(array_keys($this->statusOptions()))],

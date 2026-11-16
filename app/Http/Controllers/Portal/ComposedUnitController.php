@@ -27,6 +27,7 @@ class ComposedUnitController extends Controller
             'slug' => Unit::uniqueSlug($validated['title']),
             'content' => $validated['description'] ?? null,
             'price_rent_week' => $validated['price_rent_week'] ?? null,
+            'price_buy_min' => $validated['price_buy_min'] ?? null,
             'configuration' => UnitConfiguration::normalize($validated['configuration']),
             'status' => 'draft',
             'sort' => 0,

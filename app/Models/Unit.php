@@ -165,11 +165,19 @@ class Unit extends Model
     }
 
     /**
-     * The purchase price shown on the website: always on request.
+     * Whether an admin filled in a purchase "from" price (in whole euros, including VAT) for the unit.
+     */
+    public function hasBuyPrice(): bool
+    {
+        return ctype_digit((string) $this->price_buy_min) && (int) $this->price_buy_min > 0;
+    }
+
+    /**
+     * The purchase price shown on the website: the "from" price including VAT when it is filled in, otherwise on request.
      */
     public function buyPrice(): string
     {
-        return __('Op aanvraag');
+        return $this->hasBuyPrice() ? self::euro($this->price_buy_min) : __('Op aanvraag');
     }
 
     /**

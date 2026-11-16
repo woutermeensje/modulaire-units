@@ -22,7 +22,7 @@ class ComposedUnitTest extends TestCase
             ->assertSee('name="title"', false)
             ->assertSee('name="description"', false)
             ->assertSee('name="price_rent_week"', false)
-            ->assertDontSee('name="price_buy_min"', false)
+            ->assertSee('name="price_buy_min"', false)
             ->assertDontSee('name="price_buy_max"', false)
             ->assertSee('Unit toevoegen aan producten')
             ->assertSee('name="photos_3d_enabled"', false)
@@ -149,6 +149,47 @@ class ComposedUnitTest extends TestCase
         $this->assertSame('€ 75,- per week', $unit->rentPrice());
 
         $this->assertNull(Unit::factory()->make()->rentPrice());
+    }
+
+    public function test_admins_compose_a_unit_with_a_purchase_from_price(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)
+            ->post(route('unit-composer.store'), [
+                'title' => 'Kantoorunit met koopprijs',
+                'price_buy_min' => '4500',
+                'configuration' => UnitConfiguration::STARTER,
+            ])
+            ->assertSessionHasNoErrors();
+
+        $unit = Unit::query()->where('user_id', $admin->id)->sole();
+        $this->assertTrue($unit->hasBuyPrice());
+        $this->assertSame('€ 4.500', $unit->buyPrice());
+    }
+
+    public function test_the_purchase_from_price_must_be_whole_euros(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->post(route('unit-composer.store'), [
+                'title' => 'Kantoorunit',
+                'price_buy_min' => '€ 4.500,-',
+                'configuration' => UnitConfiguration::STARTER,
+            ])
+            ->assertSessionHasErrors('price_buy_min');
+    }
+
+    public function test_a_published_unit_shows_the_purchase_from_price_including_vat(): void
+    {
+        $unit = Unit::factory()->create(['status' => 'published', 'published_at' => now(), 'price_buy_min' => '12500']);
+
+        $this->get($unit->url())
+            ->assertOk()
+            ->assertSee('vanafprijs')
+            ->assertSee('€ 12.500')
+            ->assertSee('incl. btw')
+            ->assertDontSee('Op aanvraag');
     }
 
     public function test_amounts_without_a_euro_sign_get_one(): void

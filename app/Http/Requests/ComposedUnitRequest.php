@@ -27,6 +27,7 @@ class ComposedUnitRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price_rent_week' => ['nullable', 'string', 'max:190'],
+            'price_buy_min' => ['nullable', 'integer', 'min:1', 'max:10000000'],
             'photos_3d_enabled' => ['nullable', 'boolean'],
             'photos_3d' => ['nullable', 'array:'.implode(',', array_keys(UnitRenderer::VIEWS))],
             'photos_3d.*' => ['image', 'mimes:jpg,jpeg', 'max:10240'],
@@ -44,6 +45,7 @@ class ComposedUnitRequest extends FormRequest
             'title' => 'titel',
             'description' => 'beschrijving',
             'price_rent_week' => 'huurprijs per week',
+            'price_buy_min' => 'koopprijs vanaf',
             'configuration.size' => 'afmeting',
         ];
     }

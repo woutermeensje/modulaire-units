@@ -174,18 +174,28 @@ function initConfigurator(root) {
     setTimeout(() => { shareCopy.lastChild.textContent = ` ${t('Kopieer link')}`; }, 2000);
   });
 
-  // "Toevoegen aan offerte" is there from the start, and is offered again after every change.
+  // "Toevoegen aan offerte" is there from the start, and is offered again after every change. As soon as the unit is
+  // edited, a bar at the bottom of the page offers the same, so it is always in reach while composing.
   const quote = root.querySelector('[data-configurator-quote]');
-  const quoteButton = quote?.querySelector('[data-configurator-quote-add]');
-  const quoteLabel = quoteButton?.querySelector('span');
+  const quoteBar = root.querySelector('[data-configurator-quote-bar]');
+  const quoteButtons = [...root.querySelectorAll('[data-configurator-quote-add]')];
+  const quoteLinks = [...root.querySelectorAll('[data-configurator-quote-link]')];
+  const setQuoteLabel = (text) => quoteButtons.forEach((button) => { button.querySelector('span').textContent = text; });
   const resetQuote = () => {
     if (!quote) {
       return;
     }
 
     quote.hidden = false;
-    quoteButton.disabled = false;
-    quoteLabel.textContent = t('Toevoegen aan offerte');
+    // Every button gets its own label back, as rendered by the server.
+    quoteButtons.forEach((button) => {
+      button.disabled = false;
+      button.querySelector('span').textContent = button.dataset.label;
+    });
+    if (quoteBar?.hidden) {
+      quoteBar.hidden = false;
+      document.body.classList.add('has-quote-bar');
+    }
   };
 
   // Mirrors partials/header.blade.php: with items in the quote, the main call to action becomes "Mijn offerte".
@@ -207,8 +217,8 @@ function initConfigurator(root) {
     });
   };
 
-  quoteButton?.addEventListener('click', async () => {
-    quoteButton.disabled = true;
+  const addToQuote = async () => {
+    quoteButtons.forEach((button) => { button.disabled = true; });
     const body = new FormData();
     appendFields(root, body);
 
@@ -223,14 +233,15 @@ function initConfigurator(root) {
       }
 
       const data = await response.json();
-      quoteLabel.textContent = t('Toegevoegd aan offerte');
-      quote.querySelector('[data-configurator-quote-link]').hidden = false;
+      setQuoteLabel(t('Toegevoegd aan offerte'));
+      quoteLinks.forEach((link) => { link.hidden = false; });
       showQuoteCount(data.count, data.quote_url);
     } catch {
-      quoteLabel.textContent = t('Mislukt, probeer opnieuw');
-      quoteButton.disabled = false;
+      setQuoteLabel(t('Mislukt, probeer opnieuw'));
+      quoteButtons.forEach((button) => { button.disabled = false; });
     }
-  });
+  };
+  quoteButtons.forEach((button) => button.addEventListener('click', addToQuote));
 
   // Where an item was dragged to on the floor plan, in nominal metres; see App\Support\InteriorLayout.
   const setPosition = (id, x, y) => {

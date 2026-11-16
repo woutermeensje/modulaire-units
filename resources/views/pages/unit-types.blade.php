@@ -60,8 +60,8 @@
                                         @endif
                                         @if ($unit->buyPrice())
                                             <div class="mh-unit-tile__price">
-                                                <dt>{{ __('Aanschafprijs') }}</dt>
-                                                <dd>{{ $unit->buyPrice() }}</dd>
+                                                <dt>{{ __('Aanschafprijs') }}@if ($unit->hasBuyPrice()) ({{ __('vanaf') }})@endif</dt>
+                                                <dd>{{ $unit->buyPrice() }}@if ($unit->hasBuyPrice()) <small>{{ __('incl. btw') }}</small>@endif</dd>
                                             </div>
                                         @endif
                                     </dl>

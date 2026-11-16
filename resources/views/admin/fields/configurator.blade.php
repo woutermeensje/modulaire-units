@@ -288,7 +288,7 @@
                 {{-- Shown right away, so the starting unit can be asked for as it is. --}}
                 <div class="unit-configurator__quote" data-configurator-quote data-quote-url="{{ $quoteUrl }}">
                     <a href="{{ SiteUrl::route('quote.show') }}" class="unit-configurator__quote-link" data-configurator-quote-link hidden>{{ __('Bekijk offerte') }}</a>
-                    <button type="button" class="unit-configurator__quote-button" data-configurator-quote-add>
+                    <button type="button" class="unit-configurator__quote-button" data-configurator-quote-add data-label="{{ __('Toevoegen aan offerte') }}">
                         <i class="ph ph-shopping-bag"></i> <span>{{ __('Toevoegen aan offerte') }}</span>
                     </button>
                 </div>
@@ -339,4 +339,13 @@
             @endforeach
         @endif
     </div>
+    @if (! $storeUrl && ($quoteUrl ?? null))
+        {{-- Appears at the bottom of the page as soon as the unit is edited; see resetQuote() in unit-configurator.js. --}}
+        <div class="unit-quote-bar" data-configurator-quote-bar hidden>
+            <a href="{{ SiteUrl::route('quote.show') }}" class="unit-quote-bar__link" data-configurator-quote-link hidden>{{ __('Bekijk offerte') }}</a>
+            <button type="button" class="unit-quote-bar__button" data-configurator-quote-add data-label="{{ __('Unit toevoegen aan offerte') }}">
+                <i class="ph ph-shopping-bag"></i> <span>{{ __('Unit toevoegen aan offerte') }}</span>
+            </button>
+        </div>
+    @endif
 </div>
