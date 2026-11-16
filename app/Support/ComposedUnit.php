@@ -32,7 +32,7 @@ final class ComposedUnit
 
     /**
      * Colours, the number of windows, doors and hatches, the interior, furniture, connections and the use in the
-     * language of the page, e.g. "Wanden antraciet, frame antraciet, 4 ramen, 1 deur, 1 uitgifteluik, opstapje,
+     * language of the page, e.g. "Wanden antraciet, 4 ramen, 1 deur, 1 uitgifteluik, opstapje,
      * inrichting: airco, verwarming, sanitair (optioneel), meubilair: 1× bureau, 1× bureaustoel, elektra: 4×
      * wandcontactdoos, 1× netwerkaansluiting (utp), gebruik: portiersloge".
      */
@@ -56,7 +56,6 @@ final class ComposedUnit
 
         return implode(', ', array_filter([
             __('Wanden :colour', ['colour' => $colour('cladding')]),
-            __('frame :colour', ['colour' => $colour('frame')]),
             trans_choice(':count raam|:count ramen', $openings[UnitConfiguration::WINDOW]),
             trans_choice(':count deur|:count deuren', $openings[UnitConfiguration::DOOR]),
             $openings[UnitConfiguration::HATCH] > 0 ? trans_choice(':count uitgifteluik|:count uitgifteluiken', $openings[UnitConfiguration::HATCH]) : null,

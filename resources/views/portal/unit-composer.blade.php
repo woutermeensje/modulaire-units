@@ -40,7 +40,6 @@
                         'value' => $configuration,
                         'composer' => true,
                         'ai' => false,
-                        'usage' => false,
                         'previewUrl' => $previewUrl,
                         'storeUrl' => $storeUrl,
                     ])
@@ -61,7 +60,6 @@
                     'value' => $configuration,
                     'composer' => true,
                     'ai' => $ai ?? false,
-                    'usage' => false,
                     'previewUrl' => $previewUrl,
                     'designUrl' => $designUrl ?? null,
                     'quoteUrl' => $quoteUrl ?? null,

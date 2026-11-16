@@ -212,13 +212,13 @@ class UnitInteriorOptionsTest extends TestCase
         $this->assertStringNotContainsString('#b3b1ab', $withoutStep);
     }
 
-    public function test_the_composer_offers_the_new_options(): void
+    public function test_the_composer_offers_the_new_options_but_no_furniture_or_connections(): void
     {
         $this->get(route('unit-composer.public'))
             ->assertOk()
             ->assertSee('name="configuration[interior][]" value="heater"', false)
-            ->assertSee('name="configuration[furniture][counter]"', false)
-            ->assertSee('name="configuration[connections][network]"', false)
+            ->assertDontSee('name="configuration[furniture][counter]"', false)
+            ->assertDontSee('name="configuration[connections][network]"', false)
             ->assertSee('name="configuration[steps]"', false)
             ->assertSee('name="configuration[tentative][]" value="toilet"', false)
             ->assertSee('Uitgifteluik (80 cm, wind- en waterdicht)')
@@ -231,8 +231,7 @@ class UnitInteriorOptionsTest extends TestCase
 
         $this->get(route('unit-composer.public', [UnitConfiguration::SHARE_KEY => UnitConfiguration::toShareCode($configuration)]))
             ->assertOk()
-            ->assertSee('name="configuration[positions][walls:airco:0][x]" value="0.2"', false)
-            ->assertSee('name="configuration[furniture][counter]" value="1"', false);
+            ->assertSee('name="configuration[positions][walls:airco:0][x]" value="0.2"', false);
     }
 
     public function test_the_heras_request_can_be_composed_and_sent_as_a_quote(): void
@@ -257,7 +256,7 @@ class UnitInteriorOptionsTest extends TestCase
         $item = Submission::query()->sole()->items[0];
         $this->assertSame(ComposedUnit::TYPE, $item['type']);
         $this->assertStringContainsString('Modulaire unit van 6 x 3 meter', $item['title']);
-        $this->assertStringContainsString('Wanden antraciet, frame antraciet, 4 ramen, 1 deur, 1 uitgifteluik, opstapje', $item['title']);
+        $this->assertStringContainsString('Wanden antraciet, 4 ramen, 1 deur, 1 uitgifteluik, opstapje', $item['title']);
         $this->assertStringContainsString('inrichting: airco, verwarming, sanitair (optioneel)', $item['title']);
         $this->assertStringContainsString('meubilair: 1× bureaustoel, 1× uitgiftebalie', $item['title']);
         $this->assertStringContainsString('elektra: 4× wandcontactdoos, 1× netwerkaansluiting (utp)', $item['title']);

@@ -148,9 +148,9 @@ class UnitRenderer
         $frontSteps = $steps ? $this->steps($frontSlots, $length, fn (float $along, float $out, float $z): array => $this->project($along, -$out, $z)) : '';
 
         return $shadow
-            .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), '#9fbfd2', $seams, $seams[0] ?? $depth)
+            .$this->face($side, $depth, $sideSlots, $this->shade($colors['cladding'], 0.78), $this->shade($colors['frame'], 0.85), $this->shade(UnitConfiguration::OPENING_FRAME_COLOR, 0.85), '#9fbfd2', $seams, $seams[0] ?? $depth)
             .$sideSteps
-            .$this->face($front, $length, $frontSlots, $colors['cladding'], $colors['frame'], '#c4def0')
+            .$this->face($front, $length, $frontSlots, $colors['cladding'], $colors['frame'], UnitConfiguration::OPENING_FRAME_COLOR, '#c4def0')
             .$frontSteps
             .$roof;
     }
@@ -188,7 +188,7 @@ class UnitRenderer
      * @param  list<int>  $seams
      * @param  int|null  $segment  Slots per unit along this face; the whole face when it belongs to one unit.
      */
-    private function face(\Closure $point, int $width, array $slots, string $cladding, string $frame, string $glass, array $seams = [], ?int $segment = null): string
+    private function face(\Closure $point, int $width, array $slots, string $cladding, string $frame, string $openingFrame, string $glass, array $seams = [], ?int $segment = null): string
     {
         $height = self::HEIGHT;
         $rect = fn (float $s1, float $s2, float $z1, float $z2): array => [$point($s1, $z1), $point($s2, $z1), $point($s2, $z2), $point($s1, $z2)];
@@ -204,11 +204,11 @@ class UnitRenderer
         foreach (UnitConfiguration::openings($slots, $segment ?? $width) as ['type' => $type, 'left' => $left, 'right' => $right, 'bottom' => $bottom, 'top' => $top]) {
             $middle = ($left + $right) / 2;
             $svg .= match ($type) {
-                UnitConfiguration::WINDOW => $this->polygon($rect($left, $right, $bottom, $top), $glass, 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
-                    .$this->polygon($rect($middle - 0.02, $middle + 0.02, $bottom, $top), $frame),
-                UnitConfiguration::DOOR => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($frame, 1.25), 'stroke="'.$frame.'" stroke-width="3" stroke-linejoin="round"')
+                UnitConfiguration::WINDOW => $this->polygon($rect($left, $right, $bottom, $top), $glass, 'stroke="'.$openingFrame.'" stroke-width="3" stroke-linejoin="round"')
+                    .$this->polygon($rect($middle - 0.02, $middle + 0.02, $bottom, $top), $openingFrame),
+                UnitConfiguration::DOOR => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($frame, 1.25), 'stroke="'.$openingFrame.'" stroke-width="3" stroke-linejoin="round"')
                     .$this->polygon($rect($right - 0.18, $right - 0.1, 1.05, 1.13), '#d9d9d9'),
-                UnitConfiguration::HATCH => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($glass, 0.9), 'stroke="'.$frame.'" stroke-width="4" stroke-linejoin="round"')
+                UnitConfiguration::HATCH => $this->polygon($rect($left, $right, $bottom, $top), $this->shade($glass, 0.9), 'stroke="'.$openingFrame.'" stroke-width="4" stroke-linejoin="round"')
                     .$this->polygon($rect($left - 0.05, $right + 0.05, $bottom - 0.05, $bottom), '#a7adb1'),
                 default => '',
             };

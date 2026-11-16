@@ -43,23 +43,19 @@ class UnitDesigner
         stairs zet bij elke deur op de verdieping een buitentrap met bordes; zet het aan bij 2 lagen, tenzij er geen trap gewenst is.
         Een verdieping heeft voor de trap minstens één deur nodig.
 
-        Kleuren zijn hexcodes: cladding is de kleur van de wanden, frame die van de kozijnen en het stalen frame.
-        Er zijn vijf kleuren, voor zowel cladding als frame: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw)
-        "#4188aa" (logoblauw, het lichtere blauw uit het logo) en "#777c7e" (grijs).
+        Kleuren zijn hexcodes: cladding is de kleur van de wanden; het stalen frame krijgt automatisch dezelfde kleur en de
+        kozijnen zijn altijd wit. Er zijn vier kleuren: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw) en "#777c7e" (grijs).
         Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
         interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "heater"
         (elektrische verwarming laag aan de wand in elke unit; te combineren met airco), "toilet" (toiletruimte met fonteintje)
         en "kitchen" (keukentje). Verlichting zit er altijd in. Kies alleen wat gevraagd wordt
         of duidelijk bij het gebruik hoort; anders een lege lijst. Waar het komt te staan wordt automatisch bepaald.
-        furniture is het meubilair met aantallen (0 tot 8): "desk" (bureau), "chair" (bureaustoel), "counter" (uitgiftebalie,
-        komt bij een uitgifteluik of raam), "worktop" (werkblad) en "cabinet" (opbergkast). connections zijn de aantallen
-        "socket" (wandcontactdozen, 0 tot 24) en "network" (netwerkaansluitingen/UTP, 0 tot 24). Zet alles op 0 wat niet gevraagd wordt.
-        steps zet een opstapje voor de deuren op de begane grond. tentative is een lijst met keuzes uit interior en furniture
+        steps zet een opstapje voor de deuren op de begane grond. tentative is een lijst met keuzes uit interior
         die de klant nog niet zeker weet (bijv. "toilet als optie"); anders een lege lijst.
         Achtergrond: "industrial" (Nederlands industrieterrein met asfalt), "meadow" (grasveld), "site" (bouwterrein) of "plain" (neutraal).
 
         Volg de beschrijving zo letterlijk mogelijk. Wat niet genoemd wordt, kies je zelf op een logische manier:
-        een unit heeft minstens één deur; ramen verdeel je symmetrisch; zonder kleurwens gebruik je witte wanden met een antraciet frame; zonder achtergrondwens "industrial".
+        een unit heeft minstens één deur; ramen verdeel je symmetrisch; zonder kleurwens gebruik je witte wanden; zonder achtergrondwens "industrial".
         Als er een huidige configuratie is meegegeven en de beschrijving klinkt als een wijziging ("maak", "voeg toe", "verplaats"), pas dan alleen aan wat gevraagd wordt.
 
         Schrijf daarnaast in het Nederlands, zakelijk en zonder overdrijving:
@@ -164,20 +160,18 @@ class UnitDesigner
                 'stairs' => ['type' => 'boolean', 'description' => 'Buitentrap naar de deuren op de verdieping'],
                 'colors' => [
                     'type' => 'object',
-                    'properties' => ['cladding' => $color, 'frame' => $color],
-                    'required' => ['cladding', 'frame'],
+                    'properties' => ['cladding' => $color],
+                    'required' => ['cladding'],
                     'additionalProperties' => false,
                 ],
                 'background' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::BACKGROUNDS)],
                 'interior' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::INTERIOR)], 'description' => 'Inrichting; verlichting zit er altijd in'],
-                'furniture' => $this->amounts(UnitConfiguration::FURNITURE, 'Aantal stuks meubilair per soort'),
-                'connections' => $this->amounts(UnitConfiguration::CONNECTIONS, 'Aantal wandcontactdozen en netwerkaansluitingen'),
                 'steps' => ['type' => 'boolean', 'description' => 'Opstapje voor de deuren op de begane grond'],
-                'tentative' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => [...array_keys(UnitConfiguration::INTERIOR), ...array_keys(UnitConfiguration::FURNITURE)]], 'description' => 'Keuzes die nog niet zeker zijn'],
+                'tentative' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => array_keys(UnitConfiguration::INTERIOR)], 'description' => 'Keuzes die nog niet zeker zijn'],
                 'title' => ['type' => 'string'],
                 'meta_description' => ['type' => 'string'],
             ],
-            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'furniture', 'connections', 'steps', 'tentative', 'title', 'meta_description'],
+            'required' => ['size', 'modules', 'floors', 'walls', 'upper_walls', 'stairs', 'colors', 'background', 'interior', 'steps', 'tentative', 'title', 'meta_description'],
             'additionalProperties' => false,
         ];
     }

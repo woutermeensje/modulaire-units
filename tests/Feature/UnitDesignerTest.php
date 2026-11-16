@@ -54,7 +54,7 @@ class UnitDesignerTest extends TestCase
 
         $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $design['configuration']['walls']['front']);
         $this->assertSame('#f2f0e8', $design['configuration']['colors']['cladding']);
-        $this->assertSame(UnitConfiguration::DEFAULT_COLORS['frame'], $design['configuration']['colors']['frame']);
+        $this->assertSame('#f2f0e8', $design['configuration']['colors']['frame'], 'The frame has the colour of the walls.');
         $this->assertSame('Kantoorunit 6x3', $design['title']);
         $this->assertSame(160, mb_strlen($design['meta_description']));
 

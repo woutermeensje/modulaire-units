@@ -38,7 +38,6 @@ function initConfigurator(root) {
   const floors = () => Number(floorsSelect.value) || 1;
   const slotCount = (size, wall) => counts[size][wall] * (SIDE_WALLS.includes(wall) ? modules() : 1);
 
-  const usageSelect = root.querySelector('[data-configurator-usage]');
   const interiorInputs = [...root.querySelectorAll('[name="configuration[interior][]"]')];
   const amountInputs = [...root.querySelectorAll('[data-configurator-amount]')];
   const tentativeInputs = [...root.querySelectorAll('[name="configuration[tentative][]"]')];
@@ -91,10 +90,10 @@ function initConfigurator(root) {
       floors: floors(),
       ...levels,
       stairs: floors() > 1 && stairsToggle.checked,
-      colors: { cladding: color('cladding'), frame: color('frame') },
+      // The frame always has the colour of the walls.
+      colors: { cladding: color('cladding'), frame: color('cladding') },
       background: field('background'),
       ...(interior.length ? { interior } : {}),
-      ...(usageSelect?.selectedOptions.length ? { usage: [...usageSelect.selectedOptions].map((option) => option.value) } : {}),
       ...(Object.keys(furniture).length ? { furniture } : {}),
       ...(Object.keys(connections).length ? { connections } : {}),
       ...(tentative.length ? { tentative } : {}),
@@ -768,10 +767,6 @@ function initConfigurator(root) {
   preview.addEventListener('pointerup', endDrag);
   preview.addEventListener('pointercancel', endDrag);
   stairsToggle.addEventListener('change', refreshPreview);
-  usageSelect?.addEventListener('change', () => {
-    updateShareUrl();
-    resetQuote();
-  });
   markWindowPairs();
   renderItems();
 

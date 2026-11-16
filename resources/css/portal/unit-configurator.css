@@ -43,10 +43,6 @@
   align-items: end;
 }
 
-.unit-configurator__usage {
-  grid-column: 1 / -1;
-}
-
 .unit-configurator__colors {
   display: flex;
   flex-wrap: wrap;

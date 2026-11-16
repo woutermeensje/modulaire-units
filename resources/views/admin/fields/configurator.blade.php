@@ -10,8 +10,6 @@
     // AI is only offered in the composer test environment in the admin (Admin\UnitComposerController passes it).
     // Without AI neither the description box nor the design endpoint is offered.
     $ai ??= false;
-    // The use of the unit is asked in the public composer only.
-    $usage ??= $composer && ! $ai;
     // Admins add a composition from their account to the products instead of to the quote; see Portal\UnitComposerController.
     $storeUrl ??= null;
     $isConfigured = $composer || filled($value['size'] ?? null);
@@ -36,15 +34,12 @@
         'desk' => 'ph-desk', 'chair' => 'ph-chair', 'counter' => 'ph-storefront', 'worktop' => 'ph-rectangle', 'cabinet' => 'ph-lockers',
         'socket' => 'ph-plug', 'network' => 'ph-network',
     ];
-    $countGroups = [
-        'Elektra & netwerk' => ['options' => UnitConfiguration::CONNECTIONS, 'key' => 'connections', 'max' => UnitConfiguration::MAX_CONNECTIONS],
-        'Meubilair' => ['options' => UnitConfiguration::FURNITURE, 'key' => 'furniture', 'max' => UnitConfiguration::MAX_FURNITURE],
-    ];
     $chosen = [...($configuration['interior'] ?? []), ...array_keys($configuration['furniture'] ?? [])];
     // What the floor of the top view shows for every interior item, so it can be dragged into place there.
     $itemIcons = array_map(fn (array $option): string => $option['icon'], $interiorOptions) + $countIcons;
     $itemLabels = array_map(fn (string $itemLabel): string => __($itemLabel), UnitConfiguration::INTERIOR + UnitConfiguration::FURNITURE + UnitConfiguration::CONNECTIONS);
-    $tentativeOptions = UnitConfiguration::INTERIOR + UnitConfiguration::FURNITURE;
+    // Furniture and connections are not offered here; they are added to the quote in the admin instead.
+    $tentativeOptions = UnitConfiguration::INTERIOR;
     $usesPhotos = UnitConfigurationImages::usesPhotos($record?->configuration_images);
     $slotLabels = array_map(fn (string $slotLabel): string => __($slotLabel), UnitConfiguration::SLOTS);
 @endphp
@@ -93,16 +88,6 @@
                     @endforeach
                 </select>
             </div>
-            @if ($usage)
-                <div class="unit-configurator__usage">
-                    <label class="portal-label" for="configuration_usage">{{ __('Type gebruik') }}</label>
-                    <select class="portal-input" id="configuration_usage" name="configuration[usage][]" multiple placeholder="{{ __('Wat voor gebruik?') }}" data-configurator-usage data-search-select>
-                        @foreach (UnitConfiguration::USAGES as $usage => $usageLabel)
-                            <option value="{{ $usage }}" @selected(in_array($usage, $configuration['usage'] ?? [], true))>{{ __($usageLabel) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
             <div data-configurator-body @unless ($isConfigured) hidden @endunless>
                 <label class="portal-label" for="configuration_modules">{{ __('Aantal units') }}</label>
                 <select class="portal-input" id="configuration_modules" name="configuration[modules]" data-configurator-modules data-search-select>
@@ -122,7 +107,8 @@
             {{-- Not offered as a choice: units stand on an industrial estate, unless the AI or an older configuration says otherwise. --}}
             <input type="hidden" name="configuration[background]" value="{{ $configuration['background'] }}">
             <div class="unit-configurator__colors" data-configurator-body @unless ($isConfigured) hidden @endunless>
-                @foreach (['cladding' => 'Wanden', 'frame' => 'Kozijnen en frame'] as $part => $partLabel)
+                {{-- Only the walls have a choice: the frame has their colour and window and door frames are always white (see UnitConfiguration). --}}
+                @foreach (['cladding' => 'Wanden'] as $part => $partLabel)
                     <fieldset class="unit-configurator__palette">
                         <legend class="portal-label">{{ __($partLabel) }}</legend>
                         <div class="unit-configurator__swatches">
@@ -154,27 +140,6 @@
                     @else
                         <p class="portal-help">{{ __('Het toilet en het keukentje staan op de begane grond, op een plek zonder deur.') }}</p>
                     @endif
-                </fieldset>
-            @endforeach
-            @foreach ($countGroups as $groupLabel => $group)
-                <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>
-                    <legend class="portal-label">{{ __($groupLabel) }}</legend>
-                    <div class="unit-configurator__counts">
-                        @foreach ($group['options'] as $item => $itemLabel)
-                            @php($count = $configuration[$group['key']][$item] ?? 0)
-                            <div @class(['unit-count', 'is-chosen' => $count > 0]) data-configurator-count>
-                                <label class="unit-count__label" for="configuration_{{ $group['key'] }}_{{ $item }}"><i class="ph {{ $countIcons[$item] }}"></i> {{ __($itemLabel) }}</label>
-                                <div class="unit-count__stepper">
-                                    <button type="button" class="unit-count__button" data-count-step="-1" aria-label="{{ __('Minder') }}"><i class="ph ph-minus"></i></button>
-                                    <input class="unit-count__input" type="number" inputmode="numeric" id="configuration_{{ $group['key'] }}_{{ $item }}" name="configuration[{{ $group['key'] }}][{{ $item }}]" value="{{ $count }}" min="0" max="{{ $group['max'] }}" data-configurator-amount>
-                                    <button type="button" class="unit-count__button" data-count-step="1" aria-label="{{ __('Meer') }}"><i class="ph ph-plus"></i></button>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <p class="portal-help">{{ $group['key'] === 'connections'
-                        ? __('Verlichting zit er altijd in. Wandcontactdozen worden over de wanden verdeeld, netwerkaansluitingen komen ernaast.')
-                        : __('Een uitgiftebalie komt bij een uitgifteluik of raam, een bureau bij een raam en een stoel bij een bureau of balie. Meubilair staat op de begane grond.') }}</p>
                 </fieldset>
             @endforeach
             <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body @unless ($isConfigured) hidden @endunless>

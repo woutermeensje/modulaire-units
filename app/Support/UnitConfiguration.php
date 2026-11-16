@@ -14,6 +14,9 @@ use Illuminate\Validation\Rule;
  * Several units can be coupled long side to long side into one open space: the front wall belongs to the
  * first unit, the back wall to the last one, and the left and right walls run along all of them.
  *
+ * The walls have one of a few colours; the steel frame always has the colour of the walls and window, door and hatch
+ * frames are always white.
+ *
  * A second layer of the same units can be stacked on top. It has walls of its own (upper_walls), so it can have
  * other windows and doors than the ground floor; without a second layer upper_walls is left out. With stairs,
  * every door on the second layer gets an outside staircase with a landing.
@@ -120,8 +123,7 @@ class UnitConfiguration
     ];
 
     /**
-     * The colours the walls and the frame can have: hex code => name (white RAL 9010, anthracite RAL 7016, blue RAL 5010,
-     * the light blue of "Huisvesting" in the logo and a mid grey).
+     * The colours the walls can have: hex code => name (white RAL 9010, anthracite RAL 7016, blue RAL 5010 and a mid grey).
      *
      * @var array<string, string>
      */
@@ -129,12 +131,18 @@ class UnitConfiguration
         '#f2f0e8' => 'Wit',
         '#383e42' => 'Antraciet',
         '#0e4c92' => 'Blauw',
-        '#4188aa' => 'Logoblauw',
         '#777c7e' => 'Grijs',
     ];
 
-    /** @var array{cladding: string, frame: string} */
-    public const DEFAULT_COLORS = ['cladding' => '#f2f0e8', 'frame' => '#383e42'];
+    /**
+     * The steel frame always has the colour of the walls; normalize() keeps the two the same.
+     *
+     * @var array{cladding: string, frame: string}
+     */
+    public const DEFAULT_COLORS = ['cladding' => '#f2f0e8', 'frame' => '#f2f0e8'];
+
+    /** Window, door and hatch frames are always white (RAL 9010). */
+    public const OPENING_FRAME_COLOR = '#f2f0e8';
 
     public const COLOR_PATTERN = '/^#[0-9a-f]{6}$/i';
 
@@ -387,11 +395,9 @@ class UnitConfiguration
             }
         }
 
-        $colors = [];
-        foreach (self::DEFAULT_COLORS as $name => $default) {
-            $color = $input['colors'][$name] ?? null;
-            $colors[$name] = is_string($color) && preg_match(self::COLOR_PATTERN, $color) ? self::nearestColor($color) : $default;
-        }
+        $cladding = $input['colors']['cladding'] ?? null;
+        $cladding = is_string($cladding) && preg_match(self::COLOR_PATTERN, $cladding) ? self::nearestColor($cladding) : self::DEFAULT_COLORS['cladding'];
+        $colors = ['cladding' => $cladding, 'frame' => $cladding];
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
         $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);

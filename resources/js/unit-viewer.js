@@ -186,6 +186,8 @@ function createMaterials(colors, ribs) {
   return {
     cladding: new MeshStandardMaterial({ color: colors.cladding, roughness: 0.55, metalness: 0.25, bumpMap: ribs, bumpScale: 1.5 }),
     frame: new MeshStandardMaterial({ color: colors.frame, roughness: 0.45, metalness: 0.35 }),
+    // Window, door and hatch frames are always white (UnitConfiguration::OPENING_FRAME_COLOR).
+    openingFrame: new MeshStandardMaterial({ color: '#f2f0e8', roughness: 0.45, metalness: 0.2 }),
     doorLeaf: new MeshStandardMaterial({ color: shade(colors.frame, 1.25), roughness: 0.5, metalness: 0.3 }),
     glass: new MeshStandardMaterial({ color: '#8fb3c9', roughness: 0.08, metalness: 0.9, transparent: true, opacity: 0.75 }),
     handle: new MeshStandardMaterial({ color: '#d9d9d9', roughness: 0.3, metalness: 0.8 }),
@@ -211,11 +213,11 @@ function buildWindow({ left, right, bottom, top }, materials) {
 
   group.add(
     box(width, height, 0.01, centerX, centerY, -CLADDING_THICKNESS / 2, materials.glass),
-    box(0.05, height, 0.08, left + 0.025, centerY, -0.02, materials.frame),
-    box(0.05, height, 0.08, right - 0.025, centerY, -0.02, materials.frame),
-    box(width, 0.05, 0.08, centerX, bottom + 0.025, -0.02, materials.frame),
-    box(width, 0.05, 0.08, centerX, top - 0.025, -0.02, materials.frame),
-    box(0.04, height, 0.06, centerX, centerY, -0.02, materials.frame),
+    box(0.05, height, 0.08, left + 0.025, centerY, -0.02, materials.openingFrame),
+    box(0.05, height, 0.08, right - 0.025, centerY, -0.02, materials.openingFrame),
+    box(width, 0.05, 0.08, centerX, bottom + 0.025, -0.02, materials.openingFrame),
+    box(width, 0.05, 0.08, centerX, top - 0.025, -0.02, materials.openingFrame),
+    box(0.04, height, 0.06, centerX, centerY, -0.02, materials.openingFrame),
   );
 
   return group;
@@ -234,9 +236,9 @@ function buildDoor({ left, right, bottom, top }, materials) {
 
   group.add(
     box(width, height, 0.04, centerX, (bottom + top) / 2, -0.03, materials.doorLeaf),
-    box(jamb, height, 0.08, left + jamb / 2, (bottom + top) / 2, -0.02, materials.frame),
-    box(jamb, height, 0.08, right - jamb / 2, (bottom + top) / 2, -0.02, materials.frame),
-    box(width, head, 0.08, centerX, top - head / 2, -0.02, materials.frame),
+    box(jamb, height, 0.08, left + jamb / 2, (bottom + top) / 2, -0.02, materials.openingFrame),
+    box(jamb, height, 0.08, right - jamb / 2, (bottom + top) / 2, -0.02, materials.openingFrame),
+    box(width, head, 0.08, centerX, top - head / 2, -0.02, materials.openingFrame),
     box(0.08, 0.03, 0.05, right - 0.14, 1.09, 0.01, materials.handle),
   );
 
@@ -256,9 +258,9 @@ function buildHatch({ left, right, bottom, top }, materials) {
   group.add(
     box(width / 2, height - 0.1, 0.01, centerX + width / 4 - 0.03, centerY, -CLADDING_THICKNESS / 2 - 0.015, materials.glass),
     box(width / 2, height - 0.1, 0.01, centerX - width / 4 + 0.03, centerY, -CLADDING_THICKNESS / 2 + 0.015, materials.glass),
-    box(0.07, height, 0.1, left + 0.035, centerY, -0.02, materials.frame),
-    box(0.07, height, 0.1, right - 0.035, centerY, -0.02, materials.frame),
-    box(width, 0.07, 0.1, centerX, top - 0.035, -0.02, materials.frame),
+    box(0.07, height, 0.1, left + 0.035, centerY, -0.02, materials.openingFrame),
+    box(0.07, height, 0.1, right - 0.035, centerY, -0.02, materials.openingFrame),
+    box(width, 0.07, 0.1, centerX, top - 0.035, -0.02, materials.openingFrame),
     box(width + 0.1, 0.04, 0.16, centerX, bottom - 0.02, 0.03, materials.steel),
   );
 

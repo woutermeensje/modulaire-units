@@ -52,7 +52,7 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame(['window', 'window', 'door', 'empty', 'window', 'window'], $unit->configuration['walls']['front']);
         $this->assertSame(['empty', 'window', 'window'], $unit->configuration['walls']['left'], 'A window takes the free slot next to it.');
         $this->assertSame('#0e4c92', $unit->configuration['colors']['cladding']);
-        $this->assertSame('#f2f0e8', $unit->configuration['colors']['frame']);
+        $this->assertSame('#0e4c92', $unit->configuration['colors']['frame'], 'The frame follows the walls, whatever was sent.');
         $this->assertSame('site', $unit->configuration['background']);
 
         $this->actingAs($this->admin)->get(route('admin.units.edit', $unit))
@@ -510,16 +510,16 @@ class UnitConfiguratorTest extends TestCase
         $this->assertEqualsWithDelta(2.275, $door['top'], 0.001);
     }
 
-    public function test_only_white_anthracite_blue_logo_blue_and_grey_are_available(): void
+    public function test_only_white_anthracite_blue_and_grey_are_available(): void
     {
-        $this->assertSame(['Wit', 'Antraciet', 'Blauw', 'Logoblauw', 'Grijs'], array_values(UnitConfiguration::COLORS));
-        $this->assertSame('#4188aa', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#4a8db0']])['colors']['cladding']);
+        $this->assertSame(['Wit', 'Antraciet', 'Blauw', 'Grijs'], array_values(UnitConfiguration::COLORS));
+        $this->assertSame('#0e4c92', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#1a5aa0']])['colors']['cladding']);
         $this->assertSame('#777c7e', UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#808080']])['colors']['cladding']);
 
         $configuration = UnitConfiguration::normalize(['size' => '3x3', 'colors' => ['cladding' => '#3d4a52', 'frame' => '#2255aa']]);
 
         $this->assertSame('#383e42', $configuration['colors']['cladding']);
-        $this->assertSame('#0e4c92', $configuration['colors']['frame']);
+        $this->assertSame('#383e42', $configuration['colors']['frame'], 'The frame always has the colour of the walls.');
     }
 
     public function test_new_configurations_stand_on_an_industrial_estate(): void
