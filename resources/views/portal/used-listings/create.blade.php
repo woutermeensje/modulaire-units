@@ -25,6 +25,16 @@
                     <label class="portal-label" for="description">Beschrijving</label>
                     <textarea class="portal-textarea" id="description" name="description" rows="7" maxlength="5000" placeholder="Afmetingen, bouwjaar, staat, voorzieningen, beschikbaarheid…" required>{{ old('description') }}</textarea>
                 </div>
+                <div class="portal-field">
+                    <label class="portal-label" for="brand">Merk (optioneel)</label>
+                    <input class="portal-input" id="brand" name="brand" value="{{ old('brand') }}" maxlength="100" list="brand-suggestions" autocomplete="off" placeholder="Bijv. Containex of Moravia">
+                    <datalist id="brand-suggestions">
+                        @foreach (\App\Models\UsedListing::BRANDS as $brand)
+                            <option value="{{ $brand }}">
+                        @endforeach
+                    </datalist>
+                    <p class="portal-help">Kies een merk uit de lijst of typ het zelf. Weet je het niet? Laat het dan leeg.</p>
+                </div>
                 <div class="portal-form__row">
                     <div class="portal-field">
                         <label class="portal-label" for="location">Locatie</label>

@@ -52,9 +52,9 @@ class UnitDesigner
         Kleuren zijn hexcodes: cladding is de kleur van de wanden; het stalen frame krijgt automatisch dezelfde kleur en de
         kozijnen zijn altijd wit. Er zijn vier kleuren: "#f2f0e8" (wit), "#383e42" (antraciet), "#0e4c92" (blauw) en "#c5c7c4" (lichtgrijs).
         Kies bij andere kleurwensen de kleur die er het dichtst bij ligt.
-        interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "heater"
-        (elektrische verwarming laag aan de wand in elke unit; te combineren met airco), "toilet" (toiletruimte met fonteintje)
-        en "kitchen" (keukentje). Verlichting zit er altijd in. Kies alleen wat gevraagd wordt
+        interior is de inrichting, een lijst met: "airco" (airco aan de wand in elke unit, koelt en verwarmt), "toilet"
+        (toiletruimte met fonteintje) en "kitchen" (keukentje). Verlichting en elektrische verwarming ("heater") zitten er
+        altijd in; die hoef je niet te kiezen. Kies alleen wat gevraagd wordt
         of duidelijk bij het gebruik hoort; anders een lege lijst. Waar het komt te staan wordt automatisch bepaald.
         tentative is een lijst met keuzes uit interior
         die de klant nog niet zeker weet (bijv. "toilet als optie"); anders een lege lijst.

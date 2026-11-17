@@ -21,6 +21,7 @@ class UsedListingRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:150'],
             'description' => ['required', 'string', 'max:5000'],
+            'brand' => ['nullable', 'string', 'max:100'],
             'location' => ['required', 'string', 'max:150'],
             'price' => ['required', 'integer', 'min:1', 'max:10000000'],
             'images' => ['required', 'array', 'min:1', 'max:'.UsedListing::MAX_IMAGES],
@@ -49,6 +50,7 @@ class UsedListingRequest extends FormRequest
         return [
             'title' => 'titel',
             'description' => 'beschrijving',
+            'brand' => 'merk',
             'location' => 'locatie',
             'price' => 'prijs',
             'images' => 'afbeeldingen',

@@ -38,7 +38,7 @@ class UsedListingController extends Controller
         $user = $request->user();
 
         $listing = $user->usedListings()->create([
-            ...$request->safe()->only(['title', 'description', 'location', 'price', 'contact_name', 'contact_email', 'contact_phone']),
+            ...$request->safe()->only(['title', 'description', 'brand', 'location', 'price', 'contact_name', 'contact_email', 'contact_phone']),
             'slug' => UsedListing::uniqueSlug($request->input('title')),
             'images' => array_map(
                 fn ($file): array => ['path' => $uploader->store($file, $request->input('title')), 'alt' => null],
@@ -57,6 +57,7 @@ class UsedListingController extends Controller
                 'organisatie' => $user->company_name,
                 'account' => $user->email,
                 'titel' => $listing->title,
+                'merk' => $listing->brand,
                 'locatie' => $listing->location,
                 'prijs' => $listing->formattedPrice(),
                 'beoordelen' => route('admin.used-listings.edit', $listing->id),

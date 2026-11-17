@@ -250,11 +250,12 @@ class UnitInteriorOptionsTest extends TestCase
     {
         $this->actingAs(User::factory()->create())->get(route('unit-composer'))
             ->assertOk()
-            ->assertSee('name="configuration[interior][]" value="heater"', false)
+            ->assertSee('name="configuration[interior][]" value="airco"', false)
+            ->assertDontSee('name="configuration[interior][]" value="heater"', false)
             ->assertDontSee('name="configuration[furniture][counter]"', false)
             ->assertDontSee('name="configuration[connections][network]"', false)
             ->assertDontSee('name="configuration[steps]"', false)
-            ->assertSee('name="configuration[tentative][]" value="toilet"', false)
+            ->assertDontSee('name="configuration[tentative][]"', false)
             ->assertSee('Uitgifteluik (80 cm, wind- en waterdicht)')
             ->assertSee('data-configurator-positions-reset', false);
     }

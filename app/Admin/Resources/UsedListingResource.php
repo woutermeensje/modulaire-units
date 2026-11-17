@@ -39,6 +39,7 @@ class UsedListingResource extends Resource
                 ? new HtmlString('<img class="portal-thumb" src="'.e(SiteUrl::media(Media::variant($listing->coverImage(), 'thumbnail'))).'" alt="">')
                 : '',
             'Titel' => fn (UsedListing $listing) => new HtmlString('<strong>'.e($listing->title).'</strong>'),
+            'Merk' => fn (UsedListing $listing) => $listing->brand,
             'Locatie' => fn (UsedListing $listing) => $listing->location,
             'Prijs' => fn (UsedListing $listing) => $listing->formattedPrice(),
             'Aanbieder' => fn (UsedListing $listing) => $listing->user?->company_name ?: $listing->contact_name,
@@ -54,6 +55,7 @@ class UsedListingResource extends Resource
                 Field::make('title', 'Titel')->required(),
                 Field::make('slug', 'Slug', 'slug')->slugFrom('title'),
                 Field::make('description', 'Beschrijving', 'textarea')->rows(10)->required(),
+                Field::make('brand', 'Merk')->half(),
                 Field::make('location', 'Locatie')->half()->required(),
                 Field::make('price', 'Prijs (€)', 'number')->half()->required(),
                 Field::make('images', "Foto's", 'gallery')->help('Maximaal '.UsedListing::MAX_IMAGES.' foto\'s; de eerste is de hoofdfoto.'),
@@ -76,6 +78,7 @@ class UsedListingResource extends Resource
             'title' => ['required', 'string', 'max:150'],
             'slug' => ['nullable', 'string', 'max:190', Rule::unique('used_listings', 'slug')->ignore($record?->id)],
             'description' => ['required', 'string', 'max:5000'],
+            'brand' => ['nullable', 'string', 'max:100'],
             'location' => ['required', 'string', 'max:150'],
             'price' => ['required', 'integer', 'min:0'],
             'images_upload' => ['array', 'max:'.UsedListing::MAX_IMAGES],

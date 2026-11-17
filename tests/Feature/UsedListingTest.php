@@ -172,4 +172,46 @@ class UsedListingTest extends TestCase
         $this->assertTrue($listing->fresh()->isPublished());
         $this->get($listing->url())->assertOk();
     }
+
+    public function test_sellers_can_pick_a_suggested_brand_or_type_their_own(): void
+    {
+        Mail::fake();
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('my-used-listings.create'))
+            ->assertOk()
+            ->assertSee('name="brand"', false)
+            ->assertSee('list="brand-suggestions"', false)
+            ->assertSee('<option value="Containex">', false)
+            ->assertSee('<option value="Moravia">', false)
+            ->assertSee('<option value="Adapteo">', false)
+            ->assertSee('<option value="Jan Snel">', false)
+            ->assertSee('placeholder="Bijv. Containex of Moravia">', false);
+
+        $this->actingAs($user)->post(route('my-used-listings.store'), [
+            'title' => 'Kantoorunit 6 x 3',
+            'description' => 'Goede staat.',
+            'brand' => 'Eigen bouw Bakker',
+            'location' => 'Delft',
+            'price' => 4000,
+            'images' => [UploadedFile::fake()->image('voorkant.jpg')],
+            'contact_name' => 'Piet Bakker',
+            'contact_email' => 'piet@example.com',
+        ])->assertRedirect(route('my-used-listings.index'));
+
+        $listing = UsedListing::query()->sole();
+        $this->assertSame('Eigen bouw Bakker', $listing->brand);
+        $this->assertSame('Eigen bouw Bakker', Submission::query()->sole()->data['merk']);
+
+        $listing->update(['status' => 'published', 'published_at' => now()->subMinute()]);
+        $this->get($listing->url())->assertOk()->assertSee('Eigen bouw Bakker');
+    }
+
+    public function test_the_brand_is_optional_and_not_shown_when_unknown(): void
+    {
+        $listing = UsedListing::factory()->create(['brand' => 'Weet ik niet', 'status' => 'published', 'published_at' => now()->subMinute()]);
+
+        $this->get($listing->url())->assertOk()->assertDontSee('Weet ik niet');
+    }
 }

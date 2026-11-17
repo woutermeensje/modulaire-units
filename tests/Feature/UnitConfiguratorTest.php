@@ -530,11 +530,12 @@ class UnitConfiguratorTest extends TestCase
         $this->assertSame('meadow', UnitConfiguration::normalize(['size' => '3x3', 'background' => 'meadow'])['background']);
     }
 
-    public function test_interior_is_only_kept_when_something_is_chosen(): void
+    public function test_heating_is_always_fitted_and_the_rest_only_when_chosen(): void
     {
-        $this->assertArrayNotHasKey('interior', UnitConfiguration::normalize(['size' => '6x3']));
-        $this->assertArrayNotHasKey('interior', UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['jacuzzi']]));
-        $this->assertSame(['airco', 'kitchen'], UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['kitchen', 'airco']])['interior']);
+        $this->assertSame(['heater'], UnitConfiguration::normalize(['size' => '6x3'])['interior']);
+        $this->assertSame(['heater'], UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['jacuzzi']])['interior']);
+        $this->assertSame(['airco', 'heater', 'kitchen'], UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['kitchen', 'airco']])['interior']);
+        $this->assertArrayNotHasKey('tentative', UnitConfiguration::normalize(['size' => '6x3', 'tentative' => ['heater']]), 'Heating is never uncertain.');
     }
 
     public function test_every_floor_plan_shows_the_ceiling_lights(): void
@@ -542,7 +543,7 @@ class UnitConfiguratorTest extends TestCase
         $layout = InteriorLayout::for(UnitConfiguration::normalize(['size' => '6x3', 'modules' => 2]), 'walls');
 
         $this->assertCount(4, $layout['lights']);
-        $this->assertSame([], $layout['items']);
+        $this->assertSame(['heater', 'heater'], array_column($layout['items'], 'type'), 'Besides the lights only the standard heater, one per unit.');
         $this->assertCount(1, InteriorLayout::for(UnitConfiguration::normalize(['size' => '3x3']), 'walls')['lights']);
         $this->assertStringContainsString('>Verlichting<', (new FloorPlanRenderer)->render(['size' => '3x3']));
     }
@@ -591,8 +592,8 @@ class UnitConfiguratorTest extends TestCase
         $upper = InteriorLayout::for($configuration, 'upper_walls')['items'];
         $aircos = array_values(array_filter($ground, fn (array $item): bool => $item['type'] === 'airco'));
 
-        $this->assertCount(4, $ground);
-        $this->assertSame(['airco', 'airco'], array_column($upper, 'type'), 'The toilet and kitchenette stay on the ground floor.');
+        $this->assertCount(6, $ground, 'Two aircos, two heaters, the toilet and the kitchenette.');
+        $this->assertEqualsCanonicalizing(['airco', 'airco', 'heater', 'heater'], array_column($upper, 'type'), 'The toilet and kitchenette stay on the ground floor.');
         $this->assertSame('right', $aircos[0]['wall'], 'In the back unit the toilet takes the left wall.');
         $this->assertSame('left', $aircos[1]['wall'], 'The window in the right wall of the front unit sends its airco to the left wall.');
     }

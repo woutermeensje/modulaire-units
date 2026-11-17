@@ -63,7 +63,7 @@ class FloorPlanRenderer
         foreach (array_keys($levels) as $index => $level) {
             $originX = $index * $planWidth + self::MARGIN;
             if ($titled) {
-                $body .= $this->text($originX + $length / 2, 320, $levels[$level], 'font-size="220" font-weight="bold"');
+                $body .= $this->text($originX + $length / 2, 320, __($levels[$level]), 'font-size="220" font-weight="bold"');
             }
             $body .= '<g transform="translate('.$originX.' '.$top.')" data-plan-level="'.$level.'" data-scale-x="'.$this->number($scaleX).'" data-scale-y="'.$this->number($scaleY).'">'
                 .$this->plan($configuration, $level, $length, $depth).'</g>';

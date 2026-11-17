@@ -18,13 +18,11 @@
     // In the quote composer the configurator stands in a form that sends the quote; the browser then makes the images
     // of the unit for the PDF (3D views and the floor plan), see unit-configurator.js.
     $quoteForm ??= false;
-    // The public composer (/unit-samensteller/ and the home page) leaves the interior out for now; see partials/unit-composer.
-    $offersInterior ??= true;
     $isConfigured = $composer || filled($value['size'] ?? null);
     $configuration = $isConfigured ? UnitConfiguration::normalize($value) : UnitConfiguration::defaults();
-    if (! $offersInterior) {
-        // Without the choice an older share link must not keep an interior that can't be turned off.
-        unset($configuration['interior'], $configuration['tentative']);
+    if (! $quoteExtras) {
+        // "Nog niet zeker" is only offered in the quote composer, so an older share link must not keep it.
+        unset($configuration['tentative']);
     }
     $maxSlots = fn (string $wall): int => max(array_map(fn (string $size): int => UnitConfiguration::slotCount($size, $wall, UnitConfiguration::MAX_MODULES), array_keys(UnitConfiguration::SIZES)));
     $slotCounts = [];
@@ -41,7 +39,8 @@
         'kitchen' => ['icon' => 'ph-cooking-pot', 'help' => __('Keukenblok met spoelbak en kookplaat')],
     ];
     // The interior options per category, in the order they are shown.
-    $interiorGroups = $offersInterior ? ['Klimaat & verwarming' => ['airco', 'heater'], 'Sanitair & keuken' => ['toilet', 'kitchen']] : [];
+    // Heating is in every unit (UnitConfiguration::STANDARD_INTERIOR), so it is not a choice.
+    $interiorGroups = ['Klimaat' => ['airco'], 'Sanitair & keuken' => ['toilet', 'kitchen']];
     $countIcons = [
         'desk' => 'ph-desk', 'chair' => 'ph-chair', 'counter' => 'ph-storefront', 'worktop' => 'ph-rectangle', 'cabinet' => 'ph-lockers',
         'socket' => 'ph-plug', 'network' => 'ph-network',
@@ -162,7 +161,7 @@
                         @endforeach
                     </div>
                     @if ($loop->first)
-                        <p class="portal-help">{{ __('Een airco koelt en verwarmt; elektrische verwarming staat laag aan de wand. Van allebei komt er één per unit, ook op de verdieping. Te combineren.') }}</p>
+                        <p class="portal-help">{{ __('Elektrische verwarming zit standaard in elke unit. Een airco koelt en verwarmt; er komt er één per unit, ook op de verdieping.') }}</p>
                     @else
                         <p class="portal-help">{{ __('Het toilet en het keukentje staan op de begane grond, op een plek zonder deur.') }}</p>
                     @endif
@@ -198,7 +197,7 @@
                     </label>
                 </fieldset>
             @endif
-            @if ($offersInterior)
+            @if ($quoteExtras)
             <fieldset class="unit-configurator__palette unit-configurator__interior" data-configurator-body data-configurator-tentative @unless ($isConfigured && $chosen) hidden @endunless>
                 <legend class="portal-label">{{ __('Nog niet zeker') }}</legend>
                 <div class="unit-configurator__swatches">

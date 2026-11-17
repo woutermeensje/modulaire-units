@@ -24,6 +24,9 @@
 
                 <div class="mh-product-cats">
                     <span>{{ __('Gebruikt') }}</span>
+                    @if ($listing->brand && $listing->brand !== 'Weet ik niet')
+                        <span>{{ $listing->brand }}</span>
+                    @endif
                     <span>📍 {{ $listing->location }}</span>
                 </div>
 

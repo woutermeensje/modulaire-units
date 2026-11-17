@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
  * New listings wait for approval in the admin ("pending") before they appear on /gebruikt/.
  */
 #[Fillable([
-    'user_id', 'title', 'slug', 'description', 'location', 'price', 'images',
+    'user_id', 'title', 'slug', 'description', 'brand', 'location', 'price', 'images',
     'contact_name', 'contact_email', 'contact_phone', 'ip_address', 'status', 'published_at',
 ])]
 class UsedListing extends Model
@@ -25,6 +25,16 @@ class UsedListing extends Model
     use HasFactory, Publishable;
 
     public const MAX_IMAGES = 10;
+
+    /**
+     * Brands suggested when a seller fills in the brand of their unit. Only suggestions: any brand, or none, is fine.
+     *
+     * @var list<string>
+     */
+    public const BRANDS = [
+        'Containex', 'Moravia', 'Adapteo', 'Jan Snel', 'De Meeuw', 'Portakabin', 'Algeco', 'Touax', 'Fagsi',
+        'ELA Container', 'Kleusberg', 'Cadolto', 'Alho', 'Ursem', 'Weet ik niet',
+    ];
 
     /**
      * @return array<string, string>

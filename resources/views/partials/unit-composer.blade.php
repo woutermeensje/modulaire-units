@@ -16,7 +16,6 @@
     'value' => $configuration,
     'composer' => true,
     'ai' => false,
-    'offersInterior' => false,
     'previewUrl' => \App\Support\SiteUrl::action('unit-composer.public.preview'),
     'quoteUrl' => \App\Support\SiteUrl::action('unit-composer.quote'),
 ])

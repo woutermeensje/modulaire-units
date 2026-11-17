@@ -97,7 +97,7 @@
     "E-mailadres": "Email address",
     "E-mailadres:": "Email address:",
     "Een adviseur denkt met je mee en stuurt een vrijblijvende offerte.": "An adviser will think along with you and send you a no-obligation quote.",
-    "Een airco koelt en verwarmt; elektrische verwarming staat laag aan de wand. Van allebei komt er één per unit, ook op de verdieping. Te combineren.": "Air conditioning cools and heats; an electric heater sits low on the wall. There is one of each per unit, upstairs too. They can be combined.",
+    "Elektrische verwarming zit standaard in elke unit. Een airco koelt en verwarmt; er komt er één per unit, ook op de verdieping.": "Electric heating is standard in every unit. Air conditioning cools and heats; there is one per unit, upstairs too.",
     "Een uitgiftebalie komt bij een uitgifteluik of raam, een bureau bij een raam en een stoel bij een bureau of balie. Meubilair staat op de begane grond.": "A service counter goes at a hatch or window, a desk at a window and a chair at a desk or counter. Furniture stands on the ground floor.",
     "Eigen samenstelling: :label": "Custom configuration: :label",
     "Elektra & netwerk": "Electrical & network",
@@ -158,7 +158,7 @@
     "Kleedkamers": "Changing rooms",
     "Klik op een vak om te wisselen.": "Click a section to change it.",
     "Klik op een vak om te wisselen. Sleep wat binnen staat naar de plek die je wilt.": "Click a section to change it. Drag what is inside to where you want it.",
-    "Klimaat & verwarming": "Climate & heating",
+    "Klimaat": "Climate",
     "Koop": "Buy",
     "Kopen": "Buy",
     "Kopieer": "Copy",
@@ -360,5 +360,6 @@
     "Beste :name,": "Dear :name,",
     "In de bijlage vind je de offerte :number.": "Please find quote :number attached.",
     "De offerte met tekeningen en de volledige specificatie staat in de bijlage (:file).": "The quote with drawings and the full specification is attached (:file).",
+    "Bekijk de unit in 3D": "View the unit in 3D",
     "vrij": "clear"
 }

@@ -72,6 +72,7 @@ final class QuoteSpecification
      */
     private function amounts(array $counts, array $labels): array
     {
-        return array_map(fn (string $key, int $count): string => $count.'× '.mb_strtolower($this->name($key, $labels)), array_keys($counts), array_values($counts));
+        // Only the first letter becomes lower case, so abbreviations such as "UTP" stay as they are.
+        return array_map(fn (string $key, int $count): string => $count.'× '.mb_lcfirst($this->name($key, $labels)), array_keys($counts), array_values($counts));
     }
 }

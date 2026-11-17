@@ -25,6 +25,7 @@ use Illuminate\Validation\Rule;
  * connections with their numbers, which of those are still uncertain (tentative), a step in front of the ground-floor
  * doors (steps) and the positions items were dragged to on the floor plan (positions) are only kept when something
  * was chosen, so they are left out otherwise. Lighting is always fitted, so it is not an option; see InteriorLayout.
+ * Heating is always fitted too (standard in every unit), so the interior always holds it; see STANDARD_INTERIOR.
  *
  * @phpstan-type Configuration array{
  *     size: string,
@@ -215,6 +216,14 @@ class UnitConfiguration
         'worktop' => 'Werkblad',
         'cabinet' => 'Opbergkast',
     ];
+
+    /**
+     * What every unit has inside without being chosen: an electric heater (standard in the supplier's unit). It is kept in
+     * the interior so the drawings, the summary and the quote show it, but it can't be turned off or marked as uncertain.
+     *
+     * @var list<string>
+     */
+    public const STANDARD_INTERIOR = ['heater'];
 
     public const MAX_FURNITURE = 8;
 
@@ -429,11 +438,11 @@ class UnitConfiguration
 
         $background = self::pick($input['background'] ?? null, self::BACKGROUNDS, 'industrial');
         $stairs = $floors > 1 && filter_var($input['stairs'] ?? true, FILTER_VALIDATE_BOOLEAN);
-        $interior = array_values(array_intersect(array_keys(self::INTERIOR), (array) ($input['interior'] ?? [])));
+        $interior = array_values(array_intersect(array_keys(self::INTERIOR), [...(array) ($input['interior'] ?? []), ...self::STANDARD_INTERIOR]));
         $usage = array_values(array_intersect(array_keys(self::USAGES), (array) ($input['usage'] ?? [])));
         $furniture = self::counts($input['furniture'] ?? [], self::FURNITURE, self::MAX_FURNITURE);
         $connections = self::counts($input['connections'] ?? [], self::CONNECTIONS, self::MAX_CONNECTIONS);
-        $tentative = array_values(array_intersect([...$interior, ...array_keys($furniture)], (array) ($input['tentative'] ?? [])));
+        $tentative = array_values(array_diff(array_intersect([...$interior, ...array_keys($furniture)], (array) ($input['tentative'] ?? [])), self::STANDARD_INTERIOR));
         $steps = filter_var($input['steps'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
         $configuration = [

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\SiteUrl;
 use App\Support\UnitConfiguration;
 use Database\Factories\QuoteFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -57,6 +58,17 @@ class Quote extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Full URL of the public unit composer opened with this quote's unit, in the language of the quote, so the client
+     * can look at it in 3D. It is the same share link as "Kopieer link" in the composer.
+     */
+    public function composerUrl(): string
+    {
+        $code = UnitConfiguration::toShareCode(UnitConfiguration::normalize($this->configuration));
+
+        return SiteUrl::absolute(SiteUrl::route('unit-composer.public', [UnitConfiguration::SHARE_KEY => $code], $this->locale));
     }
 
     /**

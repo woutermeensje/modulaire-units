@@ -101,7 +101,9 @@ function initConfigurator(root) {
 
   const readConfiguration = () => {
     const field = (name) => root.querySelector(`[name="configuration[${name}]"]`).value;
-    const interior = interiorInputs.filter((input) => input.checked).map((input) => input.value);
+    // Heating is in every unit, like UnitConfiguration::STANDARD_INTERIOR; the order follows UnitConfiguration::INTERIOR.
+    const chosenInterior = new Set([...interiorInputs.filter((input) => input.checked).map((input) => input.value), 'heater']);
+    const interior = ['airco', 'heater', 'toilet', 'kitchen'].filter((item) => chosenInterior.has(item));
     const furniture = readAmounts('furniture');
     const connections = readAmounts('connections');
     const tentative = tentativeInputs.filter((input) => input.checked && !input.disabled).map((input) => input.value);

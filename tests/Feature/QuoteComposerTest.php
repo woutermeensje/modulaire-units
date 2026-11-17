@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Mail\QuoteSent;
+use App\Mail\SubmissionReceived;
 use App\Models\Quote;
+use App\Models\Submission;
 use App\Models\User;
+use App\Support\FloorPlanRenderer;
 use App\Support\Locale;
 use App\Support\QuoteSpecification;
 use App\Support\UnitConfiguration;
@@ -146,7 +149,7 @@ class QuoteComposerTest extends TestCase
         $this->assertContains('1× buitendeur (87,5 x 212,5 cm)', $sections['Ramen en deuren']);
         $this->assertContains('1× uitgifteluik (80 cm, wind- en waterdicht)', $sections['Ramen en deuren']);
         $this->assertSame(['Opstapje voor de deuren op de begane grond'], $sections['Toegang']);
-        $this->assertSame(['Airco'], $sections['Klimaat, sanitair en keuken']);
+        $this->assertSame(['Airco', 'Verwarming'], $sections['Klimaat, sanitair en keuken'], 'Heating is standard, so it is always listed.');
         $this->assertSame(['6× wandcontactdoos'], $sections['Elektra en netwerk']);
         $this->assertSame(['1× bureau', '1× bureaustoel (optioneel)'], $sections['Meubilair']);
         $this->assertArrayNotHasKey('Type gebruik', $sections);
@@ -193,6 +196,12 @@ class QuoteComposerTest extends TestCase
                 && $mail->hasAttachment(Attachment::fromData(fn (): string => $mail->pdf, $quote->number().'.pdf')->withMime('application/pdf'))
                 && str_starts_with($mail->pdf, '%PDF');
         });
+
+        $mail = new QuoteSent($quote, '%PDF');
+        $mail->assertSeeInHtml('Bekijk de unit in 3D');
+        $mail->assertSeeInHtml(e($quote->composerUrl()), false);
+        $this->assertStringStartsWith(config('app.url').'/unit-samensteller/?samenstelling=', $quote->composerUrl());
+        $this->get($quote->composerUrl())->assertOk()->assertSee('data-composer', false);
 
         $this->actingAs($admin)->get(route('quote-composer'))->assertSee($quote->number())->assertSee(route('quotes.pdf', $quote), false);
         $this->actingAs($admin)->get(route('quotes.pdf', $quote))->assertOk()->assertHeader('Content-Type', 'application/pdf');
@@ -279,6 +288,10 @@ class QuoteComposerTest extends TestCase
         $mail = (new QuoteSent($quote, '%PDF'))->locale('en');
         $mail->assertSeeInHtml('Dear John,');
         $mail->assertSeeInHtml('Please find quote '.$quote->number().' attached.');
+        $mail->assertSeeInHtml('View the unit in 3D');
+        $mail->assertDontSeeInHtml('Automatische melding');
+        $mail->assertSeeInHtml(e($quote->composerUrl()), false);
+        $this->assertStringContainsString('/en/unit-composer/?samenstelling=', $quote->composerUrl(), 'The English quote opens the English composer.');
 
         $html = Locale::using('en', fn (): string => view('pdf.quote', [
             'quote' => $quote,
@@ -292,6 +305,7 @@ class QuoteComposerTest extends TestCase
         $this->assertStringContainsString('Step in front of the ground-floor doors', $html);
         $this->assertStringContainsString('1× office chair (optional)', $html);
         $this->assertStringContainsString('Outside dimensions 6.06 x 2.99 metres', $html);
+        $this->assertStringContainsString('6× wall socket', $html);
         $this->assertStringNotContainsString('Offertenummer', $html);
     }
 
@@ -362,5 +376,24 @@ class QuoteComposerTest extends TestCase
         $this->assertStringContainsString('src="data:image/png;base64,AAAA"', $html);
         $this->assertStringNotContainsString(public_path(), $html);
         $this->assertFileExists(resource_path('images/quote-logo.png'));
+    }
+
+    public function test_an_english_floor_plan_of_two_storeys_has_no_dutch_level_names(): void
+    {
+        $configuration = UnitConfiguration::normalize(['size' => '6x3', 'floors' => 2, 'connections' => ['network' => 2]]);
+
+        $svg = Locale::using('en', fn (): string => app(FloorPlanRenderer::class)->render($configuration));
+        $this->assertStringContainsString('Ground floor', $svg);
+        $this->assertStringContainsString('Upper floor', $svg);
+        $this->assertStringNotContainsString('Begane grond', $svg);
+        $this->assertStringNotContainsString('Verdieping', $svg);
+
+        $sections = Locale::using('en', fn (): array => (new QuoteSpecification($configuration))->sections());
+        $this->assertSame(['2× network point (UTP)'], $sections['Electrical and network']);
+    }
+
+    public function test_internal_notifications_still_say_they_are_automatic(): void
+    {
+        $this->assertStringContainsString('Automatische melding', (new SubmissionReceived(Submission::factory()->create()))->render());
     }
 }

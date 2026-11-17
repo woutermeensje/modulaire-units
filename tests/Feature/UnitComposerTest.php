@@ -77,7 +77,8 @@ class UnitComposerTest extends TestCase
             ->assertSee('aria-label="Legenda"', false)
             ->assertSee('Raam (180 cm)')
             ->assertSee('Deur (87,5 cm)')
-            ->assertDontSee('name="configuration[interior][]"', false)
+            ->assertSee('name="configuration[interior][]" value="airco"', false)
+            ->assertDontSee('name="configuration[interior][]" value="heater"', false)
             ->assertSee('data-configurator-view="interior"', false)
             ->assertDontSee('id="configuration_background"', false);
 
@@ -168,20 +169,23 @@ class UnitComposerTest extends TestCase
         $this->get('/mijn-offerte/')->assertSee('gebruik: kantoor, kantine');
     }
 
-    public function test_the_public_composer_leaves_the_interior_out_for_now(): void
+    public function test_the_public_composer_offers_airco_toilet_and_kitchen_but_not_uncertain_items(): void
     {
         $encoded = UnitConfiguration::toShareCode(UnitConfiguration::normalize(['size' => '6x3', 'interior' => ['airco', 'toilet'], 'tentative' => ['airco']]));
 
         $this->get('/unit-samensteller/?'.UnitConfiguration::SHARE_KEY.'='.$encoded)
             ->assertOk()
-            ->assertDontSee('name="configuration[interior][]"', false)
+            ->assertSee('name="configuration[interior][]" value="airco" checked', false)
+            ->assertSee('name="configuration[interior][]" value="toilet" checked', false)
+            ->assertSee('name="configuration[interior][]" value="kitchen"', false)
+            ->assertSee('Elektrische verwarming zit standaard in elke unit.')
             ->assertDontSee('data-configurator-tentative', false)
-            ->assertDontSee('Klimaat &amp; verwarming', false)
-            ->assertDontSee('Sanitair &amp; keuken', false);
+            ->assertDontSee('>optie<', false);
 
         $this->actingAs(User::factory()->create())->get(route('unit-composer'))
             ->assertOk()
-            ->assertSee('name="configuration[interior][]"', false);
+            ->assertSee('name="configuration[interior][]" value="toilet"', false)
+            ->assertDontSee('data-configurator-tentative', false);
     }
 
     public function test_a_bar_to_add_the_unit_to_the_quote_is_ready_for_when_the_unit_is_edited(): void
