@@ -1,3 +1,18 @@
+# ModulaireHuisvesting.nl
+
+## De configurator en de offertetool
+
+Op de publieke pagina's staat een configurator (`/unit-samensteller/`). Daarmee stellen bedrijven en klanten zelf een unit samen. Het gaat om de basis van de unit: oppervlakte, ramen, deuren en kleuren.
+
+Per unit stelt een klant uiteraard veel meer eisen, zoals airco, verwarming, stopcontacten, vloer en de isolatiedikte van de muren. Die eisen wil ik per offerte los kunnen meesturen vanuit de offertetool (`/account/offerte-samenstellen`, alleen voor admins), want de prijs kan daardoor flink variëren. Ze komen als opsomming in de PDF-bijlage van de offerte.
+
+De configurator en de offertetool samen moeten een groot onderscheidend vermogen van dit platform worden.
+
+**Afspraken voor de code:**
+- Houd de publieke configurator eenvoudig. Een nieuwe detailoptie komt in de offertetool (achter `$quoteExtras`) en niet in de publieke configurator, tenzij ik iets anders vraag.
+- Beide tools gebruiken dezelfde configurator. `App\Support\UnitConfiguration::normalize()` is de enige bron van waarheid voor een samenstelling. De positielogica van ramen en deuren in `openings()` staat ook in `resources/js/interior-layout.js`, en die twee moeten gelijk blijven.
+- Vaste regels, dus geen keuzes: het stalen frame heeft de kleur van de wanden, kozijnen zijn altijd wit en elektrische verwarming zit standaard in elke unit.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 

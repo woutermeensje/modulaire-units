@@ -309,3 +309,50 @@ body main.site-main.unit-composer {
 .unit-composer--section {
   scroll-margin-top: calc(var(--mh-header-h, 68px) + 16px);
 }
+
+/*
+ * SEO text below the composer (from the page "unit-samensteller" in the admin) with the information form next to it:
+ * 1200px wide, 65% text and 35% form with a gap between them; below each other on smaller screens.
+ */
+.unit-composer__seo {
+  display: grid;
+  grid-template-columns: minmax(0, 65fr) minmax(0, 35fr);
+  gap: 48px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 56px auto 0;
+}
+
+/* Specific enough to win from the theme's ".site-main.page .page-content" (padding 0 0 48px). */
+body main.site-main.unit-composer .unit-composer__seo-text.page-content {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.unit-composer__seo-text > :first-child {
+  margin-top: 0;
+}
+
+.unit-composer__seo-text > :last-child {
+  margin-bottom: 0;
+}
+
+.unit-composer .unit-composer__seo-form .mh-info-form {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 24px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .unit-composer__seo {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

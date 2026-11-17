@@ -27,6 +27,39 @@ class PublicSiteTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Welkom bij de modulaire units', false)->assertSee('Inloggen');
     }
 
+    public function test_homepage_text_is_split_into_a_block_per_h2(): void
+    {
+        Page::factory()->create(['title' => 'Home', 'slug' => '', 'content' => '<div class="elementor"><div class="elementor-widget-text-editor">'
+            .'<h1>Modulaire Huisvesting</h1><p>Intro&nbsp;tekst</p><h2>Huren en kopen</h2><p>Tekst over huren</p>'
+            .'<h2>Gebruikte units</h2><p>Tekst over gebruikt</p><p>Tweede alinea</p></div></div>']);
+
+        $response = $this->get('/')->assertOk();
+
+        $response->assertSee('<h1 id="mh-home-blocks-title" class="mh-home-blocks__title">Modulaire Huisvesting</h1>', false)
+            ->assertSee('<p>Intro tekst</p>', false);
+        $this->assertSame(2, substr_count($response->getContent(), '<article class="mh-home-block">'));
+        $response->assertSeeInOrder(['Huren en kopen', 'Tekst over huren', 'Gebruikte units', 'Tekst over gebruikt', 'Tweede alinea'], false);
+    }
+
+    public function test_a_paragraph_with_only_a_link_becomes_the_block_button(): void
+    {
+        Page::factory()->create(['title' => 'Home', 'slug' => '', 'content' => '<h2>Huren</h2><p>Tekst met <a href="/faq/">een link</a> erin</p>'
+            .'<p><a href="/huren/">Bekijk huren</a></p><h2>Kopen</h2><p>Geen knop hier</p>']);
+
+        $response = $this->get('/')->assertOk();
+
+        $response->assertSee('<a class="mh-btn mh-btn--outline mh-home-block__button" href="/huren/">Bekijk huren</a>', false)
+            ->assertSee('<a href="/faq/">een link</a>', false);
+        $this->assertSame(1, substr_count($response->getContent(), 'mh-home-block__button'));
+    }
+
+    public function test_homepage_with_one_h2_keeps_its_plain_content(): void
+    {
+        Page::factory()->create(['title' => 'Home', 'slug' => '', 'content' => '<h2>Enige kop</h2><p>Gewone tekst</p>']);
+
+        $this->get('/')->assertOk()->assertSee('<p>Gewone tekst</p>', false)->assertDontSee('mh-home-block', false);
+    }
+
     public function test_nested_pages_resolve_by_their_full_path_with_trailing_slash(): void
     {
         $parent = Page::factory()->create(['slug' => 'kopen']);

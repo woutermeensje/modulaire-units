@@ -101,6 +101,42 @@ class UnitComposerTest extends TestCase
             ->assertSee('data-configurator-quote data-quote-url="/unit-samensteller/offerte">', false);
     }
 
+    public function test_the_public_page_shows_the_seo_text_and_meta_of_the_unit_samensteller_page(): void
+    {
+        Page::factory()->create([
+            'slug' => 'unit-samensteller',
+            'content' => '<h2>Zelf een unit samenstellen</h2><p>Uitleg over de samensteller</p>',
+            'meta_title' => 'Modulaire unit samenstellen in 3D',
+            'meta_description' => 'Stel online je eigen unit samen.',
+        ]);
+
+        $this->get('/unit-samensteller/')
+            ->assertOk()
+            ->assertSee('<div class="unit-composer__seo-text page-content text-content">', false)
+            ->assertSee('<aside class="unit-composer__seo-form">', false)
+            ->assertSee('id="informatie-aanvragen"', false)
+            ->assertSee('<h2>Zelf een unit samenstellen</h2>', false)
+            ->assertSee('<title>Modulaire unit samenstellen in 3D</title>', false)
+            ->assertSee('Stel online je eigen unit samen.')
+            ->assertSee('data-composer', false);
+    }
+
+    public function test_the_public_page_has_no_seo_text_without_a_published_page(): void
+    {
+        $this->get('/unit-samensteller/')->assertOk()->assertDontSee('unit-composer__seo', false);
+
+        Page::factory()->create(['slug' => 'unit-samensteller', 'content' => '<p>Concepttekst</p>', 'status' => 'draft']);
+
+        $this->get('/unit-samensteller/')->assertOk()->assertDontSee('Concepttekst');
+    }
+
+    public function test_the_english_composer_does_not_show_the_untranslated_dutch_seo_text(): void
+    {
+        Page::factory()->create(['slug' => 'unit-samensteller', 'content' => '<p>Alleen Nederlandse tekst</p>']);
+
+        $this->get('/en/unit-composer/')->assertOk()->assertDontSee('Alleen Nederlandse tekst');
+    }
+
     public function test_guests_are_sent_to_the_login_page(): void
     {
         $this->get(route('unit-composer'))->assertRedirect(route('login'));

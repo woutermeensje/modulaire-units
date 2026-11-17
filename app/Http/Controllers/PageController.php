@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Redirect;
+use App\Services\Content\ContentBlocks;
 use App\Services\Content\OfferLanding;
 use App\Services\Content\ServiceLanding;
 use App\Services\Content\ShortcodeRenderer;
@@ -97,7 +98,10 @@ class PageController extends Controller
             'page' => $page,
             'content' => $this->shortcodes->render($page->content, $page),
             'seo' => Seo::for($page, $page->excerpt),
-            ...($page->source('path') === '' ? ['composer' => $this->composer($request)] : []),
+            ...($page->source('path') === '' ? [
+                'composer' => $this->composer($request),
+                'blocks' => app(ContentBlocks::class)->build($page),
+            ] : []),
         ]);
     }
 
