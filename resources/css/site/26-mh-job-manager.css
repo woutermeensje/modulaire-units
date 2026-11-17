@@ -16,6 +16,14 @@ ul.job_listings li.job_listing {
     border-bottom: none;
 }
 
+div.job_listings ul.job_listings li.job_listing {
+    background: #fff;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    margin: 16px 0;
+    overflow: hidden;
+}
+
 .job-card {
     background: var(--color-surface);
     border-radius: 5px;
