@@ -42,7 +42,8 @@ final class QuoteSpecification
      * What a new quote starts with: the standard unit of the supplier Moravia (see moravia.md), as the client reads it.
      * Only what is the same for every unit of that supplier; what the composer already lists (windows, doors, sockets,
      * airco) is left out, and so are prices and the supplier's name. The admin changes it for another supplier or a
-     * used unit. Sections without a standard (dimensions, water, coupling, transport) start empty.
+     * used unit. Sections without a standard (dimensions, water, coupling) start empty. Transport has the transporter's
+     * rate; its diesel surcharge changes with the diesel price, so check it now and then.
      *
      * @var array<string, string>
      */
@@ -57,6 +58,7 @@ final class QuoteSpecification
         'climate' => "Elektrische wandkachel 2 kW met thermostaat en vorstbeveiliging\n2 ventilatieroosters in de wanden\nGeen mechanische ventilatie",
         'electrical' => "Elektrische installatie volgens de Nederlandse norm\nVerdeelkast met automaten en aardlekschakelaar\nAansluiting CEE 32A (in- en uitgaand)\n1 lichtschakelaar\n2 LED-armaturen 25 W, 3.150 lm, 4.000 K\nStopcontacten met kinderbeveiliging\nZonder overspanningsbeveiliging en zonder brandbeveiligingsschakelaar (AFDD)",
         'site' => "Vlakke, draagkrachtige fundering, klaar vóór de plaatsing\n150 tot 300 mm geventileerde ruimte onder de unit: rondom niet dichtmaken, wel gaas tegen dieren\nRegenpijpen aangesloten op de afvoer, zodat er geen water onder de unit blijft staan\nIn de winter verwarmd houden op minimaal 10 °C, tegen condens en bevriezing",
+        'transport' => 'Transport op regiebasis: € 148,50 per uur + 12% dieseltoeslag = € 166,32 per uur (excl. btw)',
     ];
 
     /** The sections of the PDF in their order; see DETAILS for the ones the admin writes. */

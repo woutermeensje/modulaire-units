@@ -54,6 +54,8 @@ class QuoteRequest extends FormRequest
             'specification_choices' => ['nullable', 'boolean'],
             'included_specifications' => ['nullable', 'array'],
             'included_specifications.*' => [Rule::in(array_keys(QuoteSpecification::DETAILS))],
+            // The one price of the project block: the rent per week per unit, or the purchase price per unit.
+            'unit_price' => ['nullable', 'numeric', 'min:0', 'max:10000000'],
             'lines' => ['nullable', 'array', 'max:50'],
             'lines.*.description' => ['required', 'string', 'max:255'],
             'lines.*.quantity' => ['nullable', 'integer', 'min:1', 'max:9999'],
@@ -82,6 +84,7 @@ class QuoteRequest extends FormRequest
             'locale' => 'taal',
             'intro' => 'begeleidende tekst',
             'kind' => 'koop of huur',
+            'unit_price' => 'prijs',
             'lines.*.description' => 'omschrijving',
             'lines.*.quantity' => 'aantal',
             'lines.*.price' => 'prijs',

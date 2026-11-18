@@ -118,6 +118,20 @@
                             <input class="portal-input" id="reference" name="reference" value="{{ old('reference', $draft->reference) }}" maxlength="255" placeholder="Bijv. pasuitgiftepost eindklant">
                         </div>
                     </div>
+                    @php
+                        // The price is kept in cents; the form shows euros.
+                        $unitPrice = collect($draft->lines ?? [])->firstWhere('status', 'price')['price'] ?? null;
+                    @endphp
+                    <div class="portal-form__row">
+                        <div class="portal-field">
+                            <label class="portal-label" for="unit_price">
+                                <span data-quote-rental>Huurprijs per week per unit (€)</span>
+                                <span data-quote-sale>Aanschafprijs per unit (€)</span>
+                            </label>
+                            <input class="portal-input" id="unit_price" name="unit_price" type="number" inputmode="decimal" min="0" step="0.01" value="{{ old('unit_price', $unitPrice === null ? '' : number_format($unitPrice / 100, 2, '.', '')) }}" placeholder="Bijv. 60">
+                            <p class="portal-help">Excl. btw. Bij meer units rekent de PDF het aantal units uit de samenstelling mee. Leeg laten als de prijs nog niet vaststaat.</p>
+                        </div>
+                    </div>
                 </section>
 
                 <section class="card dash-section">
@@ -165,35 +179,6 @@
                             </div>
                         @endforeach
                     </div>
-                </section>
-
-                @php
-                    // Prices are kept in cents; the form shows euros.
-                    $formLines = old('lines') ?? array_map(fn (array $line): array => [
-                        ...$line,
-                        'price' => $line['price'] === null ? '' : number_format($line['price'] / 100, 2, '.', ''),
-                    ], $draft->lines ?? []);
-                    $formLines[] = ['description' => '', 'quantity' => 1, 'price' => '', 'period' => 'once', 'status' => 'price'];
-                @endphp
-                <section class="card dash-section">
-                    <h2 class="card-title">Prijzen</h2>
-                    <p class="portal-help">Bedragen excl. btw. Alleen <strong>Berekend</strong> telt mee in het totaal. <strong>Optioneel</strong> staat apart met prijs, <strong>Inbegrepen</strong> zonder eigen bedrag, <strong>Door opdrachtgever</strong> onder "niet inbegrepen" en <strong>Nog te bepalen</strong> als open kostenpost. Regels zonder omschrijving tellen niet mee.</p>
-                    <div class="table-wrap">
-                        <table class="table quote-lines">
-                            <thead>
-                                <tr><th>Omschrijving</th><th>Aantal</th><th>Prijs per stuk (€)</th><th data-quote-rental>Per</th><th>Status</th><th></th></tr>
-                            </thead>
-                            <tbody data-quote-lines>
-                                @foreach ($formLines as $index => $line)
-                                    @include('portal.partials.quote-line', ['index' => $index, 'line' => $line])
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <template data-quote-line-template>
-                        @include('portal.partials.quote-line', ['index' => '__INDEX__', 'line' => ['description' => '', 'quantity' => 1, 'price' => '', 'period' => 'once', 'status' => 'price']])
-                    </template>
-                    <button type="button" class="btn btn-secondary quote-lines__add" data-quote-line-add><i class="ph ph-plus"></i> Regel toevoegen</button>
                 </section>
 
                 <section class="card dash-section">

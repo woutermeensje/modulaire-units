@@ -188,7 +188,8 @@
                     </tr>
                     @foreach ($charged as $line)
                         <tr>
-                            <td>{{ $line['description'] }}</td>
+                            {{-- The line made from the price in the project block is written in Dutch and translated here. --}}
+                            <td>{{ __($line['description']) }}</td>
                             <td class="number">{{ $line['quantity'] }}</td>
                             @if ($line['status'] === 'included')
                                 <td class="number muted" colspan="2" style="text-align: right">{{ __('Inbegrepen') }}</td>
@@ -201,16 +202,17 @@
                 </table>
 
                 <table class="totals">
-                    @if ($price->oneOff() > 0)
-                        <tr><td>{{ __('Eenmalige kosten') }}</td><td class="amount">{{ $money($price->oneOff()) }}</td></tr>
+                    {{-- The one-off costs and the rent per week each get their own total; a rental without one-off costs only the rent. --}}
+                    @if ($price->oneOff() > 0 || $price->weekly() === 0)
+                        <tr><td>{{ $price->weekly() > 0 ? __('Totaal eenmalig excl. btw') : __('Totaal excl. btw') }}</td><td class="amount">{{ $money($price->totalExcludingVat()) }}</td></tr>
+                        <tr><td>{{ __('Btw :rate%', ['rate' => \App\Support\QuotePrice::VAT_RATE]) }}</td><td class="amount">{{ $money($price->vat()) }}</td></tr>
+                        <tr class="grand"><td>{{ $price->weekly() > 0 ? __('Totaal eenmalig incl. btw') : __('Totaal incl. btw') }}</td><td class="amount">{{ $money($price->totalIncludingVat()) }}</td></tr>
                     @endif
                     @if ($price->weekly() > 0)
-                        <tr><td>{{ __('Huur per week') }}</td><td class="amount">{{ $money($price->weekly()) }}</td></tr>
+                        <tr><td>{{ __('Huur per week excl. btw') }}</td><td class="amount">{{ $money($price->weekly()) }}</td></tr>
+                        <tr><td>{{ __('Btw :rate%', ['rate' => \App\Support\QuotePrice::VAT_RATE]) }}</td><td class="amount">{{ $money(\App\Support\QuotePrice::vatOn($price->weekly())) }}</td></tr>
+                        <tr class="grand"><td>{{ __('Huur per week incl. btw') }}</td><td class="amount">{{ $money($price->weekly() + \App\Support\QuotePrice::vatOn($price->weekly())) }}</td></tr>
                     @endif
-                    @php($rentLeftOut = $price->weekly() > 0)
-                    <tr><td>{{ $rentLeftOut ? __('Totaal eenmalig excl. btw') : __('Totaal excl. btw') }}</td><td class="amount">{{ $money($price->totalExcludingVat()) }}</td></tr>
-                    <tr><td>{{ __('Btw :rate%', ['rate' => \App\Support\QuotePrice::VAT_RATE]) }}</td><td class="amount">{{ $money($price->vat()) }}</td></tr>
-                    <tr class="grand"><td>{{ $rentLeftOut ? __('Totaal eenmalig incl. btw') : __('Totaal incl. btw') }}</td><td class="amount">{{ $money($price->totalIncludingVat()) }}</td></tr>
                 </table>
             @endif
 

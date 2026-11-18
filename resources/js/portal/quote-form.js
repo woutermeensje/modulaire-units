@@ -32,6 +32,9 @@ export function initQuoteForms() {
             form.querySelectorAll('[data-quote-rental]').forEach((element) => {
                 element.hidden = kind.value !== 'rent';
             });
+            form.querySelectorAll('[data-quote-sale]').forEach((element) => {
+                element.hidden = kind.value === 'rent';
+            });
         };
         kind.addEventListener('change', toggle);
         form.addEventListener('quote-line-added', toggle);

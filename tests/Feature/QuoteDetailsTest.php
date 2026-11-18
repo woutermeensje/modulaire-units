@@ -167,13 +167,13 @@ class QuoteDetailsTest extends TestCase
             ->assertSee('value="Pasuitgiftepost eindklant"', false)
             ->assertSee('<option value="rent" selected', false)
             ->assertSee('100 mm minerale wol A1')
-            ->assertSee('value="Huur unit"', false)
+            ->assertSee('name="unit_price"', false)
             ->assertSee('value="60.00"', false)
             ->assertSee('Inkoop via leverancier')
             ->assertDontSee('Gelaste staalconstructie', false);
     }
 
-    public function test_a_new_quote_starts_with_the_costs_every_quote_has_to_mention(): void
+    public function test_a_new_quote_starts_with_the_standard_specification_and_one_price(): void
     {
         $this->actingAs(User::factory()->admin()->create())->get(route('quote-composer'))
             ->assertOk()
@@ -186,10 +186,45 @@ class QuoteDetailsTest extends TestCase
             ->assertSee('name="terms"', false)
             ->assertSee('name="open_points"', false)
             ->assertSee('name="internal_notes"', false)
-            ->assertSee('value="Transport naar de locatie op regiebasis: € 148,50 per uur + 12% dieseltoeslag = € 166,32 per uur"', false)
-            ->assertSee('data-quote-line-template', false)
+            ->assertSee('Transport op regiebasis: € 148,50 per uur + 12% dieseltoeslag = € 166,32 per uur (excl. btw)')
+            ->assertSee('name="unit_price"', false)
+            ->assertSee('Huurprijs per week per unit (€)')
+            ->assertSee('Aanschafprijs per unit (€)')
+            ->assertDontSee('data-quote-line-template', false)
             ->assertSee('Gelaste staalconstructie van 3 tot 4 mm staal')
             ->assertSee('Vloerbelasting 2,5 kN/m²');
+    }
+
+    public function test_the_price_of_the_project_block_is_per_unit_per_week_for_a_rental_and_once_for_a_sale(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+        $admin = User::factory()->admin()->create();
+        $input = $this->rentalInput(User::factory()->create());
+        unset($input['lines']);
+        $input['unit_price'] = '60';
+        $input['configuration']['modules'] = '2';
+
+        $this->actingAs($admin)->post(route('quote-composer.send'), $input)->assertSessionHasNoErrors();
+
+        $rental = Quote::sole();
+        $this->assertSame([['description' => 'Modulaire unit', 'quantity' => 2, 'price' => 6000, 'period' => 'week', 'status' => 'price']], $rental->lines);
+        $html = app(QuotePdf::class)->html($rental);
+        $this->assertStringContainsString('Huur per week excl. btw', $html);
+        $this->assertStringContainsString('€ 120,00', $html);
+        $this->assertStringContainsString('€ 25,20', $html);
+        $this->assertStringContainsString('€ 145,20', $html);
+        $this->assertStringNotContainsString('Totaal eenmalig', $html, 'A rental without one-off costs only has the rent.');
+        $this->assertStringContainsString('Modular unit', Locale::using('en', fn (): string => app(QuotePdf::class)->html($rental->fill(['locale' => 'en']))));
+
+        $input['kind'] = 'sale';
+        $input['unit_price'] = '8500.50';
+        $this->post(route('quote-composer.send'), $input)->assertSessionHasNoErrors();
+
+        $sale = Quote::query()->latest('id')->first();
+        $this->assertSame('once', $sale->lines[0]['period']);
+        $this->assertSame(850050, $sale->lines[0]['price']);
+        $this->assertSame(1700100, $sale->price()->totalExcludingVat());
     }
 
     public function test_unticked_sections_keep_their_text_but_stay_out_of_the_pdf(): void

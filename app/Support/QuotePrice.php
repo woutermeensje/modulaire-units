@@ -79,7 +79,15 @@ final class QuotePrice
 
     public function vat(): int
     {
-        return (int) round($this->totalExcludingVat() * self::VAT_RATE / 100);
+        return self::vatOn($this->totalExcludingVat());
+    }
+
+    /**
+     * The VAT on an amount in cents, rounded to whole cents.
+     */
+    public static function vatOn(int $cents): int
+    {
+        return (int) round($cents * self::VAT_RATE / 100);
     }
 
     public function totalIncludingVat(): int

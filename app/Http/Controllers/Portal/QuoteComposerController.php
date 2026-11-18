@@ -35,17 +35,8 @@ class QuoteComposerController extends Controller
     /** The query parameter that opens a saved draft to work on, e.g. ?concept=7. */
     public const DRAFT_KEY = 'concept';
 
-    /**
-     * The price lines a new quote starts with: what every quote has to say something about, without a price.
-     */
-    private const STARTING_LINES = [
-        'Modulaire unit',
-        // The rate of the transporter; the diesel surcharge changes with the diesel price, so check it now and then.
-        'Transport naar de locatie op regiebasis: € 148,50 per uur + 12% dieseltoeslag = € 166,32 per uur',
-        'Plaatsing en kraan',
-        'Fundering of ondergrond (bijv. stelconplaten)',
-        'Aansluiten van stroom, water en riool op de locatie',
-    ];
+    /** The description of the price line made from the price in the project block (translated in the PDF). */
+    public const UNIT_LINE = 'Modulaire unit';
 
     public function __invoke(Request $request): View
     {
@@ -57,7 +48,6 @@ class QuoteComposerController extends Controller
         $draft = $savedDraft ?? $source?->replicate(['images', 'sent_at']) ?? new Quote([
             'kind' => 'sale',
             'specifications' => QuoteSpecification::STANDARD,
-            'lines' => array_map(fn (string $description): array => ['description' => $description, 'quantity' => 1, 'price' => null, 'period' => 'once', 'status' => 'tbd'], self::STARTING_LINES),
         ]);
 
         return view('portal.unit-composer', [
@@ -204,6 +194,7 @@ class QuoteComposerController extends Controller
         $validated = $request->validated();
 
         $kind = $validated['kind'] ?? 'sale';
+        $configuration = UnitConfiguration::normalize($validated['configuration']);
         $isRental = $kind === 'rent';
 
         $quote = $draft ?? new Quote(['created_by' => $request->user()->id]);
@@ -214,19 +205,26 @@ class QuoteComposerController extends Controller
             'kind' => $kind,
             'reference' => $validated['reference'] ?? null,
             'intro' => $validated['intro'] ?? null,
-            'configuration' => UnitConfiguration::normalize($validated['configuration']),
+            'configuration' => $configuration,
             'specifications' => array_filter(array_map(fn (?string $text): string => trim((string) $text), $validated['specifications'] ?? [])) ?: null,
             'hidden_specifications' => ($validated['specification_choices'] ?? false)
                 ? (array_values(array_diff(array_keys(QuoteSpecification::DETAILS), $validated['included_specifications'] ?? [])) ?: null)
                 : null,
-            'lines' => array_map(fn (array $line): array => [
+            // For now the form only has one price, per unit; the separate price lines can come back later.
+            'lines' => filled($validated['unit_price'] ?? null) ? [[
+                'description' => self::UNIT_LINE,
+                'quantity' => $configuration['modules'] * $configuration['floors'],
+                'price' => (int) round(((float) $validated['unit_price']) * 100),
+                'period' => $isRental ? 'week' : 'once',
+                'status' => 'price',
+            ]] : (array_map(fn (array $line): array => [
                 'description' => trim($line['description']),
                 'quantity' => (int) ($line['quantity'] ?? 1),
                 'price' => filled($line['price'] ?? null) ? (int) round(((float) $line['price']) * 100) : null,
                 // A rental is charged per week, a sale only once.
                 'period' => $isRental ? $line['period'] : 'once',
                 'status' => $line['status'],
-            ], $validated['lines'] ?? []) ?: null,
+            ], $validated['lines'] ?? []) ?: null),
             'terms' => $validated['terms'] ?? null,
             'open_points' => $validated['open_points'] ?? null,
             'internal_notes' => $validated['internal_notes'] ?? null,

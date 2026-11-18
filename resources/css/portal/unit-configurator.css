@@ -1021,7 +1021,8 @@ body.has-quote-bar {
   max-width: 120px;
 }
 
-[data-quote-rental][hidden] {
+[data-quote-rental][hidden],
+[data-quote-sale][hidden] {
   display: none;
 }
 
