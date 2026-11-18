@@ -76,22 +76,7 @@
 <body>
     <div class="footer">{{ $siteName }} · {{ \App\Models\Setting::get('address') }} · {{ \App\Models\Setting::get('phone') }} · {{ \App\Models\Setting::get('email') }}</div>
 
-    <table class="header">
-        <tr>
-            <td class="brand">
-                @if ($logo ?? null)
-                    <img src="{{ $logo }}" alt="">
-                @endif
-                <span class="modulaire">Modulaire</span><span class="huisvesting">Huisvesting</span>
-            </td>
-            <td class="company">
-                {{ $siteName }}<br>
-                {{ \App\Models\Setting::get('address') }}<br>
-                {{ \App\Models\Setting::get('phone') }}<br>
-                {{ \App\Models\Setting::get('email') }}
-            </td>
-        </tr>
-    </table>
+    @include('pdf.partials.header')
 
     <table class="meta">
         <tr>

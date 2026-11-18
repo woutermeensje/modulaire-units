@@ -18,6 +18,7 @@ use App\Http\Controllers\Portal\AccountController;
 use App\Http\Controllers\Portal\ComposedUnitController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\QuoteComposerController;
+use App\Http\Controllers\Portal\TextQuoteController;
 use App\Http\Controllers\Portal\UnitComposerController as PortalUnitComposerController;
 use App\Http\Controllers\Portal\UsedListingController;
 use App\Http\Middleware\EnsureUserIsAdmin;
@@ -58,6 +59,10 @@ Route::middleware('auth')->group(function (): void {
         Route::get('account/offertes', [QuoteComposerController::class, 'index'])->name('quotes.index');
         Route::delete('account/offertes/{quote}', [QuoteComposerController::class, 'destroyDraft'])->name('quotes.destroy');
         Route::get('account/offertes/{quote}/pdf', [QuoteComposerController::class, 'pdf'])->name('quotes.pdf');
+        Route::get('account/tekst-offerte', [TextQuoteController::class, 'create'])->name('text-quotes.create');
+        Route::post('account/tekst-offerte/voorbeeld-pdf', [TextQuoteController::class, 'preview'])->name('text-quotes.preview');
+        Route::post('account/tekst-offerte', [TextQuoteController::class, 'send'])->middleware('throttle:20,1,text-quote-send')->name('text-quotes.send');
+        Route::get('account/tekst-offertes/{textQuote}/pdf', [TextQuoteController::class, 'pdf'])->name('text-quotes.pdf');
     });
     Route::patch('account/units/{unit}/status', [ComposedUnitController::class, 'updateStatus'])->middleware(EnsureUserIsAdmin::class)->name('composed-units.status');
 });

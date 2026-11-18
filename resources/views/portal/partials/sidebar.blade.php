@@ -38,6 +38,7 @@
             <a href="{{ route('admin.submissions.index') }}" class="backend-link {{ request()->routeIs('admin.submissions.*') ? 'is-active' : '' }}"><i class="ph ph-tray"></i><span>Inzendingen{{ $unreadSubmissions ? ' ('.$unreadSubmissions.')' : '' }}</span></a>
             <a href="{{ route('admin.opdrachtgevers.index') }}" class="backend-link {{ request()->routeIs('admin.opdrachtgevers.*') ? 'is-active' : '' }}"><i class="ph ph-address-book"></i><span>Opdrachtgevers</span></a>
             <a href="{{ route('quote-composer') }}" class="backend-link {{ request()->routeIs('quote-composer') ? 'is-active' : '' }}"><i class="ph ph-file-text"></i><span>Offerte samenstellen</span></a>
+            <a href="{{ route('text-quotes.create') }}" class="backend-link {{ request()->routeIs('text-quotes.*') ? 'is-active' : '' }}"><i class="ph ph-text-align-left"></i><span>Tekst offerte</span></a>
             <a href="{{ route('quotes.index') }}" class="backend-link {{ request()->routeIs('quotes.*') ? 'is-active' : '' }}"><i class="ph ph-files"></i><span>Verstuurde offertes</span></a>
 
             <div class="backend-nav-group">
