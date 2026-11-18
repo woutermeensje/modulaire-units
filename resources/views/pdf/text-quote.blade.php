@@ -31,9 +31,10 @@
         .details { text-align: right; }
         .body h2 { margin: 6mm 0 2mm; font-size: 12pt; color: #25486e; }
         .body h3 { margin: 5mm 0 2mm; font-size: 10.5pt; color: #25486e; }
-        .body p { margin: 0 0 3mm; }
-        .body ul, .body ol { margin: 0 0 3mm; padding: 0 0 0 6mm; }
-        .body li { margin: 0 0 1mm; }
+        /* Like the editor: every line is its own <p> without space between, an empty line is an empty <p>. */
+        .body p { margin: 0; }
+        .body ul, .body ol { margin: 0; padding: 0 0 0 6mm; }
+        .body li { margin: 0; }
         .body a { color: #25486e; }
         .body .ql-indent-1 { margin-left: 6mm; }
         .body .ql-indent-2 { margin-left: 12mm; }
