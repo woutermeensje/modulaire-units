@@ -27,8 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @phpstan-import-type Configuration from UnitConfiguration
  */
 #[Fillable([
-    'client_id', 'created_by', 'title', 'locale', 'kind', 'rental_weeks', 'reference', 'delivery_address', 'delivery_date',
-    'valid_until', 'intro', 'configuration', 'specifications', 'lines', 'terms', 'open_points', 'internal_notes', 'images', 'sent_at',
+    'client_id', 'created_by', 'title', 'locale', 'kind', 'reference', 'intro', 'configuration', 'specifications', 'lines', 'terms', 'open_points', 'internal_notes', 'images', 'sent_at',
 ])]
 class Quote extends Model
 {
@@ -58,8 +57,6 @@ class Quote extends Model
             'specifications' => 'array',
             'lines' => 'array',
             'images' => 'array',
-            'rental_weeks' => 'integer',
-            'valid_until' => 'date',
             'sent_at' => 'datetime',
         ];
     }
@@ -70,11 +67,11 @@ class Quote extends Model
     }
 
     /**
-     * The prices worked out from the price lines; the rental period only counts for a rental.
+     * The prices worked out from the price lines.
      */
     public function price(): QuotePrice
     {
-        return new QuotePrice($this->lines ?? [], $this->isRental() ? $this->rental_weeks : null);
+        return new QuotePrice($this->lines ?? []);
     }
 
     /**

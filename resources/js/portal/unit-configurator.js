@@ -763,7 +763,8 @@ function initConfigurator(root) {
 
   // The 3D photos can only be made in the browser, so they are rendered just before the form is sent.
   form?.addEventListener('submit', async (event) => {
-    if (photosAttached || !photosToggle.checked || !sizeSelect.value) {
+    // A draft is saved without images: they are made when the quote is sent.
+    if (photosAttached || !photosToggle.checked || !sizeSelect.value || event.submitter?.hasAttribute('data-quote-draft')) {
       return;
     }
 

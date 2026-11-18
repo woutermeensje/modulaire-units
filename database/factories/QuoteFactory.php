@@ -27,4 +27,12 @@ class QuoteFactory extends Factory
             'sent_at' => now(),
         ];
     }
+
+    /**
+     * Saved but not sent yet.
+     */
+    public function draft(): static
+    {
+        return $this->state(fn (): array => ['sent_at' => null]);
+    }
 }

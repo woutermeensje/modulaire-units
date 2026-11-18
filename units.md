@@ -6,7 +6,7 @@ Specificatie voor de offertetool in de adminomgeving (`/account/offerte-samenste
 
 ## Afspraken vooraf
 
-1. **Voorbeeldwaarden zijn geen standaard.** Alle waarden onder "Voorbeeld" komen uit dat ene referentieproject. Gebruik ze nooit als default, seeddata of template. Echte waarden vul je per leverancier, unittype en project in.
+1. **Voorbeeldwaarden zijn geen standaard.** Alle waarden onder "Voorbeeld" komen uit dat ene referentieproject. Gebruik ze nooit als default, seeddata of template. Echte waarden vul je per leverancier, unittype en project in. Uitzondering op verzoek van Wouter (18-11-2026): een nieuwe offerte begint met de technische specificatie van de standaardunit van Moravia uit [moravia.md](moravia.md) (`QuoteSpecification::STANDARD`), zonder prijzen en zonder de naam van de leverancier.
 2. **Verzin nooit technische prestaties.** Ontbreekt een U-waarde, brandklasse, belasting of vermogen, dan staat het veld op *onbekend* of *nog te bevestigen bij leverancier*. Liever leeg dan fout.
 3. **Houd de publieke configurator eenvoudig.** Alles in dit document komt in de offertetool (achter `$quoteExtras`), niet in `/unit-samensteller/`, tenzij Wouter iets anders vraagt.
 4. **`App\Support\UnitConfiguration::normalize()` blijft de bron van waarheid** voor de samenstelling (maat, ramen, deuren, kleuren). De offertetool bouwt daarop voort en maakt geen tweede versie van die gegevens.
@@ -334,7 +334,7 @@ De offertetool bestaat al (titel, klant, begeleidende tekst, `$quoteExtras`, PDF
 
 **Stap 4 – Huur.** Huurvelden en huurvoorwaarden (looptijd, borg, retour). Belangrijk voor het doel van huurinkomsten, maar pas zinvol zodra er huurvragen binnenkomen.
 
-**Status 18-11-2026:** stap 1 t/m 4 zijn gebouwd in een eenvoudige vorm. Per onderdeel een tekstvak (één regel per specificatie, zie `QuoteSpecification::DETAILS`), prijsregels met status (`QuotePrice`), koop/huur met huurperiode in weken, projectgegevens, voorwaarden, "nog te bevestigen", interne notities en "Kopieer" om een eerdere offerte als basis te gebruiken. De exacte buitenmaat staat in de offertetool en de PDF (`UnitConfiguration::exactLabel()` en `HEIGHTS`).
+**Status 18-11-2026:** stap 1 t/m 4 zijn gebouwd in een eenvoudige vorm. Per onderdeel een tekstvak (één regel per specificatie, zie `QuoteSpecification::DETAILS`), prijsregels met status (`QuotePrice`), koop/huur, een referentie, voorwaarden, "nog te bevestigen", interne notities en "Kopieer" om een eerdere offerte als basis te gebruiken. De exacte buitenmaat staat in de offertetool en de PDF (`UnitConfiguration::exactLabel()` en `HEIGHTS`). Een offerte kan als concept worden opgeslagen (zonder opdrachtgever of prijzen) en later worden verstuurd. Huurperiode, afleveradres, gewenste levering en geldig tot zijn bewust weggelaten; bij huur staan de eenmalige kosten en de huur per week los van elkaar in de PDF.
 
 **Later, als er vraag naar is:** statussen van de offerte (concept, verzonden, geaccepteerd), revisies met snapshot, installatietekening, akkoord online, meerdere gekoppelde gebouwen, bijlagenbeheer.
 

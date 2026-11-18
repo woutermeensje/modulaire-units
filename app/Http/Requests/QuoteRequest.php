@@ -40,15 +40,13 @@ class QuoteRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // The draft this quote was opened from: it is updated instead of a new quote being made.
+            'draft_id' => ['nullable', 'integer', Rule::exists('quotes', 'id')->whereNull('sent_at')],
             'title' => ['required', 'string', 'max:255'],
             'client_id' => ['required', 'integer', Rule::exists('users', 'id')->where('is_admin', false)],
             'locale' => ['required', Rule::in(Locale::all())],
             'kind' => ['nullable', Rule::in(array_keys(Quote::KINDS))],
-            'rental_weeks' => ['nullable', 'integer', 'min:1', 'max:520'],
             'reference' => ['nullable', 'string', 'max:255'],
-            'delivery_address' => ['nullable', 'string', 'max:255'],
-            'delivery_date' => ['nullable', 'string', 'max:100'],
-            'valid_until' => ['nullable', 'date'],
             'intro' => ['nullable', 'string', 'max:10000'],
             'specifications' => ['nullable', 'array:'.implode(',', array_keys(QuoteSpecification::DETAILS))],
             'specifications.*' => ['nullable', 'string', 'max:5000'],
@@ -80,8 +78,6 @@ class QuoteRequest extends FormRequest
             'locale' => 'taal',
             'intro' => 'begeleidende tekst',
             'kind' => 'koop of huur',
-            'rental_weeks' => 'huurperiode',
-            'valid_until' => 'geldig tot',
             'lines.*.description' => 'omschrijving',
             'lines.*.quantity' => 'aantal',
             'lines.*.price' => 'prijs',

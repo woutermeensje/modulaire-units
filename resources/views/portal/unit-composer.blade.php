@@ -61,6 +61,10 @@
             {{-- Admins make a quote for a client: see Portal\QuoteComposerController. --}}
             <form method="POST" action="{{ $sendUrl }}" enctype="multipart/form-data" class="portal-form">
                 @csrf
+                @if ($savedDraft ?? null)
+                    <input type="hidden" name="draft_id" value="{{ $savedDraft->id }}">
+                    <p class="form-alert">Concept {{ $savedDraft->number() }}, laatst opgeslagen op {{ $savedDraft->updated_at->format('d-m-Y \o\m H:i') }}. Met "Opslaan als concept" werk je dit concept bij; met "Offerte versturen" wordt het verstuurd.</p>
+                @endif
 
                 @if ($copiedFrom ?? null)
                     <p class="form-alert">Ingevuld met de gegevens van {{ $copiedFrom->number() }} ("{{ $copiedFrom->title }}"). Pas aan wat anders is; er wordt een nieuwe offerte verstuurd.</p>
@@ -109,30 +113,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="portal-field" data-quote-rental>
-                            <label class="portal-label" for="rental_weeks">Huurperiode in weken</label>
-                            <input class="portal-input" id="rental_weeks" name="rental_weeks" type="number" inputmode="numeric" min="1" max="520" value="{{ old('rental_weeks', $draft->rental_weeks) }}" placeholder="Bijv. 78 (18 maanden)">
-                            <p class="portal-help">Huur per week x weken = totale huur in de PDF. Leeg laten als de periode nog niet vaststaat.</p>
-                        </div>
-                    </div>
-                    <div class="portal-form__row">
                         <div class="portal-field">
                             <label class="portal-label" for="reference">Referentie of projectnaam van de opdrachtgever</label>
                             <input class="portal-input" id="reference" name="reference" value="{{ old('reference', $draft->reference) }}" maxlength="255" placeholder="Bijv. pasuitgiftepost eindklant">
-                        </div>
-                        <div class="portal-field">
-                            <label class="portal-label" for="delivery_address">Afleveradres</label>
-                            <input class="portal-input" id="delivery_address" name="delivery_address" value="{{ old('delivery_address', $draft->delivery_address) }}" maxlength="255" placeholder="Straat, plaats (of: nog niet bekend)">
-                        </div>
-                    </div>
-                    <div class="portal-form__row">
-                        <div class="portal-field">
-                            <label class="portal-label" for="delivery_date">Gewenste levering</label>
-                            <input class="portal-input" id="delivery_date" name="delivery_date" value="{{ old('delivery_date', $draft->delivery_date) }}" maxlength="100" placeholder="Bijv. eind Q1 / begin Q2 2027">
-                        </div>
-                        <div class="portal-field">
-                            <label class="portal-label" for="valid_until">Offerte geldig tot</label>
-                            <input class="portal-input" id="valid_until" name="valid_until" type="date" value="{{ old('valid_until', $draft->valid_until?->format('Y-m-d') ?? now()->addMonth()->format('Y-m-d')) }}">
                         </div>
                     </div>
                 </section>
@@ -148,12 +131,13 @@
                         'quoteExtras' => true,
                         'quoteForm' => true,
                         'pdfPreviewUrl' => $pdfPreviewUrl,
+                        'draftUrl' => $draftUrl,
                     ])
                 </section>
 
                 <section class="card dash-section">
                     <h2 class="card-title">Technische specificatie</h2>
-                    <p class="portal-help">Eén regel per specificatie. De regels komen in de PDF bij het onderdeel, na wat de samenstelling hierboven al invult. Lege vakken komen niet in de PDF. Vul alleen waarden in die je van de leverancier hebt: liever leeg dan een gok.</p>
+                    <p class="portal-help">Eén regel per specificatie. De regels komen in de PDF bij het onderdeel, na wat de samenstelling hierboven al invult. Lege vakken komen niet in de PDF. Een nieuwe offerte begint met de standaardunit van Moravia; pas het aan bij een andere leverancier of een gebruikte unit. Vul alleen waarden in die je van de leverancier hebt: liever leeg dan een gok.</p>
                     <div class="quote-details">
                         @foreach (\App\Support\QuoteSpecification::DETAILS as $key => $detail)
                             <div class="portal-field">
@@ -213,7 +197,7 @@
                 </section>
             </form>
 
-            <p class="portal-help"><a href="{{ route('quotes.index') }}"><i class="ph ph-files"></i> Verstuurde offertes bekijken ({{ $quoteCount }})</a>. Daar kopieer je ook een eerdere offerte als basis voor een nieuwe.</p>
+            <p class="portal-help"><a href="{{ route('quotes.index') }}"><i class="ph ph-files"></i> Verstuurde offertes bekijken ({{ $quoteCount }})</a> · <a href="{{ route('quotes.index', ['status' => \App\Http\Controllers\Portal\QuoteComposerController::DRAFT_KEY]) }}"><i class="ph ph-note-pencil"></i> Concepten ({{ $draftCount }})</a>. Daar kopieer je ook een eerdere offerte als basis voor een nieuwe.</p>
         @else
             <section class="card dash-section">
                 @include('admin.fields.configurator', [

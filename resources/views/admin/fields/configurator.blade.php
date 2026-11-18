@@ -354,9 +354,15 @@
     @if ($quoteForm)
         {{-- Always in reach at the bottom of the page while composing the quote. --}}
         <div class="unit-quote-bar" data-configurator-quote-bar>
-            <button type="submit" class="unit-quote-bar__link" formaction="{{ $pdfPreviewUrl }}" formtarget="_blank">
+            <button type="submit" class="unit-quote-bar__link" formaction="{{ $pdfPreviewUrl }}" formtarget="_blank" title="{{ __('Voorbeeld PDF') }}">
                 <i class="ph ph-file-pdf"></i> <span>{{ __('Voorbeeld PDF') }}</span>
             </button>
+            @if ($draftUrl ?? null)
+                {{-- Only the title is needed for a draft, so the browser's checks of the other fields are skipped. --}}
+                <button type="submit" class="unit-quote-bar__link" formaction="{{ $draftUrl }}" formnovalidate data-quote-draft title="{{ __('Opslaan als concept') }}">
+                    <i class="ph ph-floppy-disk"></i> <span>{{ __('Opslaan als concept') }}</span>
+                </button>
+            @endif
             <button type="submit" class="unit-quote-bar__button" data-confirm="{{ __('De offerte wordt nu naar de opdrachtgever gemaild. Doorgaan?') }}">
                 <i class="ph ph-paper-plane-tilt"></i> <span>{{ __('Offerte versturen') }}</span>
             </button>

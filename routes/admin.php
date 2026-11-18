@@ -54,7 +54,9 @@ Route::middleware('auth')->group(function (): void {
         Route::get('account/offerte-samenstellen', QuoteComposerController::class)->name('quote-composer');
         Route::post('account/offerte-samenstellen/voorbeeld-pdf', [QuoteComposerController::class, 'preview'])->name('quote-composer.pdf-preview');
         Route::post('account/offerte-samenstellen', [QuoteComposerController::class, 'send'])->middleware('throttle:20,1,quote-send')->name('quote-composer.send');
+        Route::post('account/offerte-samenstellen/concept', [QuoteComposerController::class, 'saveDraft'])->name('quote-composer.draft');
         Route::get('account/offertes', [QuoteComposerController::class, 'index'])->name('quotes.index');
+        Route::delete('account/offertes/{quote}', [QuoteComposerController::class, 'destroyDraft'])->name('quotes.destroy');
         Route::get('account/offertes/{quote}/pdf', [QuoteComposerController::class, 'pdf'])->name('quotes.pdf');
     });
     Route::patch('account/units/{unit}/status', [ComposedUnitController::class, 'updateStatus'])->middleware(EnsureUserIsAdmin::class)->name('composed-units.status');

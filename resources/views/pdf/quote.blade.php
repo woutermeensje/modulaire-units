@@ -14,11 +14,7 @@
     $periodLabel = fn (array $line): string => __(\App\Support\QuotePrice::PERIODS[$line['period']] ?? 'eenmalig');
     $project = array_filter([
         __('Soort') => $quote->kind ? __(\App\Models\Quote::KINDS[$quote->kind] ?? $quote->kind) : null,
-        __('Huurperiode') => $quote->isRental() && $quote->rental_weeks ? trans_choice('{1} 1 week|[2,*] :count weken', $quote->rental_weeks) : null,
         __('Referentie') => $quote->reference,
-        __('Afleveradres') => $quote->delivery_address,
-        __('Gewenste levering') => $quote->delivery_date,
-        __('Geldig tot') => $quote->valid_until?->translatedFormat('j F Y'),
     ]);
     $openPoints = \App\Support\QuoteSpecification::lines($quote->open_points);
     $terms = \App\Support\QuoteSpecification::lines($quote->terms);
@@ -210,11 +206,8 @@
                     @endif
                     @if ($price->weekly() > 0)
                         <tr><td>{{ __('Huur per week') }}</td><td class="amount">{{ $money($price->weekly()) }}</td></tr>
-                        @if ($price->rental() !== null)
-                            <tr><td>{{ __('Huur over :weeks', ['weeks' => trans_choice('{1} 1 week|[2,*] :count weken', $price->rentalWeeks())]) }}</td><td class="amount">{{ $money($price->rental()) }}</td></tr>
-                        @endif
                     @endif
-                    @php($rentLeftOut = $price->weekly() > 0 && $price->rental() === null)
+                    @php($rentLeftOut = $price->weekly() > 0)
                     <tr><td>{{ $rentLeftOut ? __('Totaal eenmalig excl. btw') : __('Totaal excl. btw') }}</td><td class="amount">{{ $money($price->totalExcludingVat()) }}</td></tr>
                     <tr><td>{{ __('Btw :rate%', ['rate' => \App\Support\QuotePrice::VAT_RATE]) }}</td><td class="amount">{{ $money($price->vat()) }}</td></tr>
                     <tr class="grand"><td>{{ $rentLeftOut ? __('Totaal eenmalig incl. btw') : __('Totaal incl. btw') }}</td><td class="amount">{{ $money($price->totalIncludingVat()) }}</td></tr>

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\QuotePdf;
 use App\Support\Locale;
 use App\Support\QuotePrice;
+use App\Support\QuoteSpecification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -26,8 +27,10 @@ class QuoteDetailsTest extends TestCase
         $rental = Quote::factory()->create([
             'title' => 'Offerte pasuitgiftepost',
             'kind' => 'rent',
-            'rental_weeks' => 78,
-            'lines' => [['description' => 'Huur unit', 'quantity' => 1, 'price' => 6000, 'period' => 'week', 'status' => 'price']],
+            'lines' => [
+                ['description' => 'Huur unit', 'quantity' => 1, 'price' => 6000, 'period' => 'week', 'status' => 'price'],
+                ['description' => 'Transport', 'quantity' => 1, 'price' => 35000, 'period' => 'once', 'status' => 'price'],
+            ],
         ]);
         $sale = Quote::factory()->create(['title' => 'Offerte kantoorunit', 'kind' => 'sale']);
 
@@ -40,9 +43,8 @@ class QuoteDetailsTest extends TestCase
             ->assertOk()
             ->assertSee('Offerte pasuitgiftepost')
             ->assertSee('Offerte kantoorunit')
-            ->assertSee('78 weken')
-            ->assertSee('€ 4.680,00')
-            ->assertSee('waarvan € 60,00 per week')
+            ->assertSee('€ 350,00 eenmalig')
+            ->assertSee('€ 60,00 per week')
             ->assertSee(route('quotes.pdf', $rental), false)
             ->assertSee(route('quote-composer', ['kopie' => $sale->id]), false);
 
@@ -66,8 +68,6 @@ class QuoteDetailsTest extends TestCase
 
         $quote = Quote::sole();
         $this->assertSame('rent', $quote->kind);
-        $this->assertSame(78, $quote->rental_weeks);
-        $this->assertSame('Eind Q1 / begin Q2 2027', $quote->delivery_date);
         $this->assertSame(6000, $quote->lines[0]['price'], 'Prices are kept in cents.');
         $this->assertSame('week', $quote->lines[0]['period']);
         $this->assertCount(6, $quote->lines, 'The empty row of the form is left out.');
@@ -76,21 +76,21 @@ class QuoteDetailsTest extends TestCase
         $html = app(QuotePdf::class)->html($quote);
 
         // Project details.
-        $this->assertStringContainsString('78 weken', $html);
-        $this->assertStringContainsString('Eind Q1 / begin Q2 2027', $html);
+        $this->assertStringContainsString('Pasuitgiftepost eindklant', $html);
+        $this->assertStringNotContainsString('Geldig tot', $html);
         // The exact size of the supplier, and the admin's specification lines in their sections.
         $this->assertStringContainsString('Buitenmaat per unit 6.058 x 2.990 x 2.860 mm (l x b x h)', $html);
         $this->assertStringContainsString('Binnenhoogte 2.500 mm', $html);
         $this->assertStringContainsString('100 mm minerale wol A1 in dak, wanden en vloer', $html);
         $this->assertStringContainsString('Split-airco 2,0 kW koelen', $html);
         $this->assertStringContainsString('Fundering en locatie', $html);
-        // Prices: €60 a week for 78 weeks plus €350 transport; the option and open costs are not in the total.
-        $this->assertStringContainsString('Huur over 78 weken', $html);
-        $this->assertStringContainsString('€ 4.680,00', $html);
-        $this->assertStringContainsString('Totaal excl. btw', $html);
-        $this->assertStringContainsString('€ 5.030,00', $html);
-        $this->assertStringContainsString('€ 1.056,30', $html);
-        $this->assertStringContainsString('€ 6.086,30', $html);
+        // Prices: €60 a week on its own, the €350 transport as the one-off total; options and open costs are left out.
+        $this->assertStringContainsString('Huur per week', $html);
+        $this->assertStringContainsString('€ 60,00', $html);
+        $this->assertStringContainsString('Totaal eenmalig excl. btw', $html);
+        $this->assertStringContainsString('€ 350,00', $html);
+        $this->assertStringContainsString('€ 73,50', $html);
+        $this->assertStringContainsString('€ 423,50', $html);
         $this->assertStringContainsString('Opties (niet in het totaal)', $html);
         $this->assertStringContainsString('Netwerkkabel naar de unit', $html);
         $this->assertStringContainsString('Nog te bepalen kosten', $html);
@@ -112,19 +112,16 @@ class QuoteDetailsTest extends TestCase
             ['description' => 'Verwarming', 'quantity' => 1, 'price' => null, 'period' => 'once', 'status' => 'included'],
             ['description' => 'Airco', 'quantity' => 1, 'price' => 149300, 'period' => 'once', 'status' => 'optional'],
             ['description' => 'Kraan', 'quantity' => 1, 'price' => 50000, 'period' => 'once', 'status' => 'tbd'],
-        ], 10);
+        ]);
 
         $this->assertSame(12000, $price->weekly());
-        $this->assertSame(120000, $price->rental());
         $this->assertSame(35000, $price->oneOff());
-        $this->assertSame(155000, $price->totalExcludingVat(), 'Options and costs still to be determined are left out.');
-        $this->assertSame(32550, $price->vat());
-        $this->assertSame(187550, $price->totalIncludingVat());
-
-        $this->assertNull((new QuotePrice([], null))->rental(), 'Without a rental period there is no total rent.');
+        $this->assertSame(35000, $price->totalExcludingVat(), 'The rent, options and costs still to be determined are left out.');
+        $this->assertSame(7350, $price->vat());
+        $this->assertSame(42350, $price->totalIncludingVat());
     }
 
-    public function test_a_sale_is_charged_once_without_a_rental_period(): void
+    public function test_a_sale_is_charged_once(): void
     {
         Mail::fake();
         Storage::fake('local');
@@ -134,9 +131,8 @@ class QuoteDetailsTest extends TestCase
         $this->actingAs(User::factory()->admin()->create())->post(route('quote-composer.send'), $input)->assertSessionHasNoErrors();
 
         $quote = Quote::sole();
-        $this->assertNull($quote->rental_weeks);
         $this->assertSame(['once'], array_values(array_unique(array_column($quote->lines, 'period'))));
-        $this->assertStringNotContainsString('Huurperiode', app(QuotePdf::class)->html($quote));
+        $this->assertStringNotContainsString('Huur per week', app(QuotePdf::class)->html($quote));
     }
 
     public function test_a_charged_or_optional_line_needs_a_price(): void
@@ -157,9 +153,7 @@ class QuoteDetailsTest extends TestCase
     {
         $quote = Quote::factory()->create([
             'kind' => 'rent',
-            'rental_weeks' => 78,
             'reference' => 'Pasuitgiftepost eindklant',
-            'valid_until' => '2026-01-01',
             'specifications' => ['insulation' => '100 mm minerale wol A1'],
             'lines' => [['description' => 'Huur unit', 'quantity' => 1, 'price' => 6000, 'period' => 'week', 'status' => 'price']],
             'internal_notes' => 'Inkoop via leverancier',
@@ -176,8 +170,7 @@ class QuoteDetailsTest extends TestCase
             ->assertSee('value="Huur unit"', false)
             ->assertSee('value="60.00"', false)
             ->assertSee('Inkoop via leverancier')
-            ->assertDontSee('value="2026-01-01"', false)
-            ->assertSee('value="'.now()->addMonth()->format('Y-m-d').'"', false);
+            ->assertDontSee('Gelaste staalconstructie', false);
     }
 
     public function test_a_new_quote_starts_with_the_costs_every_quote_has_to_mention(): void
@@ -185,13 +178,30 @@ class QuoteDetailsTest extends TestCase
         $this->actingAs(User::factory()->admin()->create())->get(route('quote-composer'))
             ->assertOk()
             ->assertSee('name="kind"', false)
-            ->assertSee('name="rental_weeks"', false)
+            ->assertDontSee('name="rental_weeks"', false)
+            ->assertDontSee('name="valid_until"', false)
+            ->assertDontSee('name="delivery_address"', false)
+            ->assertDontSee('name="delivery_date"', false)
             ->assertSee('name="specifications[insulation]"', false)
             ->assertSee('name="terms"', false)
             ->assertSee('name="open_points"', false)
             ->assertSee('name="internal_notes"', false)
             ->assertSee('value="Transport naar de locatie"', false)
-            ->assertSee('data-quote-line-template', false);
+            ->assertSee('data-quote-line-template', false)
+            ->assertSee('Gelaste staalconstructie van 3 tot 4 mm staal')
+            ->assertSee('Vloerbelasting 2,5 kN/m²');
+    }
+
+    public function test_the_standard_specification_reaches_the_pdf_without_the_supplier(): void
+    {
+        $quote = Quote::factory()->create(['specifications' => QuoteSpecification::STANDARD]);
+
+        $html = app(QuotePdf::class)->html($quote);
+
+        $this->assertStringContainsString('Dampscherm van PE-folie 0,2 mm', $html);
+        $this->assertStringContainsString('Aansluiting CEE 32A (in- en uitgaand)', $html);
+        $this->assertStringNotContainsStringIgnoringCase('Moravia', $html);
+        $this->assertStringNotContainsString('HEO-', $html);
     }
 
     public function test_the_quote_tool_shows_the_exact_size_and_the_customer_composer_the_rounded_one(): void
@@ -210,20 +220,19 @@ class QuoteDetailsTest extends TestCase
         $quote = Quote::factory()->create([
             'locale' => 'en',
             'kind' => 'rent',
-            'rental_weeks' => 78,
             'lines' => [['description' => 'Unit rental', 'quantity' => 1, 'price' => 6000, 'period' => 'week', 'status' => 'price']],
         ]);
 
         $html = Locale::using('en', fn (): string => app(QuotePdf::class)->html($quote));
 
-        $this->assertStringContainsString('Rent over 78 weeks', $html);
-        $this->assertStringContainsString('€ 4,680.00', $html);
+        $this->assertStringContainsString('Rent per week', $html);
+        $this->assertStringContainsString('€ 60.00', $html);
         $this->assertStringContainsString('VAT 21%', $html);
         $this->assertStringNotContainsString('btw', $html);
     }
 
     /**
-     * A rental like the ones that come in: one 6x3 unit as a pass issue point for 78 weeks.
+     * A rental like the ones that come in: one 6x3 unit as a pass issue point.
      *
      * @return array<string, mixed>
      */
@@ -234,11 +243,7 @@ class QuoteDetailsTest extends TestCase
             'locale' => 'nl',
             'client_id' => $client->id,
             'kind' => 'rent',
-            'rental_weeks' => '78',
             'reference' => 'Pasuitgiftepost eindklant',
-            'delivery_address' => 'Nog niet bekend',
-            'delivery_date' => 'Eind Q1 / begin Q2 2027',
-            'valid_until' => now()->addMonth()->format('Y-m-d'),
             'intro' => 'Beste Rob,',
             'configuration' => [
                 'size' => '6x3',

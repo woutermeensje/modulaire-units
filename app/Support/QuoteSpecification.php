@@ -17,8 +17,7 @@ final class QuoteSpecification
      * the PDF the lines go in (translated with __()), the label in the form and an example as placeholder. Several keys
      * can share a section of the PDF; their lines are then listed together, after what the composer puts there.
      *
-     * The examples are only a hint of the level of detail. They are never filled in: real values differ per supplier,
-     * type of unit and project.
+     * The examples are only a hint of the level of detail; what a new quote starts with is in STANDARD.
      *
      * @var array<string, array{section: string, label: string, placeholder: string}>
      */
@@ -37,6 +36,27 @@ final class QuoteSpecification
         'coupling' => ['section' => 'Koppeling en accessoires', 'label' => 'Koppeling en accessoires', 'placeholder' => "Bijv. koppelmateriaal en rubberafdichtingen\nGeen trap of hellingbaan"],
         'site' => ['section' => 'Fundering en locatie', 'label' => 'Fundering en locatie (wat moet klaar zijn)', 'placeholder' => "Bijv. vlakke, draagkrachtige ondergrond (stelconplaten)\n150–300 mm vrije ruimte onder de unit\nStroomaansluiting 230 V binnen … meter"],
         'transport' => ['section' => 'Transport en plaatsing', 'label' => 'Transport en plaatsing', 'placeholder' => "Bijv. bereikbaar voor vrachtwagen met kraan\nPlaatsing en aansluiten door …"],
+    ];
+
+    /**
+     * What a new quote starts with: the standard unit of the supplier Moravia (see moravia.md), as the client reads it.
+     * Only what is the same for every unit of that supplier; what the composer already lists (windows, doors, sockets,
+     * airco) is left out, and so are prices and the supplier's name. The admin changes it for another supplier or a
+     * used unit. Sections without a standard (dimensions, water, coupling, transport) start empty.
+     *
+     * @var array<string, string>
+     */
+    public const STANDARD = [
+        'construction' => "Gelaste staalconstructie van 3 tot 4 mm staal\nStapelbaar volgens statische berekening (berekening niet inbegrepen)\nZonder heftruckopeningen",
+        'exterior' => "Gevel van verzinkte profielplaat 0,55 mm\nCorrosiebescherming klasse C3M: primer 70 µm en toplaag 50 µm, samen 120 µm\nVerwachte levensduur van de coating 7 tot 15 jaar",
+        'insulation' => "Dak: 100 mm minerale wol A1, λ 0,035 W/mK, U < 0,48 W/m²K\nWanden: 100 mm minerale wol A1, λ 0,035 W/mK\nVloer: 100 mm minerale wol A1, λ 0,035 W/mK, U < 0,63 W/m²K\nDampscherm van PE-folie 0,2 mm\nIsolatieberekening niet inbegrepen",
+        'roof' => "Verzinkte trapeziumplaat 0,75 mm, geventileerd\nDakbelasting 1,5 kN/m² (zwaarder uitvoeren kan tegen meerprijs, bijv. voor sneeuwbelasting)\nBakgoot en 4 regenpijpen Ø 63 mm, weggewerkt in de hoekstijlen\nAansluiten van de regenpijpen op de afvoer door de opdrachtgever",
+        'walls' => "Wanden en plafond van witte melamine spaanplaat 12 mm, emissieklasse E1\nNaden afgewerkt met kunststof strips\nHouten binnenconstructie van 100 mm\nZonder brandwerende uitvoering",
+        'floor' => "PVC-vloer 1,4 mm, grijs marmer, met kunststof plint\nCementgebonden spaanplaat 22 mm, brandklasse A2-s1,d0\nOnderzijde van verzinkte staalplaat 0,55 mm\nVloerbelasting 2,5 kN/m²",
+        'openings' => "Ramen draai-kiep, wit kunststof kozijn, dubbel glas Ug 1,1 W/m²K\nWit kunststof buitenrolluik bij de ramen van 180 x 120 cm\nBuitendeur van verzinkt staal met stalen kozijn, binnenzijde wit (RAL 9003)\nVrije doorgang buitendeur 811 x 2.093 mm\nAluminium deurbeslag, cilinderslot met 3 sleutels",
+        'climate' => "Elektrische wandkachel 2 kW met thermostaat en vorstbeveiliging\n2 ventilatieroosters in de wanden\nGeen mechanische ventilatie",
+        'electrical' => "Elektrische installatie volgens de Nederlandse norm\nVerdeelkast met automaten en aardlekschakelaar\nAansluiting CEE 32A (in- en uitgaand)\n1 lichtschakelaar\n2 LED-armaturen 25 W, 3.150 lm, 4.000 K\nStopcontacten met kinderbeveiliging\nZonder overspanningsbeveiliging en zonder brandbeveiligingsschakelaar (AFDD)",
+        'site' => "Vlakke, draagkrachtige fundering, klaar vóór de plaatsing\n150 tot 300 mm geventileerde ruimte onder de unit: rondom niet dichtmaken, wel gaas tegen dieren\nRegenpijpen aangesloten op de afvoer, zodat er geen water onder de unit blijft staan\nIn de winter verwarmd houden op minimaal 10 °C, tegen condens en bevriezing",
     ];
 
     /** The sections of the PDF in their order; see DETAILS for the ones the admin writes. */

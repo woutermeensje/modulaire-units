@@ -33,7 +33,7 @@ final class QuotePrice
     /**
      * @param  list<Line>  $lines
      */
-    public function __construct(private readonly array $lines, private readonly ?int $rentalWeeks = null) {}
+    public function __construct(private readonly array $lines) {}
 
     /**
      * The lines with one of the given statuses, in their order.
@@ -70,24 +70,11 @@ final class QuotePrice
     }
 
     /**
-     * The rent over the whole rental period, or null when the period isn't known yet.
-     */
-    public function rental(): ?int
-    {
-        return $this->rentalWeeks ? $this->weekly() * $this->rentalWeeks : null;
-    }
-
-    public function rentalWeeks(): ?int
-    {
-        return $this->rentalWeeks;
-    }
-
-    /**
-     * The total excluding VAT: one-off costs plus the rent over the rental period, when that period is known.
+     * The total excluding VAT: the one-off costs. The rent per week is shown on its own, next to it.
      */
     public function totalExcludingVat(): int
     {
-        return $this->oneOff() + ($this->rental() ?? 0);
+        return $this->oneOff();
     }
 
     public function vat(): int

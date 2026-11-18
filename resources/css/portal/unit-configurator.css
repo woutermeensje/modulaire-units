@@ -958,6 +958,14 @@ body.has-quote-bar {
     padding: 0 16px;
     font-size: 15px;
   }
+  /* Three buttons in the quote tool: the preview and the draft keep only their icon. */
+  .unit-quote-bar button.unit-quote-bar__link span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
 }
 
 /* ===============================
