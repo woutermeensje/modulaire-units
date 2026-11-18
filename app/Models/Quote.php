@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array<string, mixed> $configuration
  * @property array<string, string>|null $images Paths on the local disk by image key (front, back, plan).
  * @property array<string, string>|null $specifications Technical text per key of QuoteSpecification::DETAILS.
+ * @property list<string>|null $hidden_specifications Keys of DETAILS that were unticked: kept, but not in the PDF.
  * @property list<array{description: string, quantity: int, price: int|null, period: string, status: string}>|null $lines
  *                                                                                                                        Price lines, prices in cents excluding VAT; see QuotePrice.
  * @property string|null $internal_notes Only for admins: never in the PDF or the mail.
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @phpstan-import-type Configuration from UnitConfiguration
  */
 #[Fillable([
-    'client_id', 'created_by', 'title', 'locale', 'kind', 'reference', 'intro', 'configuration', 'specifications', 'lines', 'terms', 'open_points', 'internal_notes', 'images', 'sent_at',
+    'client_id', 'created_by', 'title', 'locale', 'kind', 'reference', 'intro', 'configuration', 'specifications', 'hidden_specifications', 'lines', 'terms', 'open_points', 'internal_notes', 'images', 'sent_at',
 ])]
 class Quote extends Model
 {
@@ -55,6 +56,7 @@ class Quote extends Model
         return [
             'configuration' => 'array',
             'specifications' => 'array',
+            'hidden_specifications' => 'array',
             'lines' => 'array',
             'images' => 'array',
             'sent_at' => 'datetime',

@@ -40,7 +40,8 @@ class QuoteComposerController extends Controller
      */
     private const STARTING_LINES = [
         'Modulaire unit',
-        'Transport naar de locatie',
+        // The rate of the transporter; the diesel surcharge changes with the diesel price, so check it now and then.
+        'Transport naar de locatie op regiebasis: € 148,50 per uur + 12% dieseltoeslag = € 166,32 per uur',
         'Plaatsing en kraan',
         'Fundering of ondergrond (bijv. stelconplaten)',
         'Aansluiten van stroom, water en riool op de locatie',
@@ -215,6 +216,9 @@ class QuoteComposerController extends Controller
             'intro' => $validated['intro'] ?? null,
             'configuration' => UnitConfiguration::normalize($validated['configuration']),
             'specifications' => array_filter(array_map(fn (?string $text): string => trim((string) $text), $validated['specifications'] ?? [])) ?: null,
+            'hidden_specifications' => ($validated['specification_choices'] ?? false)
+                ? (array_values(array_diff(array_keys(QuoteSpecification::DETAILS), $validated['included_specifications'] ?? [])) ?: null)
+                : null,
             'lines' => array_map(fn (array $line): array => [
                 'description' => trim($line['description']),
                 'quantity' => (int) ($line['quantity'] ?? 1),

@@ -50,6 +50,10 @@ class QuoteRequest extends FormRequest
             'intro' => ['nullable', 'string', 'max:10000'],
             'specifications' => ['nullable', 'array:'.implode(',', array_keys(QuoteSpecification::DETAILS))],
             'specifications.*' => ['nullable', 'string', 'max:5000'],
+            // The form says it has the tick boxes, so that "none ticked" can be told apart from "no tick boxes".
+            'specification_choices' => ['nullable', 'boolean'],
+            'included_specifications' => ['nullable', 'array'],
+            'included_specifications.*' => [Rule::in(array_keys(QuoteSpecification::DETAILS))],
             'lines' => ['nullable', 'array', 'max:50'],
             'lines.*.description' => ['required', 'string', 'max:255'],
             'lines.*.quantity' => ['nullable', 'integer', 'min:1', 'max:9999'],

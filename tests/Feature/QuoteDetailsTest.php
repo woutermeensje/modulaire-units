@@ -186,10 +186,40 @@ class QuoteDetailsTest extends TestCase
             ->assertSee('name="terms"', false)
             ->assertSee('name="open_points"', false)
             ->assertSee('name="internal_notes"', false)
-            ->assertSee('value="Transport naar de locatie"', false)
+            ->assertSee('value="Transport naar de locatie op regiebasis: € 148,50 per uur + 12% dieseltoeslag = € 166,32 per uur"', false)
             ->assertSee('data-quote-line-template', false)
             ->assertSee('Gelaste staalconstructie van 3 tot 4 mm staal')
             ->assertSee('Vloerbelasting 2,5 kN/m²');
+    }
+
+    public function test_unticked_sections_keep_their_text_but_stay_out_of_the_pdf(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+        $input = $this->rentalInput(User::factory()->create());
+        $input['specification_choices'] = '1';
+        $input['included_specifications'] = ['insulation'];
+
+        $this->actingAs(User::factory()->admin()->create())->post(route('quote-composer.send'), $input)->assertSessionHasNoErrors();
+
+        $quote = Quote::sole();
+        $this->assertSame('Split-airco 2,0 kW koelen', $quote->specifications['climate'], 'The text is kept.');
+        $this->assertContains('climate', $quote->hidden_specifications);
+        $this->assertNotContains('insulation', $quote->hidden_specifications);
+
+        $html = app(QuotePdf::class)->html($quote);
+        $this->assertStringContainsString('100 mm minerale wol A1 in dak, wanden en vloer', $html);
+        $this->assertStringNotContainsString('Split-airco 2,0 kW koelen', $html);
+        $this->assertStringNotContainsString('Vlakke ondergrond van stelconplaten', $html);
+
+        $this->get(route('quote-composer', ['kopie' => $quote->id]))
+            ->assertSee('name="included_specifications[]" value="insulation" checked', false)
+            ->assertDontSee('name="included_specifications[]" value="climate" checked', false);
+
+        // Nothing ticked: no specification of the admin in the PDF at all.
+        $input['included_specifications'] = [];
+        unset($input['included_specifications']);
+        $this->post(route('quote-composer.pdf-preview'), $input)->assertOk();
     }
 
     public function test_the_standard_specification_reaches_the_pdf_without_the_supplier(): void

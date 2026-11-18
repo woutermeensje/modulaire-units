@@ -983,6 +983,27 @@ body.has-quote-bar {
   margin-top: 0;
 }
 
+.quote-details__all {
+  margin-top: 12px;
+}
+
+.quote-details__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quote-details__head .portal-checkbox {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Unticked: the text is kept, but it is not in the PDF. */
+.quote-details__item[data-excluded] .portal-textarea {
+  opacity: 0.45;
+}
+
 .quote-lines {
   min-width: 760px;
 }

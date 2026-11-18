@@ -40,7 +40,11 @@ class QuotePdf
     {
         return view('pdf.quote', [
             'quote' => $quote,
-            'specification' => (new QuoteSpecification(UnitConfiguration::normalize($quote->configuration), $quote->specifications ?? []))->sections(),
+            // Unticked sections keep their text in the quote, but stay out of the PDF.
+            'specification' => (new QuoteSpecification(
+                UnitConfiguration::normalize($quote->configuration),
+                array_diff_key($quote->specifications ?? [], array_flip($quote->hidden_specifications ?? [])),
+            ))->sections(),
             'images' => $images,
             'logo' => $this->logo(),
         ])->render();

@@ -137,11 +137,30 @@
 
                 <section class="card dash-section">
                     <h2 class="card-title">Technische specificatie</h2>
-                    <p class="portal-help">Eén regel per specificatie. De regels komen in de PDF bij het onderdeel, na wat de samenstelling hierboven al invult. Lege vakken komen niet in de PDF. Een nieuwe offerte begint met de standaardunit van Moravia; pas het aan bij een andere leverancier of een gebruikte unit. Vul alleen waarden in die je van de leverancier hebt: liever leeg dan een gok.</p>
-                    <div class="quote-details">
+                    <p class="portal-help">Eén regel per specificatie. De regels komen in de PDF bij het onderdeel, na wat de samenstelling hierboven al invult. Lege en uitgevinkte vakken komen niet in de PDF; de tekst van een uitgevinkt vak blijft wel bewaard. Een nieuwe offerte begint met de standaardunit van Moravia; pas het aan bij een andere leverancier of een gebruikte unit. Vul alleen waarden in die je van de leverancier hebt: liever leeg dan een gok.</p>
+                    @php
+                        $hiddenSpecifications = old('specification_choices')
+                            ? array_diff(array_keys(\App\Support\QuoteSpecification::DETAILS), old('included_specifications', []))
+                            : ($draft->hidden_specifications ?? []);
+                    @endphp
+                    <input type="hidden" name="specification_choices" value="1">
+                    <label class="portal-checkbox quote-details__all">
+                        <input type="checkbox" data-quote-details-all>
+                        Alles aan- of uitvinken
+                    </label>
+                    <div class="quote-details" data-quote-details>
                         @foreach (\App\Support\QuoteSpecification::DETAILS as $key => $detail)
-                            <div class="portal-field">
-                                <label class="portal-label" for="specifications_{{ $key }}">{{ $detail['label'] }}</label>
+                            @php
+                                $included = ! in_array($key, $hiddenSpecifications, true);
+                            @endphp
+                            <div class="portal-field quote-details__item" @unless ($included) data-excluded @endunless>
+                                <div class="quote-details__head">
+                                    <label class="portal-label" for="specifications_{{ $key }}">{{ $detail['label'] }}</label>
+                                    <label class="portal-checkbox" title="Uitgevinkt blijft de tekst bewaard, maar komt hij niet in de PDF">
+                                        <input type="checkbox" name="included_specifications[]" value="{{ $key }}" @checked($included) data-quote-detail-toggle>
+                                        In de PDF
+                                    </label>
+                                </div>
                                 <textarea class="portal-textarea" id="specifications_{{ $key }}" name="specifications[{{ $key }}]" rows="3" data-quill="off" placeholder="{{ $detail['placeholder'] }}">{{ old("specifications.$key", $draft->specifications[$key] ?? '') }}</textarea>
                             </div>
                         @endforeach

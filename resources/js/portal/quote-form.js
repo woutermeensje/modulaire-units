@@ -3,6 +3,29 @@
  * and removed. Without JavaScript every field is shown and the form still works with its one empty line.
  */
 export function initQuoteForms() {
+    document.querySelectorAll('[data-quote-details]').forEach((details) => {
+        const toggles = [...details.querySelectorAll('[data-quote-detail-toggle]')];
+        const all = details.parentElement.querySelector('[data-quote-details-all]');
+        const refresh = () => {
+            toggles.forEach((toggle) => {
+                toggle.closest('.quote-details__item').toggleAttribute('data-excluded', !toggle.checked);
+            });
+            if (all) {
+                const ticked = toggles.filter((toggle) => toggle.checked).length;
+                all.checked = ticked === toggles.length;
+                all.indeterminate = ticked > 0 && ticked < toggles.length;
+            }
+        };
+        toggles.forEach((toggle) => toggle.addEventListener('change', refresh));
+        all?.addEventListener('change', () => {
+            toggles.forEach((toggle) => {
+                toggle.checked = all.checked;
+            });
+            refresh();
+        });
+        refresh();
+    });
+
     document.querySelectorAll('[data-quote-kind]').forEach((kind) => {
         const form = kind.form;
         const toggle = () => {
