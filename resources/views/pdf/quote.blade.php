@@ -9,6 +9,19 @@
      */
     $client = $quote->client;
     $siteName = \App\Models\Setting::get('site_name');
+    $price = $quote->price();
+    $money = \App\Support\QuotePrice::format(...);
+    $periodLabel = fn (array $line): string => __(\App\Support\QuotePrice::PERIODS[$line['period']] ?? 'eenmalig');
+    $project = array_filter([
+        __('Soort') => $quote->kind ? __(\App\Models\Quote::KINDS[$quote->kind] ?? $quote->kind) : null,
+        __('Huurperiode') => $quote->isRental() && $quote->rental_weeks ? trans_choice('{1} 1 week|[2,*] :count weken', $quote->rental_weeks) : null,
+        __('Referentie') => $quote->reference,
+        __('Afleveradres') => $quote->delivery_address,
+        __('Gewenste levering') => $quote->delivery_date,
+        __('Geldig tot') => $quote->valid_until?->translatedFormat('j F Y'),
+    ]);
+    $openPoints = \App\Support\QuoteSpecification::lines($quote->open_points);
+    $terms = \App\Support\QuoteSpecification::lines($quote->terms);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
@@ -45,6 +58,22 @@
         .specification td { padding: 2.5mm 0; vertical-align: top; border-top: 0.3mm solid #dde2e6; }
         .specification ul { margin: 0; padding: 0 0 0 4mm; }
         .specification tr { page-break-inside: avoid; }
+        .project { width: 100%; border-collapse: collapse; margin-bottom: 8mm; }
+        .project th { width: 32%; padding: 1mm 4mm 1mm 0; text-align: left; font-weight: normal; color: #5b6770; }
+        .project td { padding: 1mm 0; }
+        .section { margin-top: 9mm; page-break-inside: avoid; }
+        .prices { width: 100%; border-collapse: collapse; }
+        .prices th { padding: 2mm 2mm 2mm 0; text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5pt; color: #5b6770; border-bottom: 0.3mm solid #dde2e6; }
+        .prices td { padding: 2mm 2mm 2mm 0; vertical-align: top; border-bottom: 0.3mm solid #dde2e6; }
+        .prices .amount { text-align: right; white-space: nowrap; padding-right: 0; }
+        .prices .number { text-align: right; white-space: nowrap; }
+        .prices tr { page-break-inside: avoid; }
+        .totals { width: 60%; margin-left: 40%; margin-top: 3mm; border-collapse: collapse; }
+        .totals td { padding: 1.2mm 0; }
+        .totals .amount { text-align: right; white-space: nowrap; }
+        .totals .grand td { padding-top: 2mm; border-top: 0.4mm solid #25486e; font-weight: bold; color: #25486e; }
+        .muted { color: #5b6770; }
+        .list { margin: 0; padding: 0 0 0 4mm; }
         .footer { position: fixed; bottom: -14mm; left: 0; right: 0; font-size: 8pt; color: #5b6770; text-align: center; }
     </style>
 </head>
@@ -94,6 +123,14 @@
 
     <h1>{{ $quote->title }}</h1>
 
+    @if ($project)
+        <table class="project">
+            @foreach ($project as $projectLabel => $projectValue)
+                <tr><th>{{ $projectLabel }}</th><td>{{ $projectValue }}</td></tr>
+            @endforeach
+        </table>
+    @endif
+
     @if (filled($quote->intro))
         <div class="intro">{!! nl2br(e($quote->intro)) !!}</div>
     @endif
@@ -140,6 +177,104 @@
             </tr>
         @endforeach
     </table>
+
+    @unless ($price->isEmpty())
+        <div class="section">
+            <h2>{{ __('Prijzen') }}</h2>
+            @php($charged = $price->lines('price', 'included'))
+            @if ($charged)
+                <table class="prices">
+                    <tr>
+                        <th>{{ __('Omschrijving') }}</th>
+                        <th class="number">{{ __('Aantal') }}</th>
+                        <th class="number">{{ __('Prijs') }}</th>
+                        <th class="amount">{{ __('Totaal') }}</th>
+                    </tr>
+                    @foreach ($charged as $line)
+                        <tr>
+                            <td>{{ $line['description'] }}</td>
+                            <td class="number">{{ $line['quantity'] }}</td>
+                            @if ($line['status'] === 'included')
+                                <td class="number muted" colspan="2" style="text-align: right">{{ __('Inbegrepen') }}</td>
+                            @else
+                                <td class="number">{{ $money($line['price']) }} {{ $periodLabel($line) }}</td>
+                                <td class="amount">{{ $money(\App\Support\QuotePrice::lineTotal($line)) }} {{ $periodLabel($line) }}</td>
+                            @endif
+                        </tr>
+                    @endforeach
+                </table>
+
+                <table class="totals">
+                    @if ($price->oneOff() > 0)
+                        <tr><td>{{ __('Eenmalige kosten') }}</td><td class="amount">{{ $money($price->oneOff()) }}</td></tr>
+                    @endif
+                    @if ($price->weekly() > 0)
+                        <tr><td>{{ __('Huur per week') }}</td><td class="amount">{{ $money($price->weekly()) }}</td></tr>
+                        @if ($price->rental() !== null)
+                            <tr><td>{{ __('Huur over :weeks', ['weeks' => trans_choice('{1} 1 week|[2,*] :count weken', $price->rentalWeeks())]) }}</td><td class="amount">{{ $money($price->rental()) }}</td></tr>
+                        @endif
+                    @endif
+                    @php($rentLeftOut = $price->weekly() > 0 && $price->rental() === null)
+                    <tr><td>{{ $rentLeftOut ? __('Totaal eenmalig excl. btw') : __('Totaal excl. btw') }}</td><td class="amount">{{ $money($price->totalExcludingVat()) }}</td></tr>
+                    <tr><td>{{ __('Btw :rate%', ['rate' => \App\Support\QuotePrice::VAT_RATE]) }}</td><td class="amount">{{ $money($price->vat()) }}</td></tr>
+                    <tr class="grand"><td>{{ $rentLeftOut ? __('Totaal eenmalig incl. btw') : __('Totaal incl. btw') }}</td><td class="amount">{{ $money($price->totalIncludingVat()) }}</td></tr>
+                </table>
+            @endif
+
+            @if ($optional = $price->lines('optional'))
+                <h2 style="margin-top: 7mm">{{ __('Opties (niet in het totaal)') }}</h2>
+                <table class="prices">
+                    @foreach ($optional as $line)
+                        <tr>
+                            <td>{{ $line['description'] }}</td>
+                            <td class="number">{{ $line['quantity'] }}×</td>
+                            <td class="amount">{{ $money(\App\Support\QuotePrice::lineTotal($line)) }} {{ $periodLabel($line) }}</td>
+                        </tr>
+                    @endforeach
+                </table>
+            @endif
+
+            @if ($open = $price->lines('tbd'))
+                <h2 style="margin-top: 7mm">{{ __('Nog te bepalen kosten') }}</h2>
+                <ul class="list">
+                    @foreach ($open as $line)
+                        <li>{{ $line['description'] }}</li>
+                    @endforeach
+                </ul>
+            @endif
+
+            @if ($byClient = $price->lines('client'))
+                <h2 style="margin-top: 7mm">{{ __('Niet inbegrepen, door de opdrachtgever te regelen') }}</h2>
+                <ul class="list">
+                    @foreach ($byClient as $line)
+                        <li>{{ $line['description'] }}</li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+    @endunless
+
+    @if ($openPoints)
+        <div class="section">
+            <h2>{{ __('Nog te bevestigen') }}</h2>
+            <ul class="list">
+                @foreach ($openPoints as $point)
+                    <li>{{ $point }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if ($terms)
+        <div class="section">
+            <h2>{{ __('Voorwaarden') }}</h2>
+            <ul class="list">
+                @foreach ($terms as $term)
+                    <li>{{ $term }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     </div>
 </body>
 </html>

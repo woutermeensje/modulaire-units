@@ -57,6 +57,17 @@ class UnitConfiguration
         '6x3' => ['label' => '6 x 3 meter', 'length' => 6, 'depth' => 3, 'outer' => ['length' => 6058, 'depth' => 2990]],
     ];
 
+    /**
+     * The real outside height and inside height in millimetres per size, as given by the supplier (Moravia), for the
+     * quote. Null where it hasn't been confirmed yet.
+     *
+     * @var array<string, array{outer: int, inner: int}|null>
+     */
+    public const HEIGHTS = [
+        '3x3' => ['outer' => 2860, 'inner' => 2500],
+        '6x3' => ['outer' => 2860, 'inner' => 2500],
+    ];
+
     /** @var array<string, string> */
     public const WALLS = [
         'front' => 'Voorzijde',
@@ -340,6 +351,29 @@ class UnitConfiguration
         $outer = self::SIZES[$configuration['size']]['outer'];
 
         return ['length' => $outer['length'], 'depth' => $outer['depth'] * $configuration['modules']];
+    }
+
+    /**
+     * The exact outside size of one unit as the supplier gives it, e.g. "6.058 x 2.990 mm (6 x 3 meter)", for the quote
+     * tool and the quote PDF. The customer's composer only shows the rounded size.
+     */
+    public static function exactLabel(string $size): string
+    {
+        $outer = self::SIZES[$size]['outer'];
+
+        return __(':length x :depth mm (:size)', [
+            'length' => self::millimetres($outer['length']),
+            'depth' => self::millimetres($outer['depth']),
+            'size' => __(self::SIZES[$size]['label']),
+        ]);
+    }
+
+    /**
+     * Millimetres with a thousands separator in the active language: "6.058" in Dutch, "6,058" in English.
+     */
+    public static function millimetres(int $millimetres): string
+    {
+        return number_format($millimetres, 0, '', app()->getLocale() === 'nl' ? '.' : ',');
     }
 
     /**

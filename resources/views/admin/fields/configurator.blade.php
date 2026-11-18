@@ -99,7 +99,8 @@
                         <option value="">{{ __('Geen configuratie') }}</option>
                     @endunless
                     @foreach (UnitConfiguration::SIZES as $size => $dimensions)
-                        <option value="{{ $size }}" @selected($isConfigured && $configuration['size'] === $size)>{{ __($dimensions['label']) }}</option>
+                        {{-- The quote tool shows the exact size of the supplier, the customer's composer the rounded one. --}}
+                        <option value="{{ $size }}" @selected($isConfigured && $configuration['size'] === $size)>{{ $quoteExtras ? UnitConfiguration::exactLabel($size) : __($dimensions['label']) }}</option>
                     @endforeach
                 </select>
             </div>

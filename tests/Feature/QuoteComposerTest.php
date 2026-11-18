@@ -178,7 +178,7 @@ class QuoteComposerTest extends TestCase
         $client = User::factory()->create(['email' => 'jan@example.com']);
 
         $this->actingAs($admin)->post(route('quote-composer.send'), $this->quoteInput($client))
-            ->assertRedirect(route('quote-composer'))
+            ->assertRedirect(route('quotes.index'))
             ->assertSessionHas('status');
 
         $quote = Quote::sole();
@@ -203,7 +203,7 @@ class QuoteComposerTest extends TestCase
         $this->assertStringStartsWith(config('app.url').'/unit-samensteller/?samenstelling=', $quote->composerUrl());
         $this->get($quote->composerUrl())->assertOk()->assertSee('data-composer', false);
 
-        $this->actingAs($admin)->get(route('quote-composer'))->assertSee($quote->number())->assertSee(route('quotes.pdf', $quote), false);
+        $this->actingAs($admin)->get(route('quotes.index'))->assertSee($quote->number())->assertSee(route('quotes.pdf', $quote), false);
         $this->actingAs($admin)->get(route('quotes.pdf', $quote))->assertOk()->assertHeader('Content-Type', 'application/pdf');
     }
 
@@ -278,7 +278,7 @@ class QuoteComposerTest extends TestCase
 
         $this->actingAs(User::factory()->admin()->create())
             ->post(route('quote-composer.send'), $this->quoteInput($client, ['locale' => 'en', 'title' => 'Quote gatehouse', 'intro' => null]))
-            ->assertRedirect(route('quote-composer'));
+            ->assertRedirect(route('quotes.index'));
 
         $quote = Quote::sole();
         $this->assertSame('en', $quote->locale);
@@ -304,7 +304,8 @@ class QuoteComposerTest extends TestCase
         $this->assertStringContainsString('1× outside door (87.5 x 212.5 cm)', $html);
         $this->assertStringContainsString('Step in front of the ground-floor doors', $html);
         $this->assertStringContainsString('1× office chair (optional)', $html);
-        $this->assertStringContainsString('Outside dimensions 6.06 x 2.99 metres', $html);
+        $this->assertStringContainsString('Outside size per unit 6,058 x 2,990 x 2,860 mm (l x w x h)', $html);
+        $this->assertStringContainsString('Inside height 2,500 mm', $html);
         $this->assertStringContainsString('6× wall socket', $html);
         $this->assertStringNotContainsString('Offertenummer', $html);
     }
@@ -341,7 +342,7 @@ class QuoteComposerTest extends TestCase
         }
 
         $this->post(route('quote-composer.send'), $this->quoteInput(User::factory()->create()))
-            ->assertRedirect(route('quote-composer'));
+            ->assertRedirect(route('quotes.index'));
         Mail::assertSent(QuoteSent::class);
     }
 

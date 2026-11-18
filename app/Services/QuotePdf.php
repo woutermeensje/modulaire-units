@@ -28,12 +28,22 @@ class QuotePdf
         $images ??= $this->storedImages($quote);
 
         // Written in the language chosen for the quote, dates included.
-        return Locale::using($quote->locale ?? Locale::SOURCE, fn (): string => Pdf::loadView('pdf.quote', [
+        return Locale::using($quote->locale ?? Locale::SOURCE, fn (): string => Pdf::loadHTML($this->html($quote, $images))->setPaper('a4')->output());
+    }
+
+    /**
+     * The HTML the PDF is made from, in the active language.
+     *
+     * @param  array<string, string>  $images  Data URIs by image key; see Quote::IMAGES.
+     */
+    public function html(Quote $quote, array $images = []): string
+    {
+        return view('pdf.quote', [
             'quote' => $quote,
-            'specification' => (new QuoteSpecification(UnitConfiguration::normalize($quote->configuration)))->sections(),
+            'specification' => (new QuoteSpecification(UnitConfiguration::normalize($quote->configuration), $quote->specifications ?? []))->sections(),
             'images' => $images,
             'logo' => $this->logo(),
-        ])->setPaper('a4')->output());
+        ])->render();
     }
 
     /**

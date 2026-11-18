@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\QuotePrice;
 use App\Support\SiteUrl;
 use App\Support\UnitConfiguration;
 use Database\Factories\QuoteFactory;
@@ -12,14 +13,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * A quote an admin composed in /account/offerte-samenstellen/ and sent to a client: a title, an accompanying text and
- * a composed unit, with the images of the unit that were made in the browser (3D views and the floor plan).
+ * a composed unit, with the images of the unit that were made in the browser (3D views and the floor plan), and the rest
+ * of what a full quote needs (see units.md): sale or rent, project details, a technical specification per section,
+ * price lines, terms and open points.
  *
  * @property array<string, mixed> $configuration
  * @property array<string, string>|null $images Paths on the local disk by image key (front, back, plan).
+ * @property array<string, string>|null $specifications Technical text per key of QuoteSpecification::DETAILS.
+ * @property list<array{description: string, quantity: int, price: int|null, period: string, status: string}>|null $lines
+ *                                                                                                                        Price lines, prices in cents excluding VAT; see QuotePrice.
+ * @property string|null $internal_notes Only for admins: never in the PDF or the mail.
  *
  * @phpstan-import-type Configuration from UnitConfiguration
  */
-#[Fillable(['client_id', 'created_by', 'title', 'locale', 'intro', 'configuration', 'images', 'sent_at'])]
+#[Fillable([
+    'client_id', 'created_by', 'title', 'locale', 'kind', 'rental_weeks', 'reference', 'delivery_address', 'delivery_date',
+    'valid_until', 'intro', 'configuration', 'specifications', 'lines', 'terms', 'open_points', 'internal_notes', 'images', 'sent_at',
+])]
 class Quote extends Model
 {
     /** @use HasFactory<QuoteFactory> */
@@ -32,6 +42,12 @@ class Quote extends Model
         'plan' => 'Plattegrond',
     ];
 
+    /** Whether the unit is bought or rented: key => label (translated with __()). */
+    public const KINDS = [
+        'sale' => 'Koop',
+        'rent' => 'Huur',
+    ];
+
     /**
      * @return array<string, string>
      */
@@ -39,9 +55,26 @@ class Quote extends Model
     {
         return [
             'configuration' => 'array',
+            'specifications' => 'array',
+            'lines' => 'array',
             'images' => 'array',
+            'rental_weeks' => 'integer',
+            'valid_until' => 'date',
             'sent_at' => 'datetime',
         ];
+    }
+
+    public function isRental(): bool
+    {
+        return $this->kind === 'rent';
+    }
+
+    /**
+     * The prices worked out from the price lines; the rental period only counts for a rental.
+     */
+    public function price(): QuotePrice
+    {
+        return new QuotePrice($this->lines ?? [], $this->isRental() ? $this->rental_weeks : null);
     }
 
     /**
