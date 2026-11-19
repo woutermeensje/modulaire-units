@@ -1,11 +1,15 @@
-{{-- Huur- en koopagina's (/huren/..., /kopen/...): opbouw overgenomen van de /inhuren/-landingspagina's van OnlineMarketingjobs.nl. --}}
+{{-- Huur-, koop- en verkooppagina's (/huren/..., /kopen/..., /verkopen/): opbouw overgenomen van de /inhuren/-landingspagina's van OnlineMarketingjobs.nl. --}}
 @extends('layouts.site')
 
 @php
     /** @var \App\Models\Page $page */
     /** @var array{section: string, heading: string, body: string, blocks: list<string>, image: ?string, counterpart: ?\App\Models\Page} $landing */
     /** @var array{configuration: array<string, mixed>} $composer */
-    $requestUrl = url('offerte-aanvragen').'/';
+    $isSale = $landing['section'] === \App\Services\Content\OfferLanding::SALE_SECTION;
+    // Verkopers bieden hun units aan vanuit hun account; vragen gaan via de contactpagina in plaats van het offerteformulier.
+    $requestUrl = $isSale ? url('contact').'/' : url('offerte-aanvragen').'/';
+    $offerUnitsUrl = route('used-listings.create');
+    $usedUrl = url(\App\Http\Controllers\UsedListingController::PAGE_PATH).'/';
     $phone = \App\Models\Setting::get('phone');
     $email = \App\Models\Setting::get('email');
     $isRental = $landing['section'] === 'huren';
@@ -13,10 +17,11 @@
         ? match ($landing['section']) {
             'huren' => __('Modulaire Units Huren'),
             'kopen' => __('Modulaire Units Kopen'),
+            'verkopen' => __('Modulaire Units Verkopen'),
             default => $page->title,
         }
         : $page->title;
-    $requestLink = '<a href="'.e($requestUrl).'">'.e(__('Vraag vrijblijvend informatie aan')).'</a>';
+    $requestLink = '<a href="'.e($requestUrl).'">'.e($isSale ? __('Neem contact met ons op') : __('Vraag vrijblijvend informatie aan')).'</a>';
     $phoneLink = $phone ? '<a href="tel:'.e(preg_replace('/[^0-9+]/', '', $phone)).'">'.e($phone).'</a>' : '';
     $emailLink = $email ? '<a href="mailto:'.e($email).'">'.e($email).'</a>' : '';
     $followUp = match (true) {
@@ -39,9 +44,14 @@
                 <h1 id="mh-offer-title">{{ $heroTitle }}</h1>
                 <p class="mh-offer-hero__lead">{{ $page->hero['subtitle'] ?? __('Bekijk de mogelijkheden en vraag vrijblijvend informatie aan bij :site.', ['site' => \App\Models\Setting::get('site_name')]) }}</p>
                 <div class="mh-offer-hero__actions">
-                    {{-- Via een account kunnen klanten straks zelf units uitzoeken. --}}
-                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ route('register') }}">{{ __('Account aanmaken') }}</a>
-                    <a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">{{ __('Units samenstellen') }}</a>
+                    @if ($isSale)
+                        <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $offerUnitsUrl }}">{{ __('Units aanbieden') }}</a>
+                        <a class="mh-offer-btn mh-offer-btn--dark" href="{{ $usedUrl }}">{{ __('Gebruikt aanbod') }}</a>
+                    @else
+                        {{-- Via een account kunnen klanten straks zelf units uitzoeken. --}}
+                        <a class="mh-offer-btn mh-offer-btn--primary" href="{{ route('register') }}">{{ __('Account aanmaken') }}</a>
+                        <a class="mh-offer-btn mh-offer-btn--dark" href="#unit-samensteller">{{ __('Units samenstellen') }}</a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -59,10 +69,14 @@
                 {!! $landing['body'] !!}
             </div>
 
-            {{-- Vaste afsluiting, onderaan elke huur- en koopagina. --}}
+            {{-- Vaste afsluiting, onderaan elke huur-, koop- en verkooppagina. --}}
             <h2 class="mh-offer-intro__heading mh-offer-intro__heading--sub">{{ __('Hoe nu verder?') }}</h2>
             <p class="mh-offer-intro__platform mh-offer-intro__platform--bottom">
-                {{ $isRental ? __('Heb je vragen over de mogelijkheden, de huurperiode of de kosten?') : __('Heb je vragen over de mogelijkheden, de levertijd of de kosten?') }} {!! $followUp !!}
+                {{ match (true) {
+                    $isSale => __('Heb je vragen over de verkoop van je units?'),
+                    $isRental => __('Heb je vragen over de mogelijkheden, de huurperiode of de kosten?'),
+                    default => __('Heb je vragen over de mogelijkheden, de levertijd of de kosten?'),
+                } }} {!! $followUp !!}
             </p>
         </article>
 
@@ -85,6 +99,25 @@
             </ul>
 
             <div class="mh-offer-options">
+                @if ($isSale)
+                    <a class="mh-offer-option mh-offer-option--highlight" href="{{ $offerUnitsUrl }}">
+                        <span class="mh-offer-option__meta">{{ __('Gratis') }}</span>
+                        <strong>{{ __('Units aanbieden') }}</strong>
+                        <span>{{ __('Plaats je units gratis vanuit je account. Na een korte controle verschijnt je advertentie op de pagina Gebruikt.') }}</span>
+                    </a>
+
+                    <a class="mh-offer-option" href="{{ $usedUrl }}">
+                        <span class="mh-offer-option__meta">{{ __('Aanbod') }}</span>
+                        <strong>{{ __('Gebruikt aanbod') }}</strong>
+                        <span>{{ __('Bekijk welke gebruikte units nu worden aangeboden.') }}</span>
+                    </a>
+
+                    <a class="mh-offer-option" href="{{ url('transport-plaatsing') }}/">
+                        <span class="mh-offer-option__meta">{{ __('Service') }}</span>
+                        <strong>{{ __('Transport & plaatsing') }}</strong>
+                        <span>{{ __('Ervaring met transport en demontage van modulaire units.') }}</span>
+                    </a>
+                @else
                 @if ($landing['counterpart'])
                     <a class="mh-offer-option" href="{{ $landing['counterpart']->url() }}">
                         <span class="mh-offer-option__meta">{{ $isRental ? __('Kopen') : __('Huren') }}</span>
@@ -110,10 +143,15 @@
                     <strong>{{ __('Advies op maat') }}</strong>
                     <span>{{ __('Een adviseur denkt met je mee en stuurt een vrijblijvende offerte.') }}</span>
                 </a>
+                @endif
             </div>
 
             <div class="mh-offer-request__actions">
-                <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">{{ __('Informatie aanvragen') }}</a>
+                @if ($isSale)
+                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $offerUnitsUrl }}">{{ __('Units aanbieden') }}</a>
+                @else
+                    <a class="mh-offer-btn mh-offer-btn--primary" href="{{ $requestUrl }}">{{ __('Informatie aanvragen') }}</a>
+                @endif
             </div>
         </aside>
     </div>
@@ -122,6 +160,9 @@
         <section class="mh-offer-block">{!! $block !!}</section>
     @endforeach
 
-    @include('partials.unit-composer-section', ['composer' => $composer])
+    {{-- De unit-samensteller is voor huurders en kopers, niet voor wie units verkoopt. --}}
+    @unless ($isSale)
+        @include('partials.unit-composer-section', ['composer' => $composer])
+    @endunless
 </main>
 @endsection

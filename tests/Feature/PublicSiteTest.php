@@ -176,6 +176,59 @@ class PublicSiteTest extends TestCase
             ->assertDontSee('mh-units-catalog', false);
     }
 
+    public function test_sell_page_uses_the_offer_layout_aimed_at_sellers(): void
+    {
+        Page::factory()->create(['slug' => 'kopen', 'title' => 'Kopen']);
+        Page::factory()->create([
+            'slug' => 'verkopen',
+            'title' => 'Verkopen',
+            'template' => 'landing',
+            'hero' => ['title' => 'Modulaire Units en Oplossingen voor Tijdelijke Huisvesting (zowel koop als huur).', 'subtitle' => 'Heb je modulaire units die je wilt verkopen?'],
+            'content' => '<div class="elementor"><section><div class="elementor-widget elementor-widget-text-editor"><h1>Modulaire Units Verkopen</h1><p>Wij kopen gebruikte units.</p></div></section></div>',
+        ]);
+
+        $content = $this->get('/verkopen/')
+            ->assertOk()
+            ->assertSee('<h1 id="mh-offer-title">Modulaire Units Verkopen</h1>', false)
+            ->assertSee('Heb je modulaire units die je wilt verkopen?')
+            ->assertSee('Wij kopen gebruikte units.')
+            ->assertSee('<a class="mh-offer-btn mh-offer-btn--primary" href="'.route('used-listings.create').'">Units aanbieden</a>', false)
+            ->assertSee('href="'.url('gebruikt').'/"', false)
+            ->assertSee('href="'.url('contact').'/"', false)
+            ->assertSee('Heb je vragen over de verkoop van je units?')
+            ->assertDontSee('Tijdelijke Huisvesting (zowel koop als huur)')
+            ->assertDontSee('Liever flexibel en zonder investering?')
+            ->assertDontSee('href="/kopen/"', false)
+            ->assertDontSee('data-composer', false)
+            ->getContent();
+
+        $this->assertSame(1, substr_count($content, '<h1'));
+    }
+
+    public function test_sell_page_migration_replaces_the_generic_hero_and_old_banner_once(): void
+    {
+        $banner = '<section class="elementor-section elementor-top-section elementor-element elementor-element-3c270191 elementor-section-boxed"><h1>Modulaire Unit Verkopen?</h1><a class="elementor-button">Offerte aanvragen</a></section>';
+        $text = '<section class="elementor-section elementor-top-section elementor-element elementor-element-191e1b51"><h1>Modulaire Units Verkopen</h1><p>Tekst</p></section>';
+        $page = Page::factory()->create([
+            'slug' => 'verkopen',
+            'hero' => ['title' => 'Oud', 'subtitle' => 'Neem contact op met ons team en laat je adviseren in de keuze voor de beste unit.'],
+            'content' => '<div class="elementor">'.$banner.$text.'</div>',
+        ]);
+        $migration = require database_path('migrations/2026_11_19_082336_move_sell_page_to_offer_landing_layout.php');
+
+        $migration->up();
+        $migration->up();
+
+        $page->refresh();
+        $this->assertStringStartsWith('Heb je op dit moment een aantal modulaire units', $page->hero['subtitle']);
+        $this->assertSame('Oud', $page->hero['title']);
+        $this->assertSame('<div class="elementor">'.$text.'</div>', $page->content);
+
+        $page->update(['hero' => ['subtitle' => 'Eigen tekst']]);
+        $migration->up();
+        $this->assertSame('Eigen tekst', $page->refresh()->hero['subtitle']);
+    }
+
     public function test_work_steps_shortcode_renders_numbered_steps(): void
     {
         Page::factory()->create(['slug' => 'over-ons', 'content' => '<p>Over ons tekst</p>[werkwijze]']);

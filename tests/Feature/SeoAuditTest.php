@@ -51,16 +51,16 @@ class SeoAuditTest extends TestCase
     public function test_a_subpage_with_a_hero_has_the_heading_of_its_content_as_only_h1(): void
     {
         Page::factory()->create([
-            'slug' => 'verkopen',
+            'slug' => 'inrichting',
             'template' => 'landing',
             'hero' => ['title' => 'Modulaire Units en Oplossingen voor Tijdelijke Huisvesting'],
-            'content' => '<h1>Modulaire Unit Verkopen?</h1><p>Tekst</p><h1>Modulaire Units Verkopen</h1>',
+            'content' => '<h1>Modulaire units inrichten?</h1><p>Tekst</p><h1>Inrichting op maat</h1>',
         ]);
 
-        $content = $this->get('/verkopen/')->assertOk()->getContent();
+        $content = $this->get('/inrichting/')->assertOk()->getContent();
 
         $this->assertSame(1, substr_count($content, '<h1'));
-        $this->assertStringContainsString('<h1>Modulaire Unit Verkopen?</h1>', $content);
+        $this->assertStringContainsString('<h1>Modulaire units inrichten?</h1>', $content);
         $this->assertStringContainsString('<p class="mh-home-hero__title">Modulaire Units en Oplossingen voor Tijdelijke Huisvesting</p>', $content);
     }
 

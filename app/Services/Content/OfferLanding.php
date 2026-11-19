@@ -8,7 +8,7 @@ use Dom\Element;
 use Dom\HTMLDocument;
 
 /**
- * Turns the (imported Elementor) content of a /huren/ or /kopen/ page into the parts of the offer landing layout:
+ * Turns the (imported Elementor) content of a /huren/, /kopen/ or /verkopen/ page into the parts of the offer landing layout:
  * a hero image, a heading with the body text, and the remaining dynamic blocks such as a form.
  */
 class OfferLanding
@@ -18,7 +18,12 @@ class OfferLanding
      *
      * @var list<string>
      */
-    public const SECTIONS = ['huren', 'kopen'];
+    public const SECTIONS = ['huren', 'kopen', 'verkopen'];
+
+    /**
+     * The section for organisations that sell their used units to us; it has no rent or buy counterpart.
+     */
+    public const SALE_SECTION = 'verkopen';
 
     public function __construct(private ShortcodeRenderer $shortcodes) {}
 
@@ -28,7 +33,7 @@ class OfferLanding
     }
 
     /**
-     * The section ("huren" or "kopen") a page belongs to, or null when it is not an offer page.
+     * The section ("huren", "kopen" or "verkopen") a page belongs to, or null when it is not an offer page.
      */
     public static function section(Page $page): ?string
     {
@@ -64,7 +69,7 @@ class OfferLanding
                 $shortcodes,
             ))),
             'image' => $this->heroImage($page),
-            'counterpart' => Page::query()->published()
+            'counterpart' => $section === self::SALE_SECTION ? null : Page::query()->published()
                 ->where('path', $isOverview ? $otherSection : $otherSection.'/'.$page->source('slug'))
                 ->first(),
         ];
