@@ -229,6 +229,29 @@ class PublicSiteTest extends TestCase
         $this->assertSame('Eigen tekst', $page->refresh()->hero['subtitle']);
     }
 
+    public function test_buy_page_migration_fills_the_empty_text_once_and_keeps_cms_edits(): void
+    {
+        $page = Page::factory()->create([
+            'slug' => 'kopen',
+            'title' => 'Kopen',
+            'content' => '<div class="elementor"><section><div class="elementor-widget elementor-widget-shortcode">[units_catalog title="Kopen"]</div></section><section><div class="elementor-widget elementor-widget-text-editor"><h1 style="color: #333333;">Modulaire Units Kopen</h1></div></section></div>',
+        ]);
+        $migration = require database_path('migrations/2026_11_19_183430_fill_buy_page_text.php');
+
+        $migration->up();
+        $migration->up();
+
+        $this->get('/kopen/')
+            ->assertOk()
+            ->assertSee('<h2 class="mh-offer-intro__heading">Modulaire Units Kopen</h2>', false)
+            ->assertSeeInOrder(['gespecialiseerd in de verkoop en verhuur', 'Eigen units samenstellen', 'Ons proces', 'Even contact hebben?'])
+            ->assertSee('href="#unit-samensteller"', false);
+
+        $page->update(['content' => '<h2>Modulaire Units Kopen</h2><p>Eigen tekst</p>']);
+        $migration->up();
+        $this->assertSame('<h2>Modulaire Units Kopen</h2><p>Eigen tekst</p>', $page->refresh()->content);
+    }
+
     public function test_work_steps_shortcode_renders_numbered_steps(): void
     {
         Page::factory()->create(['slug' => 'over-ons', 'content' => '<p>Over ons tekst</p>[werkwijze]']);
