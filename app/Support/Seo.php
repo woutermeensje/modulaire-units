@@ -92,6 +92,17 @@ class Seo
     }
 
     /**
+     * Keep the page out of Google while its links are still followed, for thin pages such as blog archives per
+     * author or category that only repeat the blog overview.
+     */
+    public function withoutIndexing(): self
+    {
+        $this->noindex = true;
+
+        return $this;
+    }
+
+    /**
      * Absolute alternate URLs for hreflang; empty when the page exists in one language only.
      *
      * @return array<string, string>
@@ -116,11 +127,25 @@ class Seo
         return $plain === '' ? null : Str::limit($plain, self::DESCRIPTION_LENGTH, '…', preserveWords: true);
     }
 
+    /**
+     * Google shows roughly this many characters of a title; a longer title is cut off in the results.
+     */
+    public const TITLE_LENGTH = 60;
+
+    /**
+     * The title followed by the site name, or the title alone when the site name would push it past TITLE_LENGTH.
+     */
     public static function withSiteName(string $title): string
     {
-        $siteName = Setting::get('site_name');
+        $siteName = (string) Setting::get('site_name');
 
-        return $title === '' || $title === $siteName ? (string) $siteName : "{$title} - {$siteName}";
+        if ($title === '' || $title === $siteName) {
+            return $siteName;
+        }
+
+        $withSiteName = "{$title} - {$siteName}";
+
+        return mb_strlen($withSiteName) > self::TITLE_LENGTH ? $title : $withSiteName;
     }
 
     public function canonicalUrl(): ?string

@@ -10,6 +10,7 @@ use App\Services\Content\OfferLanding;
 use App\Services\Content\ServiceLanding;
 use App\Services\Content\ShortcodeRenderer;
 use App\Services\Content\UnitTypesOverview;
+use App\Support\HeadingOutline;
 use App\Support\Locale;
 use App\Support\Seo;
 use App\Support\UnitConfiguration;
@@ -94,9 +95,15 @@ class PageController extends Controller
             ]);
         }
 
+        // Only the home page uses its hero title as h1 (see partials.hero).
+        $heroIsHeading = $page->isHome() && $page->template === 'landing' && ! empty($page->hero['title']);
+        $content = HeadingOutline::normalize($this->shortcodes->render($page->content, $page), hasPageHeading: $page->show_title || $heroIsHeading);
+
         return view('pages.show', [
             'page' => $page,
-            'content' => $this->shortcodes->render($page->content, $page),
+            'content' => $content,
+            // The home page has its h1 in the hero; on other pages the hero title is decoration and the page heading is shown when the content has none.
+            'showTitle' => ! $page->isHome() && ($page->show_title || ! HeadingOutline::hasH1($content)),
             'seo' => Seo::for($page, $page->excerpt),
             ...($page->source('path') === '' ? [
                 'composer' => $this->composer($request),

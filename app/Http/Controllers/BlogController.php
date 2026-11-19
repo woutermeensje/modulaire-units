@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Page;
 use App\Models\Post;
 use App\Services\Content\ShortcodeRenderer;
+use App\Support\HeadingOutline;
 use App\Support\Seo;
 use App\Support\SiteUrl;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -34,7 +35,8 @@ class BlogController extends Controller
             (int) request('page', 1),
             $category->name,
             Seo::make($category->name, $category->description ?: __('Alle blogartikelen in de categorie :name: tips, regels en achtergronden over modulaire units en tijdelijke huisvesting.', ['name' => $category->name]), $category->url())
-                ->withAlternates(fn (): string => $category->url(), $category),
+                ->withAlternates(fn (): string => $category->url(), $category)
+                ->withoutIndexing(),
             $category->url(),
         );
     }
@@ -48,7 +50,8 @@ class BlogController extends Controller
             (int) request('page', 1),
             $author->name,
             Seo::make(__(':name, auteur', ['name' => $author->name]), $author->bio ?: __('Lees alle blogartikelen van :name over modulaire units, tijdelijke huisvesting en de regels die daarbij horen.', ['name' => $author->name]), $author->url())
-                ->withAlternates(fn (): string => $author->url(), $author),
+                ->withAlternates(fn (): string => $author->url(), $author)
+                ->withoutIndexing(),
             $author->url(),
         );
     }
@@ -63,7 +66,7 @@ class BlogController extends Controller
 
         return view('blog.show', [
             'post' => $post,
-            'content' => app(ShortcodeRenderer::class)->render($post->content),
+            'content' => HeadingOutline::normalize(app(ShortcodeRenderer::class)->render($post->content), hasPageHeading: true),
             'relatedPosts' => $relatedPosts,
             'seo' => Seo::for($post, $post->summary(30)),
         ]);

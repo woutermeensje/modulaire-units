@@ -1,5 +1,7 @@
 @php
     /** @var array{image?: string, eyebrow?: string, title?: string, subtitle?: string, button_text?: string, button_url?: string} $hero */
+    /** @var bool $titleIsHeading  Whether the hero title is the h1 of the page. */
+    $titleIsHeading ??= true;
     $heroImage = \App\Support\SiteUrl::media($hero['image'] ?? null);
 @endphp
 <div class="mh-lp">
@@ -10,7 +12,8 @@
             @endif
             <div class="mh-home-hero__title-wrap">
                 @if (! empty($hero['title']))
-                    <h1 class="mh-home-hero__title">{!! $hero['title'] !!}</h1>
+                    {{-- Only the home page uses the hero title as its h1; elsewhere the page has its own heading. --}}
+                    <{{ $titleIsHeading ? 'h1' : 'p' }} class="mh-home-hero__title">{!! $hero['title'] !!}</{{ $titleIsHeading ? 'h1' : 'p' }}>
                 @endif
                 @if (! empty($hero['subtitle']))
                     <p class="mh-home-hero__subtitle">{{ $hero['subtitle'] }}</p>

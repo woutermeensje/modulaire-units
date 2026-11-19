@@ -18,7 +18,7 @@
     </div>
     <div class="mh-unit-3d__pane mh-unit-3d__viewer" data-unit-card-viewer='@json($viewer)' role="img" aria-label="{{ __('Draaibare 3D-weergave van :unit', ['unit' => $unit->title]) }}">
         @if ($poster)
-            <img src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($poster, $posterVariant)) }}" alt="" width="600" height="400" loading="lazy" data-unit-card-viewer-poster>
+            <img src="{{ \App\Support\SiteUrl::media(\App\Models\Media::variant($poster, $posterVariant)) }}" alt="{{ $unit->title }}" width="600" height="400" loading="lazy" data-unit-card-viewer-poster>
         @endif
         <span class="mh-unit-3d__hint" aria-hidden="true">{{ __('Sleep om te draaien') }}</span>
     </div>

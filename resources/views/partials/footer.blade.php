@@ -30,6 +30,9 @@
 
     <div class="mh-footer__bottom">
         <span>&copy; {{ date('Y') }} {{ \App\Models\Setting::get('site_name') }}</span>
-        <a href="{{ url('algemene-voorwaarden') }}/">{{ __('Algemene voorwaarden') }}</a>
+        <span class="mh-footer__legal">
+            <a href="{{ url('algemene-voorwaarden') }}/">{{ __('Algemene voorwaarden') }}</a>
+            <a href="{{ url('algemene-voorwaarden/huur') }}/">{{ __('Huurvoorwaarden') }}</a>
+        </span>
     </div>
 </footer>

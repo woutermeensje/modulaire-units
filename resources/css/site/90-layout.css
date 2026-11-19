@@ -176,6 +176,12 @@ a.mh-btn--accent:focus,
   opacity: .85;
 }
 
+.mh-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
 @media (max-width: 1024px) {
   .mh-footer__inner {
     grid-template-columns: repeat(2, minmax(0, 1fr));

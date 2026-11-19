@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Product;
+use App\Models\Redirect;
 use App\Models\Unit;
 use App\Models\UnitTerm;
 use App\Models\UsedListing;
@@ -31,7 +32,10 @@ class SitemapController extends Controller
         /** @var Collection<int, array{loc: string, lastmod: ?string, alternates: array<string, string>}> $urls */
         $urls = collect();
 
-        Page::query()->published()->where('noindex', false)->whereNotIn('path', self::EXCLUDED_PATHS)->get()
+        // A page whose URL redirects elsewhere is never shown, so only its redirect target belongs in the sitemap.
+        $redirectedPaths = Redirect::query()->pluck('from_path')->map(fn (string $path): string => trim($path, '/'))->all();
+
+        Page::query()->published()->where('noindex', false)->whereNotIn('path', [...self::EXCLUDED_PATHS, ...$redirectedPaths])->get()
             ->each(fn (Page $page) => $urls->push(...$this->entries(fn (): string => $page->url(), $page->updated_at, $page)));
 
         Post::query()->published()->where('noindex', false)->get()
@@ -45,6 +49,8 @@ class SitemapController extends Controller
 
         UnitTerm::query()->whereHas('units')->get()
             ->each(fn (UnitTerm $term) => $urls->push(...$this->entries(fn (): string => $term->url(), $term->updated_at, $term)));
+
+        $urls->push(...$this->entries(fn (): string => SiteUrl::route('products.index'), Product::query()->max('updated_at')));
 
         Product::query()->published()->where('noindex', false)->get()
             ->each(fn (Product $product) => $urls->push(...$this->entries(fn (): string => $product->url(), $product->updated_at, $product)));
