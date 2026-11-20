@@ -1,25 +1,27 @@
 # Klantprofiel – ModulaireHuisvesting.nl
 
-**Status:** deels gevalideerd (rol: signaal uit de eerste aanvragen; de rest is nog aanname)
+**Status:** deels gevalideerd (op basis van 7 aanvragen, maart–november 2026; nog weinig data, blijf bijwerken)
 **Laatst bijgewerkt:** 20 november 2026
 
 ## In één zin
-Facilitair managers en coördinatoren huisvesting bij bedrijven, instellingen en non-profits die snel 1 tot 10 modulaire units willen huren of kopen.
+De persoon die bij een bedrijf of instelling "even" extra ruimte moet regelen (een kantoorplek, een portiersloge, een paar units) en snel wil weten wat het kost en wat erbij komt kijken.
 
 ## Wie is het?
-- Type: zakelijk (B2B)
-- Rol of functie: **facilitair manager, coördinator huisvesting** of een andere rol in facilities of huisvesting. Dit zie je terug in de aanvragen tot nu toe (november 2026). Nog weinig aanvragen, dus houd het in de gaten.
-- [AANNAME] Deze persoon is meestal niet de eindgebruiker van de unit. Hij of zij regelt ruimte voor een afdeling, een project of een locatie.
-- Soort organisatie en grootte: [VRAAG]
-- Branche / sector: [AANNAME] bouw, onderwijs, zorg, sportverenigingen, evenementen, beveiliging (portiersloges)
-- Regio: heel Nederland
+- Type: alleen niet-particulieren: bedrijven, non-profits en overheden (zie "Wie is níet mijn klant?")
+- Rol of functie: **degene die het moet regelen**. Bij grotere organisaties iemand van facilitair of vastgoed (facilitair manager, coördinator huisvesting, vastgoedontwikkelaar bij een afdeling Vastgoed, Inkoop & Facility Management). Bij mkb operations, een engineer of de eigenaar zelf. Geen expert in units; doet dit naast het eigen werk.
+- Soort organisatie en grootte: mkb, middelgrote bedrijven en grote maatschappelijke organisaties/non-profits met een eigen pand of terrein.
+- Branche / sector (gezien): industrie/fabriek, logistiek, kinderopvang, food/bezorging, beveiliging/hekwerk, maatschappelijke non-profit.
+- Regio: heel Nederland (gezien: Zuid-Holland, Noord-Holland, Brabant).
 
 ## Welk probleem heeft deze klant?
-- [AANNAME] Heeft tijdelijk (of langdurig) extra ruimte nodig: kantoor, kantine, klaslokaal, kleedkamer, sanitair, portiersloge.
-- [VRAAG] Wat gaat er bij bestaande verhuurders mis volgens klanten die bij jou aanvragen?
+- Te weinig ruimte op de eigen locatie: extra kantoorplek naast of ín een bedrijfspand (fabriek, hal).
+- Een bewaakte toegang nodig: portiersloge, beveiligingshuisje, wachthuisje.
+- Uitbreiding van een bestaande locatie (bijv. kinderopvang), eerst een paar units en later meer.
 
 ## Wat wil de klant bereiken?
-- [AANNAME] Snel een werkende unit op locatie, met een duidelijke prijs per week of een duidelijke koopprijs.
+- Snel een werkende unit op locatie, met verwarming en ramen, tegen een zo laag mogelijke prijs.
+- Kleine aantallen: 1 tot 3 units, soms met uitzicht op meer (tot ca. 8).
+- Huurperiode: van 1 maand tot ruim 1,5 jaar.
 
 ## Hoe lost de klant het nu op?
 - [VRAAG] Welke verhuurders/leveranciers noemen klanten?
@@ -27,33 +29,49 @@ Facilitair managers en coördinatoren huisvesting bij bedrijven, instellingen en
 ## Waarom kiest de klant voor mij?
 - Unit zelf samenstellen in de unit-samensteller en direct een offerte zien.
 - Open over prijzen en werkwijze.
+- Huren én kopen, nieuw én gebruikt bij één partij.
 - [VRAAG]
 
 ## Twijfels en bezwaren
-- [AANNAME, past bij de rol facilitair/huisvesting]
-  - Moet een offerte kunnen doorsturen naar budgethouder of inkoop, vaak naast offertes van andere leveranciers.
-  - Wil weten wat er allemaal bij zit (transport, plaatsing, aansluiten, ophalen) zodat er achteraf geen extra kosten komen.
-  - Levertijd en planning: wanneer staat de unit er en is hij bruikbaar?
-  - Vergunning, ondergrond, stroom en water: wat moet hij of zij zelf regelen?
-  - Wat gebeurt er bij een storing of als er iets kapot is tijdens de huur?
-  - Huurperiode: minimale duur, verlengen, eerder stoppen.
-- [VRAAG] Klopt dit met de vragen die je echt krijgt?
+Bevestigd in aanvragen:
+- Prijs ("goedkope oplossing", tarieven, volumekorting).
+- Levertijd en planning (bijv. "voorkeur levering eind Q2").
+- Eisen aan de ondergrond.
+- Nutsvoorzieningen: wat moet er voorbereid worden (elektra, water, riolering).
+- Verwarming en ramen.
+- Plaatsing binnen in een bedrijfshal.
+- Huur of koop: staat open voor beide, kiest op basis van prijs.
+- Fundering: klant heeft er geen partij voor en verwacht dat de leverancier het regelt of iemand kan aanwijzen.
+- Uitstraling: een mooie buitenkant ("design aan de buitenkant"), vooral bij organisaties met bezoekers of cliënten.
+
+Nog aanname:
+- Moet de offerte intern doorsturen naar een budgethouder of inkoop.
+- Wat er gebeurt bij een storing tijdens de huur.
+- Vergunning.
 
 ## Hoe vindt de klant mij?
-- Zoektermen: [AANNAME] "kantoorunit huren", "bouwunit huren", "portiersloge huren", "modulaire unit kopen", "tweedehands kantoorunit"
-- Kanalen: Google (organisch)
+- Woorden die klanten zelf gebruiken: kantoorplek, beveiligingshuisje, wachthuisje, portacabin, containerunit, kantoorunit, gebruikte kantoorunit.
+- Zoektermen: [AANNAME] "kantoorunit huren", "portiersloge huren", "beveiligingshuisje huren", "portacabin kopen", "gebruikte kantoorunit", "kantoor in bedrijfshal".
+- Kanalen: Google (organisch), offerteformulier en unit-samensteller (november 2026: eerste zakelijke aanvraag volledig via de samensteller, 2 units 6×3, huur 1,5 jaar).
 
 ## Wat is de klant waard?
 - Prijs / budget: huur vanaf ca. €60 per week per unit (zie /units/)
 - Eenmalig of terugkerend: huur is terugkerend, koop eenmalig
-- Wie beslist over de aankoop: [AANNAME] de facilitair manager bereidt voor en vergelijkt, een budgethouder, directie of inkoop keurt goed. [VRAAG] Klopt dit?
+- Wie beslist over de aankoop: bij mkb vaak de aanvrager of eigenaar zelf; bij grotere bedrijven [AANNAME] een budgethouder, directie of inkoop.
 
 ## Hoe spreek ik deze klant aan?
-- Informeel, jij-vorm, concreet: maten, prijzen, levertijd. Geen marketingtaal.
+- Informeel, jij-vorm, concreet: maten, prijzen, levertijd, wat erbij zit en wat de klant zelf moet regelen.
+- Gebruik de woorden van de klant (wachthuisje, portacabin, kantoorplek), niet "modulaire huisvestingsoplossing".
+- Laat huur en koop naast elkaar zien.
 
 ## Wie is níet mijn klant?
-- [AANNAME] Particulieren (tuinhuis, mantelzorgwoning) en grote bouwprojecten met tientallen units zijn nu geen ontwerpdoel.
+- **Particulieren: harde keuze, geen aanname.** Ik verkoop en verhuur alleen aan niet-particulieren: bedrijven, non-profits en overheden, met een zakelijk of maatschappelijk doel. Geen particulier die een woonunit, tuinhuis, mantelzorgwoning of iets dergelijks zoekt.
+  - Gevolg voor de site: geen pagina's, teksten, beelden of zoekwoorden die op particulieren zijn gericht.
+- [AANNAME] Grote bouwprojecten met tientallen units zijn nu geen ontwerpdoel (wel welkom).
 
 ## Aanbieders van gebruikte units
 - Wél interessant: bedrijven met Containex- of Moravia-units.
 - Nu geen prioriteit: particulieren en oude bedrijfsunits van andere merken.
+
+## Let op
+- Kinderopvang (en mogelijk ander gebruik met kinderen of overnachting) heeft waarschijnlijk extra eisen (bouwregels, brandveiligheid, GGD). Navragen voordat je erover schrijft of offreert.
