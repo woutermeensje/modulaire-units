@@ -310,6 +310,39 @@ class QuoteComposerTest extends TestCase
         $this->assertStringNotContainsString('Offertenummer', $html);
     }
 
+    public function test_the_accompanying_text_is_rich_text_in_the_pdf_and_the_mail(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+        $intro = '<p>Beste <strong>Rob</strong>,</p><ol><li data-list="bullet">Levering in week 12</li></ol><script>alert(1)</script><p><span style="color: red">Groet</span></p>';
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->post(route('quote-composer.send'), $this->quoteInput(User::factory()->create(), ['intro' => $intro]))
+            ->assertRedirect(route('quotes.index'));
+
+        $quote = Quote::sole();
+        $this->assertStringContainsString('<strong>Rob</strong>', $quote->intro);
+        $this->assertStringContainsString('<ul><li>Levering in week 12</li></ul>', $quote->intro);
+        $this->assertStringNotContainsString('script', $quote->intro);
+        $this->assertStringNotContainsString('style=', $quote->intro);
+
+        $html = view('pdf.quote', ['quote' => $quote, 'specification' => [], 'images' => []])->render();
+        $this->assertStringContainsString('<div class="intro">'.$quote->intro.'</div>', $html);
+
+        $mail = new QuoteSent($quote, '%PDF');
+        $mail->assertSeeInHtml('Rob</strong>,', false);
+        $mail->assertSeeInHtml('Levering in week 12</li></ul>', false);
+        $mail->assertDontSeeInHtml('&lt;p&gt;', false);
+    }
+
+    public function test_an_older_plain_text_intro_keeps_its_line_breaks(): void
+    {
+        $quote = Quote::factory()->make(['intro' => "Beste Rob,\n\nPrijs < 5.000 euro."]);
+
+        $this->assertSame("Beste Rob,<br />\n<br />\nPrijs &lt; 5.000 euro.", $quote->introHtml());
+        $this->assertSame('', Quote::factory()->make(['intro' => '<p><br></p>'])->introHtml());
+    }
+
     public function test_the_language_must_be_dutch_or_english(): void
     {
         $this->actingAs(User::factory()->admin()->create())

@@ -43,6 +43,13 @@
         .label { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5pt; color: #5b6770; }
         .details { text-align: right; }
         .intro { margin-bottom: 8mm; }
+        .intro h2 { margin: 5mm 0 2mm; font-size: 12pt; }
+        .intro h3 { margin: 4mm 0 2mm; font-size: 10.5pt; color: #25486e; }
+        .intro p { margin: 0; }
+        .intro ul, .intro ol { margin: 0; padding: 0 0 0 6mm; }
+        .intro a { color: #25486e; }
+        .intro .ql-indent-1 { margin-left: 6mm; }
+        .intro .ql-indent-2 { margin-left: 12mm; }
         .images { width: 100%; border-collapse: collapse; margin-bottom: 4mm; }
         .images td { width: 50%; padding: 0 2mm 4mm 0; vertical-align: top; }
         .images td + td { padding: 0 0 4mm 2mm; }
@@ -113,7 +120,8 @@
     @endif
 
     @if (filled($quote->intro))
-        <div class="intro">{!! nl2br(e($quote->intro)) !!}</div>
+        {{-- From the rich text editor, cleaned by RichText::clean(). --}}
+        <div class="intro">{!! $quote->introHtml() !!}</div>
     @endif
 
     @if (isset($images['front']) || isset($images['back']))

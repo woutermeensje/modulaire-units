@@ -2,7 +2,7 @@
 # {{ $quote->title }}
 
 @if (filled($quote->intro))
-{!! nl2br(e($quote->intro)) !!}
+{!! $quote->introHtml() !!}
 @else
 {{ __('Beste :name,', ['name' => $quote->client->firstName()]) }}
 

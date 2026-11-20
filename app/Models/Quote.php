@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\QuotePrice;
+use App\Support\RichText;
 use App\Support\SiteUrl;
 use App\Support\UnitConfiguration;
 use Database\Factories\QuoteFactory;
@@ -101,6 +102,21 @@ class Quote extends Model
         $code = UnitConfiguration::toShareCode(UnitConfiguration::normalize($this->configuration));
 
         return SiteUrl::absolute(SiteUrl::route('unit-composer.public', [UnitConfiguration::SHARE_KEY => $code], $this->locale));
+    }
+
+    /**
+     * The accompanying text as HTML for the PDF and the mail. It comes from the rich text editor and is cleaned once
+     * more; an older plain-text intro keeps its line breaks.
+     */
+    public function introHtml(): string
+    {
+        $intro = (string) $this->intro;
+
+        if (RichText::isEmpty($intro)) {
+            return '';
+        }
+
+        return preg_match('/<[a-z][^>]*>/i', $intro) ? RichText::clean($intro) : nl2br(e($intro));
     }
 
     /**

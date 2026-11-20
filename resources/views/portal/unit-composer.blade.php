@@ -97,7 +97,7 @@
                     </div>
                     <div class="portal-field">
                         <label class="portal-label" for="intro">Begeleidende tekst</label>
-                        <textarea class="portal-textarea" id="intro" name="intro" rows="8" data-quill="off" placeholder="Beste ..., hierbij de offerte voor ...">{{ old('intro', $draft->intro) }}</textarea>
+                        <textarea class="portal-textarea" id="intro" name="intro" rows="8" data-editor-height="220" placeholder="Beste ..., hierbij de offerte voor ...">{{ old('intro', $draft->intro) }}</textarea>
                         <p class="portal-help">Staat bovenaan de PDF en in de mail.</p>
                     </div>
                 </section>

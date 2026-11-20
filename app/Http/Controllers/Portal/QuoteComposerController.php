@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\QuotePdf;
 use App\Support\Locale;
 use App\Support\QuoteSpecification;
+use App\Support\RichText;
 use App\Support\UnitConfiguration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -204,7 +205,7 @@ class QuoteComposerController extends Controller
             'locale' => $validated['locale'],
             'kind' => $kind,
             'reference' => $validated['reference'] ?? null,
-            'intro' => $validated['intro'] ?? null,
+            'intro' => RichText::isEmpty($validated['intro'] ?? null) ? null : RichText::clean($validated['intro']),
             'configuration' => $configuration,
             'specifications' => array_filter(array_map(fn (?string $text): string => trim((string) $text), $validated['specifications'] ?? [])) ?: null,
             'hidden_specifications' => ($validated['specification_choices'] ?? false)

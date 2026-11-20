@@ -47,7 +47,7 @@ class QuoteRequest extends FormRequest
             'locale' => ['required', Rule::in(Locale::all())],
             'kind' => ['nullable', Rule::in(array_keys(Quote::KINDS))],
             'reference' => ['nullable', 'string', 'max:255'],
-            'intro' => ['nullable', 'string', 'max:10000'],
+            'intro' => ['nullable', 'string', 'max:50000'],
             'specifications' => ['nullable', 'array:'.implode(',', array_keys(QuoteSpecification::DETAILS))],
             'specifications.*' => ['nullable', 'string', 'max:5000'],
             // The form says it has the tick boxes, so that "none ticked" can be told apart from "no tick boxes".
